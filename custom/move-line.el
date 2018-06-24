@@ -1,7 +1,12 @@
+;;; move-line.el --- Move line.
+;;; Commentary:
 ;; https://www.emacswiki.org/emacs/MoveLine
 ;; This is a move-line function (by Joe Smith) that was discussed on the
 ;; gnu-help mailing list back in 2008. This function allows the current line
-;; to be transposed up and down. This is useful for re-arranging lists in Emacs.
+;; to be transposed up and down.  This is useful for re-arranging lists in Emacs.
+
+;;; Code:
+
 (defun move-line (n)
   "Move the current line up or down by N lines."
   (interactive "p")
@@ -26,3 +31,5 @@
 (global-set-key (kbd "M-<up>") 'move-line-up)
 (global-set-key (kbd "M-<down>") 'move-line-down)
 (provide 'move-line)
+
+;;; move-line.el ends here

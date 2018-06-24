@@ -1,4 +1,6 @@
-;; set backup settings
+;;; emacs-saves.el --- Emacs auto save settings
+;;; Commentary:
+;;; Code:
 
 (unless (file-accessible-directory-p "~/.emacs-saves")
   (make-directory "~/.emacs-saves"))
@@ -9,3 +11,5 @@
       kept-old-versions 2
       version-control t)
 (provide 'emacs-saves)
+
+;;; emacs-saves.el ends here

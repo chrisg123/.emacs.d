@@ -1,9 +1,13 @@
+;;; init.el --- My init.el.
+;;; Commentary:
+;;; Code:
+
 (require 'package)
 
 ;; Add MELPA to package-archives. (https://www.emacswiki.org/emacs/MELPA)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
-;; Avoid loading the packages again after processing the init file. 
+;; Avoid loading the packages again after processing the init file.
 (setq package-enable-at-startup nil)
 
 ;; Load packages explicitly.
@@ -20,7 +24,10 @@
 (add-to-list 'load-path "~/.emacs.d/custom/")
 (require 'emacs-customize)
 (require 'emacs-saves)
-(require 'line-numbers)
+(require 'emacs-modes)
 (require 'move-line)
+(require 'my-line-numbers)
+(require 'my-helm)
 (require 'misc)
 
+;;; init.el ends here
