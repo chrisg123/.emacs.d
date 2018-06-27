@@ -22,12 +22,15 @@
 
 ;; Load custom scripts.
 (add-to-list 'load-path "~/.emacs.d/custom/")
+(require 'my-flycheck)
 (require 'emacs-customize)
 (require 'emacs-saves)
 (require 'emacs-modes)
+(require 'emacs-keys)
 (require 'move-line)
 (require 'my-line-numbers)
 (require 'my-helm)
+(require 'my-org)
 (require 'misc)
 
 ;;; init.el ends here
