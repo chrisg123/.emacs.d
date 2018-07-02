@@ -9,6 +9,9 @@
 (add-to-list 'auto-mode-alist '("\\.html\\.twig\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 
+;; ANSI colors for .log files https://stackoverflow.com/a/23382008/2974621
+(add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
+
 (provide 'emacs-modes)
 
 ;;; emacs-modes.el ends here

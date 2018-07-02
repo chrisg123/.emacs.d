@@ -28,6 +28,7 @@
 (require 'emacs-modes)
 (require 'emacs-keys)
 (require 'move-line)
+(require 'xclip)
 (require 'my-line-numbers)
 (require 'my-helm)
 (require 'my-org)
