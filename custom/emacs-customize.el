@@ -22,7 +22,7 @@
  '(fci-rule-color "#383838")
  '(package-selected-packages
    (quote
-    (dracula-theme geben seq helm flycheck nlinum web-mode php-mode))))
+    (projectile dracula-theme geben seq helm flycheck nlinum web-mode php-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
