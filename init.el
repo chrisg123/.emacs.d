@@ -40,6 +40,7 @@
 (require 'my-line-numbers)
 (require 'my-helm)
 (require 'my-org)
+(require 'my-haskell)
 (require 'misc)
 
 ;;; init.el ends here

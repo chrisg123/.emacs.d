@@ -19,7 +19,8 @@
 (if (is-gnu-screen)
     ;; Disable italic. Does not play well with gnu screen.
     (progn (set-face-italic 'font-lock-comment-face nil)
-	   (set-face-italic 'font-lock-doc-face nil)))
+	   (set-face-italic 'font-lock-doc-face nil)
+	   (set-face-italic 'font-lock-preprocesor-face nil)))
 
 ;; remove background color so transparency works.
 ;; TODO: maybe check if compositing is enabled first.
