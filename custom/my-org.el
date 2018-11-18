@@ -54,6 +54,27 @@
   (revert-buffer :ignore-auto :nonconfirm)
   )
 
+(defvar org-bracket-link-regexp)
+
+;; ref: https://emacs.stackexchange.com/a/3990
+(defun org-kill-url ()
+  "Extract url from org link."
+  (interactive)
+  (let* ((link-info (assoc :link (org-context)))
+	 (text (when link-info
+		 ;; org-context seems to return nil if the current element
+		 ;; starts at buffer-start or ends at buffer-end
+		 (buffer-substring-no-properties (or (cadr link-info) (point-min))
+						 (or (caddr link-info) (point-max))))))
+    (if (not text)
+	(error "Not in org link")
+      (kill-new ((lambda (x)
+		    (string-match org-bracket-link-regexp x)
+		    (substring x (match-beginning 1) (match-end 1))) text)))))
+
+
+
+
 (provide 'my-org)
 
 ;;; my-org.el ends here
