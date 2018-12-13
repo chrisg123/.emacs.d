@@ -35,5 +35,7 @@
   (interactive)
   (ansi-color-apply-on-region (point-min) (point-max)))
 
+(ac-config-default)
+
 (provide 'misc)
 ;;; misc.el ends here

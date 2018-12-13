@@ -12,7 +12,9 @@
 		    nil))))))
 
 (add-hook 'haskell-mode-hook 'pretty-lambdas-haskell)
-
+(require 'hindent)
+(add-hook 'haskell-mode-hook #'hindent-mode)
+(add-hook 'haskell-mode-hook (lambda () (ghc-init)))
 (provide 'my-haskell)
 
 ;;; my-haskell.el ends here

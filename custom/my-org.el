@@ -8,6 +8,11 @@
 (defvar org-hide-emphasis-markers)
 (setq org-hide-emphasis-markers t)
 
+(defvar org-edit-src-content-indentation)
+(setq org-edit-src-content-indentation nil)
+
+(add-hook 'org-mode-hook 'org-indent-mode)
+
 (defun insert-source-block()
   "Insert source code declaration block."
   (interactive)
