@@ -18,7 +18,9 @@
   "Check if gnu screen is running."
   (cond ((getenv "STY") t)))
 
-(if (is-gnu-screen)
+(if 1 ;; used to use is-gnu-screen but set to always disable italic
+    ;; since it caused issues when ssh'd into a remote machine
+    ;; while using gnu-screen localy
     ;; Disable italic. Does not play well with gnu screen.
     (progn (set-face-italic 'font-lock-comment-face nil)
 	   (set-face-italic 'font-lock-doc-face nil)
