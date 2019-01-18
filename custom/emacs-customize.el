@@ -21,7 +21,7 @@
  '(custom-enabled-themes (quote (manoj-dark)))
  '(package-selected-packages
    (quote
-    (nginx-mode hindent ac-haskell-process haskell-snippets nlinum flycheck-ghcmod flycheck-haskell company-ghc xah-math-input web-mode tangotango-theme projectile php-auto-yasnippets helm haskell-mode geben flycheck boron-theme auto-complete))))
+    (ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets nlinum flycheck-ghcmod flycheck-haskell company-ghc xah-math-input web-mode tangotango-theme projectile php-auto-yasnippets helm haskell-mode geben flycheck boron-theme auto-complete))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
