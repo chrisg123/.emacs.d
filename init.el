@@ -41,6 +41,9 @@
 (require 'my-helm)
 (require 'my-org)
 (require 'my-haskell)
+(require 'my-projectile)
 (require 'misc)
-
+(require 'my-yasnippet)
+(require 'my-company-mode)
+(require 'geben-helm-projectile)
 ;;; init.el ends here
