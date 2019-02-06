@@ -31,6 +31,7 @@
 ;; Load custom scripts.
 (add-to-list 'load-path "~/.emacs.d/custom/")
 (require 'my-flycheck)
+(require 'my-semantic)
 (require 'emacs-customize)
 (require 'emacs-saves)
 (require 'emacs-modes)
@@ -45,5 +46,7 @@
 (require 'misc)
 (require 'my-yasnippet)
 (require 'my-company-mode)
+(require 'my-highlight-indent-guides)
 (require 'geben-helm-projectile)
+(require 'my-yaml)
 ;;; init.el ends here

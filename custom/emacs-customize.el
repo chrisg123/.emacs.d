@@ -21,7 +21,8 @@
  '(custom-enabled-themes (quote (manoj-dark)))
  '(package-selected-packages
    (quote
-    (company-nginx yasnippet-snippets helm-c-yasnippet indent-tools yaml-mode geben-helm-projectile helm-projectile ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets nlinum flycheck-ghcmod flycheck-haskell company-ghc xah-math-input web-mode tangotango-theme php-auto-yasnippets helm haskell-mode geben flycheck boron-theme))))
+    (geben-helm-projectile geben highlight-indent-guides company-nginx yasnippet-snippets helm-c-yasnippet indent-tools yaml-mode helm-projectile ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets nlinum flycheck-ghcmod flycheck-haskell company-ghc xah-math-input web-mode tangotango-theme php-auto-yasnippets helm haskell-mode flycheck boron-theme)))
+ '(yaml-indent-offset 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
