@@ -19,9 +19,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-enabled-themes (quote (manoj-dark)))
+ '(global-semantic-idle-scheduler-mode t)
+ '(global-semanticdb-minor-mode t)
  '(package-selected-packages
    (quote
-    (company-nginx yasnippet-snippets helm-c-yasnippet indent-tools yaml-mode geben-helm-projectile helm-projectile ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets nlinum flycheck-ghcmod flycheck-haskell company-ghc xah-math-input web-mode tangotango-theme php-auto-yasnippets helm haskell-mode geben flycheck boron-theme))))
+    (android-mode flycheck-kotlin kotlin-mode cmake-mode company-nginx yasnippet-snippets helm-c-yasnippet indent-tools yaml-mode geben-helm-projectile helm-projectile ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets nlinum flycheck-ghcmod flycheck-haskell company-ghc xah-math-input web-mode tangotango-theme php-auto-yasnippets helm haskell-mode geben flycheck boron-theme)))
+ '(semantic-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -31,4 +34,9 @@
  '(diff-header ((t (:background "brightblack"))))
  '(font-lock-keyword-face ((t (:foreground "cyan"))))
  '(helm-selection ((t (:background "color-238" :distant-foreground "black"))))
- '(org-document-title ((t (:foreground "brightyellow" :weight bold)))))
+ '(helm-visible-mark ((t (:background "color-19"))))
+ '(org-document-title ((t (:foreground "brightyellow" :weight bold))))
+ '(pulse-highlight-start-face ((t (:background "color-19"))))
+ '(semantic-decoration-on-fileless-includes ((t (:background "#f0fdf0" :foreground "black"))))
+ '(semantic-decoration-on-unparsed-includes ((t (:background "#ffff55" :foreground "black"))))
+ '(semantic-highlight-func-current-tag-face ((t (:background "color-19" :foreground "white")))))
