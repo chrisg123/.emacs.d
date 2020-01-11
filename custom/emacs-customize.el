@@ -23,7 +23,8 @@
  '(global-semanticdb-minor-mode t)
  '(package-selected-packages
    (quote
-    (android-mode flycheck-kotlin kotlin-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx yasnippet-snippets helm-c-yasnippet indent-tools yaml-mode helm-projectile ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets nlinum flycheck-ghcmod flycheck-haskell company-ghc xah-math-input web-mode tangotango-theme php-auto-yasnippets helm haskell-mode flycheck boron-theme))))
+    (flycheck-gradle gradle-mode company-lsp kotlin-mode lsp-mode markdown-mode format-all android-mode flycheck-kotlin cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx yasnippet-snippets helm-c-yasnippet indent-tools yaml-mode helm-projectile ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc xah-math-input web-mode tangotango-theme php-auto-yasnippets helm flycheck boron-theme)))
+ '(yaml-indent-offset 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
