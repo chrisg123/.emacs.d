@@ -37,5 +37,9 @@
   (interactive)
   (ansi-color-apply-on-region (point-min) (point-max)))
 
+(setq scroll-conservatively most-positive-fixnum)
+
+(delete-selection-mode t)
+
 (provide 'misc)
 ;;; misc.el ends here

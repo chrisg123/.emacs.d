@@ -51,4 +51,5 @@
 (require 'my-highlight-indent-guides)
 (require 'geben-helm-projectile)
 (require 'my-yaml)
+(require 'my-multiple-cursors)
 ;;; init.el ends here

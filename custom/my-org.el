@@ -11,7 +11,7 @@
 (defvar org-edit-src-content-indentation)
 (setq org-edit-src-content-indentation nil)
 
-(add-hook 'org-mode-hook 'org-indent-mode)
+(add-hook 'org-mode-hook (lambda() (org-indent-mode) (hide-source-block-delimeters)))
 
 (defun insert-source-block()
   "Insert source code declaration block."

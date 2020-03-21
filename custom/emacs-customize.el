@@ -23,7 +23,7 @@
  '(global-semanticdb-minor-mode t)
  '(package-selected-packages
    (quote
-    (flycheck-gradle gradle-mode company-lsp kotlin-mode lsp-mode markdown-mode format-all android-mode flycheck-kotlin cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx yasnippet-snippets helm-c-yasnippet indent-tools yaml-mode helm-projectile ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc xah-math-input web-mode tangotango-theme php-auto-yasnippets helm flycheck boron-theme)))
+    (multiple-cursors org-projectile flycheck-kotlin lsp-ui yaml-mode auto-complete company ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode kotlin-mode lsp-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx helm-c-yasnippet ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm)))
  '(yaml-indent-offset 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -35,6 +35,19 @@
  '(font-lock-keyword-face ((t (:foreground "cyan"))))
  '(helm-selection ((t (:background "color-238" :distant-foreground "black"))))
  '(helm-visible-mark ((t (:background "color-19"))))
+ '(lsp-ui-peek-list ((t (:background "brightblack"))))
+ '(lsp-ui-peek-peek ((t (:background "brightblack"))))
+ '(magit-diff-added ((t (:foreground "#22aa22"))))
+ '(magit-diff-added-highlight ((t (:foreground "#22aa22" :weight bold))))
+ '(magit-diff-base ((t (:foreground "#aaaa11"))))
+ '(magit-diff-base-highlight ((t (:underline nil))))
+ '(magit-diff-context-highlight ((t (:foreground "grey50"))))
+ '(magit-diff-hunk-heading ((t (:foreground "grey30"))))
+ '(magit-diff-hunk-heading-highlight ((t (:foreground "grey30" :weight bold))))
+ '(magit-diff-removed-highlight ((t (:foreground "#aa2222"))))
+ '(magit-section-highlight ((t (:underline nil :weight bold))))
+ '(mode-line ((t (:background "grey30" :foreground "grey80" :box 1 :height 0.9))))
+ '(mode-line-inactive ((t (:background "black" :foreground "grey80" :box 1 :weight light :height 0.9))))
  '(org-document-title ((t (:foreground "brightyellow" :weight bold))))
  '(pulse-highlight-start-face ((t (:background "color-19"))))
  '(semantic-decoration-on-fileless-includes ((t (:background "#f0fdf0" :foreground "black"))))
