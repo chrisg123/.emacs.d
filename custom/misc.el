@@ -1,5 +1,5 @@
 ;;; misc.el --- Miscellaneous Emacs settings
-;;; Commentary:
+;;; commentary:
 ;; A place for miscellaneous Emacs settings.
 
 ;;; Code:
@@ -41,5 +41,15 @@
 
 (delete-selection-mode t)
 
+(add-to-list 'auto-mode-alist '("\\.bash_aliases\\'" . sh-mode))
+
+(autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
+(push '("\\.\\(?:frm\\|\\(?:ba\\|cl\\|vb\\)s\\)\\'" . visual-basic-mode)
+      auto-mode-alist)
+
+(defvar visual-basic-mode-indent)
+(defvar visual-basic-ide-pathname)
+(setq visual-basic-mode-indent 4)
+;;(setq visual-basic-ide-pathname "/bin/bash -c VB.exe")
 (provide 'misc)
 ;;; misc.el ends here
