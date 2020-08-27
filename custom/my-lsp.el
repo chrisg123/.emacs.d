@@ -5,7 +5,7 @@
 (require 'lsp-mode)
 (require 'lsp-ui)
 
-(lsp-ui-flycheck-add-mode 'kotlin-mode)
+;;(lsp-ui-flycheck-add-mode 'kotlin-mode)
 (add-to-list 'flycheck-checkers 'lsp-ui)
 
 (defun lsp-mode-keybinding()
