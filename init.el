@@ -52,5 +52,6 @@
 (require 'geben-helm-projectile)
 (require 'my-yaml)
 (require 'my-multiple-cursors)
+(require 'visual-basic-mode)
 ;;; init.el ends here
 (put 'downcase-region 'disabled nil)
