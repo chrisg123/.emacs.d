@@ -53,3 +53,4 @@
 (require 'my-yaml)
 (require 'my-multiple-cursors)
 ;;; init.el ends here
+(put 'downcase-region 'disabled nil)
