@@ -23,7 +23,8 @@
  '(global-semanticdb-minor-mode t)
  '(package-selected-packages
    (quote
-    (multiple-cursors org-projectile flycheck-kotlin lsp-ui yaml-mode auto-complete company ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode kotlin-mode lsp-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx helm-c-yasnippet ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm)))
+    (org-category-capture xah-math-input multiple-cursors org-projectile flycheck-kotlin lsp-ui yaml-mode auto-complete company ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode kotlin-mode lsp-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx helm-c-yasnippet ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm)))
+ '(safe-local-variable-values (quote ((c-indent-level . 4))))
  '(yaml-indent-offset 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
