@@ -53,5 +53,6 @@
 (require 'my-yaml)
 (require 'my-multiple-cursors)
 (require 'visual-basic-mode)
+(require 'hide-comnt)
 ;;; init.el ends here
-(put 'downcase-region 'disabled nil)
+

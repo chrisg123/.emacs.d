@@ -48,8 +48,23 @@
       auto-mode-alist)
 
 (defvar visual-basic-mode-indent)
-(defvar visual-basic-ide-pathname)
-(setq visual-basic-mode-indent 4)
+;;(defvar visual-basic-ide-pathname)
 ;;(setq visual-basic-ide-pathname "/bin/bash -c VB.exe")
+(add-hook 'visual-basic-mode-hook ()
+	  (setq visual-basic-mode-indent 4)
+	  (setq-default indent-tabs-mode nil))
+
+(elpy-enable)
+
+(when (load "flycheck" t t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
+
+(show-paren-mode t)
+
+(put 'narrow-to-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+
 (provide 'misc)
 ;;; misc.el ends here
