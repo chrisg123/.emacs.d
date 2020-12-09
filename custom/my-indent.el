@@ -19,6 +19,8 @@
   (interactive)
   (setq indent-tabs-mode nil))
 
+(setq backward-delete-char-untabify-method 'hungry)
+
 (defvar whitespace-style)
 (setq whitespace-style '(face spaces space-mark tabs tab-mark trailing))
 
