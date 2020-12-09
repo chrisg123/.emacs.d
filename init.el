@@ -54,5 +54,6 @@
 (require 'my-multiple-cursors)
 (require 'visual-basic-mode)
 (require 'hide-comnt)
+(require 'my-indent)
 ;;; init.el ends here
 
