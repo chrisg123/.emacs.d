@@ -55,6 +55,7 @@
 	  (setq-default indent-tabs-mode nil))
 
 (elpy-enable)
+(setq elpy-rpc-backend "jedi")
 
 (when (load "flycheck" t t)
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
