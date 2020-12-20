@@ -13,6 +13,20 @@
 
 (add-hook 'org-mode-hook (lambda() (org-indent-mode) (hide-source-block-delimeters)))
 
+;; PDFs visited in Org-mode are opened in Evince (and not in the default choice)
+;; https://stackoverflow.com/a/8836108/2974621
+;; https://stackoverflow.com/a/8836108/789593
+(add-hook 'org-mode-hook
+          '(lambda ()
+             (delete '("\\.pdf\\'" . default) org-file-apps)
+             (delete '("\\.jpg\\'" . default) org-file-apps)
+             (delete '("\\.png\\'" . default) org-file-apps)
+             (delete '("\\.bmp\\'" . default) org-file-apps)
+             (add-to-list 'org-file-apps '("\\.pdf\\'" . "mupdf %s"))
+             (add-to-list 'org-file-apps '("\\.jpg\\'" . "feh -. %s"))
+             (add-to-list 'org-file-apps '("\\.png\\'" . "feh -. %s"))
+             (add-to-list 'org-file-apps '("\\.bmp\\'" . "feh -. %s"))))
+
 (defun insert-source-block()
   "Insert source code declaration block."
   (interactive)
@@ -30,11 +44,11 @@
        (goto-char (point-max))
        (setq src-block-overlays (list))
        (while (re-search-backward "#\\+BEGIN_SRC\\|#\\+END_SRC" nil t)
-	 (let ((ov-src-block-delim
-		(make-overlay (line-beginning-position) (1+ (line-end-position)))))
-	   (overlay-put ov-src-block-delim 'src-block-delim t)
-	   (overlay-put ov-src-block-delim 'invisible t)
-	   (push ov-src-block-delim src-block-overlays)))))
+     (let ((ov-src-block-delim
+        (make-overlay (line-beginning-position) (1+ (line-end-position)))))
+       (overlay-put ov-src-block-delim 'src-block-delim t)
+       (overlay-put ov-src-block-delim 'invisible t)
+       (push ov-src-block-delim src-block-overlays)))))
 
 (defun unhide-source-block-delimiters()
   "Unhide source block delimiters."
@@ -66,16 +80,16 @@
   "Extract url from org link."
   (interactive)
   (let* ((link-info (assoc :link (org-context)))
-	 (text (when link-info
-		 ;; org-context seems to return nil if the current element
-		 ;; starts at buffer-start or ends at buffer-end
-		 (buffer-substring-no-properties (or (cadr link-info) (point-min))
-						 (or (caddr link-info) (point-max))))))
+     (text (when link-info
+         ;; org-context seems to return nil if the current element
+         ;; starts at buffer-start or ends at buffer-end
+         (buffer-substring-no-properties (or (cadr link-info) (point-min))
+                         (or (caddr link-info) (point-max))))))
     (if (not text)
-	(error "Not in org link")
+    (error "Not in org link")
       (kill-new ((lambda (x)
-		    (string-match org-bracket-link-regexp x)
-		    (substring x (match-beginning 1) (match-end 1))) text)))))
+            (string-match org-bracket-link-regexp x)
+            (substring x (match-beginning 1) (match-end 1))) text)))))
 
 
 

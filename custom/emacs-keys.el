@@ -10,6 +10,8 @@
 (global-set-key (kbd "C-x <left>") 'windmove-left)
 (global-set-key (kbd "C-x <right>") 'windmove-right)
 
+(global-set-key (kbd "C-c w") 'whitespace-cleanup)
+
 (provide 'emacs-keys)
 
 ;;; emacs-keys.el ends here
