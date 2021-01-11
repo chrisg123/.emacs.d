@@ -18,6 +18,9 @@
 ;; Avoid loading the packages again after processing the init file.
 (setq package-enable-at-startup nil)
 
+;; https://emacs.stackexchange.com/a/51772
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+
 ;; Load packages explicitly.
 (package-initialize)
 
