@@ -56,6 +56,7 @@
 
 (elpy-enable)
 (setq elpy-rpc-backend "jedi")
+(setq eldoc-idle-delay 1)
 
 (when (load "flycheck" t t)
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
