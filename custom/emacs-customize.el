@@ -23,7 +23,7 @@
  '(global-semantic-idle-scheduler-mode t)
  '(global-semanticdb-minor-mode t)
  '(package-selected-packages
-   '(linum-relative rust-mode flycheck company-jedi elpy flycheck-pycheckers python-mode xah-math-input multiple-cursors org-projectile flycheck-kotlin lsp-ui yaml-mode auto-complete company ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode kotlin-mode lsp-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx helm-c-yasnippet ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm))
+   '(jedi elpy lsp-ui linum-relative rust-mode flycheck-pycheckers python-mode xah-math-input multiple-cursors org-projectile flycheck-kotlin yaml-mode auto-complete company ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode kotlin-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx helm-c-yasnippet ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm))
  '(safe-local-variable-values '((c-indent-level . 4)))
  '(yaml-indent-offset 4))
 (custom-set-faces

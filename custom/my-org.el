@@ -22,6 +22,7 @@
              (delete '("\\.jpg\\'" . default) org-file-apps)
              (delete '("\\.png\\'" . default) org-file-apps)
              (delete '("\\.bmp\\'" . default) org-file-apps)
+             (add-to-list 'org-file-apps '(directory . emacs))
              (add-to-list 'org-file-apps '("\\.pdf\\'" . "mupdf %s"))
              (add-to-list 'org-file-apps '("\\.jpg\\'" . "feh -. %s"))
              (add-to-list 'org-file-apps '("\\.png\\'" . "feh -. %s"))
@@ -90,8 +91,6 @@
       (kill-new ((lambda (x)
             (string-match org-bracket-link-regexp x)
             (substring x (match-beginning 1) (match-end 1))) text)))))
-
-
 
 
 (provide 'my-org)
