@@ -7,9 +7,8 @@
 
 ;; Ref: https://www.monolune.com/configuring-company-mode-in-emacs/
 
-;; No delay in showing suggedtions.
 (defvar company-idle-delay)
-(setq company-idle-delay 0)
+(setq company-idle-delay 1)
 
 ;; Show suggestions after entering one character.
 (defvar company-minimum-prefix-length 1)

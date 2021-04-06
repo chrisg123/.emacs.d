@@ -45,6 +45,7 @@
 (require 'my-line-numbers)
 (require 'my-helm)
 (require 'my-org)
+(require 'my-c)
 (require 'my-haskell)
 (require 'my-kotlin)
 (require 'my-projectile)
@@ -58,5 +59,6 @@
 (require 'visual-basic-mode)
 (require 'hide-comnt)
 (require 'my-indent)
+(require 'ol-man)
 ;;; init.el ends here
 
