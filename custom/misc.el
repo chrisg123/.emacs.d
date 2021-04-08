@@ -48,11 +48,16 @@
       auto-mode-alist)
 
 (defvar visual-basic-mode-indent)
+(defvar visual-basic-mode-map)
 ;;(defvar visual-basic-ide-pathname)
 ;;(setq visual-basic-ide-pathname "/bin/bash -c VB.exe")
-(add-hook 'visual-basic-mode-hook ()
-	  (setq visual-basic-mode-indent 4)
-	  (setq-default indent-tabs-mode nil))
+(add-hook 'visual-basic-mode-hook
+          (lambda()
+            (setq visual-basic-mode-indent 4)
+            (setq-default indent-tabs-mode nil)
+            (define-key visual-basic-mode-map (kbd "C-c w")
+              (lambda() (interactive) (print "No whitespace cleanup for vb6 silly.")))
+          ))
 
 (elpy-enable)
 (setq elpy-rpc-backend "jedi")

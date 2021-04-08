@@ -8,6 +8,7 @@
 ;; Ref: https://www.monolune.com/configuring-company-mode-in-emacs/
 
 (defvar company-idle-delay)
+(setq company-dabbrev-downcase nil)
 (setq company-idle-delay 1)
 
 ;; Show suggestions after entering one character.
