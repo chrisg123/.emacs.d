@@ -32,6 +32,8 @@
 
 (global-whitespace-mode t)
 
+(setq-default indent-tabs-mode nil)
+
 (provide 'my-indent)
 
 ;;; my-indent.el ends here

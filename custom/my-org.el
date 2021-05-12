@@ -22,11 +22,14 @@
              (delete '("\\.jpg\\'" . default) org-file-apps)
              (delete '("\\.png\\'" . default) org-file-apps)
              (delete '("\\.bmp\\'" . default) org-file-apps)
+             (delete '("\\.mtl\\'" . default) org-file-apps)
              (add-to-list 'org-file-apps '(directory . emacs))
              (add-to-list 'org-file-apps '("\\.pdf\\'" . "mupdf %s"))
              (add-to-list 'org-file-apps '("\\.jpg\\'" . "feh -. %s"))
              (add-to-list 'org-file-apps '("\\.png\\'" . "feh -. %s"))
-             (add-to-list 'org-file-apps '("\\.bmp\\'" . "feh -. %s"))))
+             (add-to-list 'org-file-apps '("\\.bmp\\'" . "feh -. %s"))
+             (add-to-list 'org-file-apps '("\\.mlt\\'" . "shotcut %s"))
+             ))
 
 (defun insert-source-block()
   "Insert source code declaration block."

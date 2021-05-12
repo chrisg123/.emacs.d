@@ -33,6 +33,7 @@
 
 ;; Load custom scripts.
 (add-to-list 'load-path "~/.emacs.d/custom/")
+(require 'my-indent)
 (require 'my-flycheck)
 (require 'my-semantic)
 (require 'emacs-customize)
@@ -58,7 +59,6 @@
 (require 'my-multiple-cursors)
 (require 'visual-basic-mode)
 (require 'hide-comnt)
-(require 'my-indent)
 (require 'ol-man)
 ;;; init.el ends here
 

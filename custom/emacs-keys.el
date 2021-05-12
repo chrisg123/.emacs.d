@@ -12,6 +12,14 @@
 
 (global-set-key (kbd "C-c w") 'whitespace-cleanup)
 
+(defvar xah-math-input-keymap)
+(add-hook
+ 'xah-math-input-mode-hook
+ (lambda()
+   (define-key xah-math-input-keymap
+     (kbd "<f8>") 'xah-math-input-change-to-symbol)))
+
+
 (provide 'emacs-keys)
 
 ;;; emacs-keys.el ends here

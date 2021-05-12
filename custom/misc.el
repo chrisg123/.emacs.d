@@ -77,5 +77,19 @@
 (set-face-attribute 'Man-overstrike nil :inherit font-lock-type-face :bold t)
 (set-face-attribute 'Man-underline nil :inherit font-lock-keyword-face :underline t)
 
+;; Enable mouse support
+(unless window-system
+  (require 'mouse)
+  (xterm-mouse-mode t)
+  (global-set-key [mouse-4] (lambda ()
+                              (interactive)
+                              (previous-line 1)))
+  (global-set-key [mouse-5] (lambda ()
+                              (interactive)
+                              (next-line 1)))
+  (defun track-mouse (e))
+  (setq mouse-sel-mode t)
+  )
+
 (provide 'misc)
 ;;; misc.el ends here
