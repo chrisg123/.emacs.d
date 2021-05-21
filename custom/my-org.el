@@ -29,6 +29,7 @@
              (add-to-list 'org-file-apps '("\\.png\\'" . "feh -. %s"))
              (add-to-list 'org-file-apps '("\\.bmp\\'" . "feh -. %s"))
              (add-to-list 'org-file-apps '("\\.mlt\\'" . "shotcut %s"))
+             (add-to-list 'org-file-apps '("\\.mp3\\'" . "mplayer %s"))
              ))
 
 (defun insert-source-block()
