@@ -47,6 +47,9 @@
 (push '("\\.\\(?:frm\\|\\(?:ba\\|cl\\|vb\\)s\\)\\'" . visual-basic-mode)
       auto-mode-alist)
 
+(autoload 'vbnet-mode "vbnet-mode" "Mode for editing VB.NET code." t)
+(setq auto-mode-alist (append '(("\\.vb\\'" . vbnet-mode)) auto-mode-alist))
+
 (defvar visual-basic-mode-indent)
 (defvar visual-basic-mode-map)
 ;;(defvar visual-basic-ide-pathname)
