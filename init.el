@@ -58,6 +58,7 @@
 (require 'my-yaml)
 (require 'my-multiple-cursors)
 (require 'visual-basic-mode)
+(require 'vbnet-mode)
 (require 'hide-comnt)
 (require 'ol-man)
 ;;; init.el ends here
