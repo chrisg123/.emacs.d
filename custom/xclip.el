@@ -15,7 +15,7 @@
     (defun clip-exe-cut-function (text &optional push)
       (with-temp-buffer
 	(insert text)
-	(call-process-region (point-min) (point-max) "clip.exe")))
+	(call-process-region (point-min) (point-max) "/mnt/c/Windows/system32/clip.exe")))
     (defun clip-exe-paste-function()
       (let ((xclip-output (shell-command-to-string "powershell.exe -command Get-Clipboard | sed 's/\r//g'")))
 	(unless (string= (car kill-ring) xclip-output)
