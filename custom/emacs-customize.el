@@ -18,13 +18,14 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes '(manoj-dark))
+ '(custom-enabled-themes (quote (manoj-dark)))
  '(elpy-syntax-check-command "pylint")
  '(global-semantic-idle-scheduler-mode t)
  '(global-semanticdb-minor-mode t)
  '(package-selected-packages
-   '(jedi elpy lsp-ui linum-relative rust-mode flycheck-pycheckers python-mode xah-math-input multiple-cursors org-projectile flycheck-kotlin yaml-mode auto-complete company ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode kotlin-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx helm-c-yasnippet ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm))
- '(safe-local-variable-values '((c-indent-level . 4)))
+   (quote
+    (jedi elpy lsp-ui linum-relative rust-mode flycheck-pycheckers python-mode xah-math-input multiple-cursors org-projectile flycheck-kotlin yaml-mode auto-complete company ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode kotlin-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx helm-c-yasnippet ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm)))
+ '(safe-local-variable-values (quote ((c-indent-level . 4))))
  '(yaml-indent-offset 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -58,5 +59,7 @@
  '(semantic-decoration-on-fileless-includes ((t (:background "#f0fdf0" :foreground "black"))))
  '(semantic-decoration-on-unparsed-includes ((t (:background "#ffff55" :foreground "black"))))
  '(semantic-highlight-func-current-tag-face ((t (:background "color-19" :foreground "white"))))
+ '(vbnet-funcall-face ((t (:foreground "brightcyan"))))
+ '(vbnet-namespace-face ((t (:foreground "brightmagenta"))))
  '(whitespace-space ((t (:foreground "#262626"))))
  '(whitespace-tab ((t (:foreground "#636363")))))
