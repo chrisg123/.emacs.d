@@ -80,6 +80,8 @@
 (set-face-attribute 'Man-overstrike nil :inherit font-lock-type-face :bold t)
 (set-face-attribute 'Man-underline nil :inherit font-lock-keyword-face :underline t)
 
+
+
 ;; Enable mouse support
 (unless window-system
   (require 'mouse)
@@ -93,6 +95,38 @@
   (defun track-mouse (e))
   (setq mouse-sel-mode t)
   )
+
+(defun add-include-path (path &optional buffer)
+  "Add PATH to flycheck and semantic include-path.  Optional BUFFER."
+  (interactive
+   (list (string-trim-right (read-directory-name "Include path: "))))
+  (if (file-directory-p path)
+      (if (y-or-n-p (format "Path: `%s'\nAdd path to includes? " path))
+          (progn
+            (message (format "buffer: %s" buffer))
+            (add-to-list 'flycheck-gcc-include-path path)
+            (semantic-add-system-include path)
+            (if buffer (switch-to-buffer buffer))
+            (flycheck-buffer)
+        )
+        (message "Canceled."))
+    (message "Path is not a directory.")))
+
+(defun extra-include(path)
+  "Load includes from `.extra_include' file in PATH."
+  (interactive
+   (list (string-trim-right (read-directory-name "Path to `.extra_include' parent directory: "))))
+  (let ((xfile (format "%s/.extra_include" (replace-regexp-in-string "/*\s*$" "" path)))
+        (buffer (current-buffer)))
+    (if (file-exists-p xfile)
+        (progn
+          (message "file exists")
+          (with-temp-buffer
+            (insert-file-contents xfile)
+            (mapcar (lambda (x) (add-include-path x buffer)) (split-string (buffer-string) "\n" t))
+            )
+          )
+      (message (format "File not found: `%s'" xfile)))))
 
 (provide 'misc)
 ;;; misc.el ends here

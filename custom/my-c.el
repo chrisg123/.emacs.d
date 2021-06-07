@@ -6,6 +6,7 @@
 (add-hook
  'c-mode-common-hook
  (lambda()
+   (semantic-mode 1)
    (define-key c-mode-base-map
      (kbd "M-.") 'semantic-ia-fast-jump)))
 

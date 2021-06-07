@@ -47,6 +47,7 @@
 (require 'my-helm)
 (require 'my-org)
 (require 'my-c)
+(require 'my-cxx)
 (require 'my-haskell)
 (require 'my-kotlin)
 (require 'my-projectile)
