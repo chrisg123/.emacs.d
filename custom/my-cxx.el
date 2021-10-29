@@ -2,13 +2,14 @@
 ;;; Commentary:
 
 ;;; Code:
-(defvar c++-mode-base-map)
+(defvar c++-mode-map)
 (add-hook
  'c++-mode-hook
  (lambda()
    (semantic-mode 1)
    (setq-default flycheck-checker 'c/c++-gcc)
-   (define-key c++-mode-base-map
+   (setq c-hungry-delete-key nil)
+   (define-key c++-mode-map
      (kbd "M-.") 'semantic-ia-fast-jump)))
 
 (provide 'my-cxx)

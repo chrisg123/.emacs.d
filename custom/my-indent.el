@@ -22,7 +22,8 @@
 (setq backward-delete-char-untabify-method 'hungry)
 
 (defvar whitespace-style)
-(setq whitespace-style '(face spaces space-mark tabs tab-mark trailing))
+(setq whitespace-style
+      '(face spaces space-mark tabs tab-mark lines-tail trailing))
 
 (custom-set-faces
  '(whitespace-tab ((t (:foreground "#636363")))))

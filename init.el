@@ -62,5 +62,6 @@
 (require 'vbnet-mode)
 (require 'hide-comnt)
 (require 'ol-man)
+(require 'copy-file-path)
 ;;; init.el ends here
 

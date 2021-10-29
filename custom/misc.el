@@ -105,8 +105,8 @@
           (progn
             (message (format "buffer: %s" buffer))
             (add-to-list 'flycheck-gcc-include-path path)
-            (semantic-add-system-include path)
             (if buffer (switch-to-buffer buffer))
+            (semantic-add-system-include path)
             (flycheck-buffer)
         )
         (message "Canceled."))

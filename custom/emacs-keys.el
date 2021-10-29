@@ -11,6 +11,7 @@
 (global-set-key (kbd "C-x <right>") 'windmove-right)
 
 (global-set-key (kbd "C-c w") 'whitespace-cleanup)
+(global-set-key (kbd "C-c C-w") 'global-whitespace-mode)
 
 (defvar xah-math-input-keymap)
 (add-hook
