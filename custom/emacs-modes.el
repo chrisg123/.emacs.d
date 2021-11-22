@@ -18,6 +18,7 @@
 
 ;; conf-mode for mysql my.cnf
 (add-to-list 'auto-mode-alist '("\\.cnf\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.muttrc\\'" . conf-mode))
 
 (provide 'emacs-modes)
 

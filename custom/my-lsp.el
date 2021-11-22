@@ -23,7 +23,7 @@
 	    (lsp-mode-keybinding)
 	    (lsp-mode-settings)
 	    (lsp-ui-mode)
-	    ))
+	    (setq lsp-headerline-breadcrumb-enable nil)))
 
 (add-hook 'kotlin-mode-hook
 	  (lambda()

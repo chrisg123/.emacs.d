@@ -9,7 +9,7 @@
 (setq org-hide-emphasis-markers t)
 
 (defvar org-edit-src-content-indentation)
-(setq org-edit-src-content-indentation nil)
+(setq org-edit-src-content-indentation 0)
 
 (add-hook 'org-mode-hook (lambda() (org-indent-mode) (hide-source-block-delimeters)))
 
@@ -30,6 +30,12 @@
              (add-to-list 'org-file-apps '("\\.bmp\\'" . "feh -. %s"))
              (add-to-list 'org-file-apps '("\\.mlt\\'" . "shotcut %s"))
              (add-to-list 'org-file-apps '("\\.mp3\\'" . "mplayer %s"))
+             (add-to-list 'org-file-apps '("\\.m4a\\'" . "mplayer %s"))
+             (add-to-list 'org-file-apps '("\\.webm\\'" . "mplayer %s"))
+             (add-to-list 'org-file-apps '("\\.mpeg\\'" . "mplayer %s"))
+             (add-to-list 'org-file-apps '("\\.mkv\\'" . "mplayer %s"))
+             (add-to-list 'org-file-apps '("\\.htm\\'" . "firefox %s"))
+             (add-to-list 'org-file-apps '("\\.html\\'" . "firefox %s"))
              ))
 
 (defun insert-source-block()

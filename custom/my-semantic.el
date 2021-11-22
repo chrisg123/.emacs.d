@@ -3,9 +3,11 @@
 
 ;;; Code:
 (require 'semantic)
-(global-semanticdb-minor-mode 1)
-(global-semantic-idle-scheduler-mode 1)
-(semantic-mode 1)
+
+(setq semantic-default-submodes
+      '(global-semantic-idle-scheduler-mode
+        global-semanticdb-minor-mode
+        global-semantic-highlight-func-mode))
 
 (provide 'my-semantic)
 ;;; my-semantic.el ends here

@@ -47,6 +47,7 @@
 (require 'my-helm)
 (require 'my-org)
 (require 'my-c)
+(require 'my-cxx)
 (require 'my-haskell)
 (require 'my-kotlin)
 (require 'my-projectile)
@@ -61,5 +62,6 @@
 (require 'vbnet-mode)
 (require 'hide-comnt)
 (require 'ol-man)
+(require 'copy-file-path)
 ;;; init.el ends here
 

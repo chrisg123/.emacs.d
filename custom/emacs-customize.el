@@ -18,14 +18,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (manoj-dark)))
+ '(custom-enabled-themes '(manoj-dark))
  '(elpy-syntax-check-command "pylint")
  '(global-semantic-idle-scheduler-mode t)
  '(global-semanticdb-minor-mode t)
  '(package-selected-packages
-   (quote
-    (string-inflection jedi elpy lsp-ui linum-relative rust-mode flycheck-pycheckers python-mode xah-math-input multiple-cursors org-projectile flycheck-kotlin yaml-mode auto-complete company ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode kotlin-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx helm-c-yasnippet ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm)))
- '(safe-local-variable-values (quote ((c-indent-level . 4))))
+   '(string-inflection flycheck-rust flycheck-kotlin kotlin-mode lsp-ui swift-mode org jedi elpy linum-relative flycheck-pycheckers python-mode xah-math-input org-projectile yaml-mode auto-complete company ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx helm-c-yasnippet ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm))
+ '(safe-local-variable-values '((c-indent-level . 4)))
  '(yaml-indent-offset 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -41,6 +40,7 @@
  '(helm-selection ((t (:background "color-238" :distant-foreground "black"))))
  '(helm-visible-mark ((t (:background "color-19"))))
  '(highlight-indentation-face ((t (:inherit nil))))
+ '(lsp-ui-doc-background ((t (:background "brightblack"))))
  '(lsp-ui-peek-list ((t (:background "brightblack"))))
  '(lsp-ui-peek-peek ((t (:background "brightblack"))))
  '(magit-diff-added ((t (:foreground "#22aa22"))))
@@ -54,11 +54,16 @@
  '(magit-section-highlight ((t (:underline nil :weight bold))))
  '(mode-line ((t (:background "grey30" :foreground "grey80" :box 1 :height 0.9))))
  '(mode-line-inactive ((t (:background "black" :foreground "grey80" :box 1 :weight light :height 0.9))))
+ '(org-code ((t (:foreground "magenta"))))
  '(org-document-title ((t (:foreground "brightyellow" :weight bold))))
  '(pulse-highlight-start-face ((t (:background "color-19"))))
  '(semantic-decoration-on-fileless-includes ((t (:background "#f0fdf0" :foreground "black"))))
  '(semantic-decoration-on-unparsed-includes ((t (:background "#ffff55" :foreground "black"))))
- '(semantic-highlight-func-current-tag-face ((t (:background "color-19" :foreground "white"))))
+ '(semantic-highlight-func-current-tag-face ((t (:weight bold))))
+ '(smerge-lower ((t (:extend t :background "color-17"))))
+ '(smerge-refined-added ((t (:inherit smerge-refined-change :background "color-22"))))
+ '(smerge-refined-removed ((t (:inherit smerge-refined-change :background "red"))))
+ '(smerge-upper ((t (:extend t :background "red"))))
  '(vbnet-funcall-face ((t (:foreground "brightcyan"))))
  '(vbnet-namespace-face ((t (:foreground "brightmagenta"))))
  '(whitespace-space ((t (:foreground "#262626"))))
