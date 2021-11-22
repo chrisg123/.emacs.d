@@ -1202,11 +1202,11 @@ See `imenu-create-index-function' for more information."
      ;; The Dim regexp is one example.  This allows the AS fragment and
      ;; its following typename to be fontified independently.
 
-
      `(field         ;; Public foo As Integer
        ,(concat
          "\\(?:[Pp]ublic\\|[Pp]rivate\\|[Ff]riend\\)"
          "[ \t]+"                            ;; ws
+         "\\(?:[Rr]ead[Oo]nly[ \t]+\\)?"       ;; access modifier
          "\\([^- \t\(]+\\)"                  ;; name of field
          "[ \t]+"                            ;; ws
          "\\([Aa]s\\)\\([ \t]+[^- \t\(\n]+\\)" ;; type decl
@@ -1312,7 +1312,7 @@ fast enough.
       "Picture" "Pmt" "Print" "Printer" "Printers" "Private" "ProjectTemplate"
       "Property"
       "Properties" "Public" "Put" "QBColor" "QueryDef" "QueryDefs"
-      "RSet" "RTrim" "Randomize" "Rate" "ReDim" "Recordset" "Recordsets"
+      "RSet" "RTrim" "Randomize" "Rate" "ReadOnly" "ReDim" "Recordset" "Recordsets"
       "RegisterDatabase" "Relation" "Relations" "Rem" "RepairDatabase"
       "Reset" "Resume" "Return" "Right" "RmDir" "Rnd" "Rollback" "RowBuffer"
       "SLN" "SYD" "SavePicture" "SaveSetting" "Screen" "Second" "Seek"

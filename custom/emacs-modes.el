@@ -8,6 +8,10 @@
 (add-to-list 'auto-mode-alist '("\\.html\\.php\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\.twig\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.proj\\'" . xml-mode))
+(add-to-list 'auto-mode-alist '("\\.vbproj\\'" . xml-mode))
+(add-to-list 'auto-mode-alist '("\\.csproj\\'" . xml-mode))
+(add-to-list 'auto-mode-alist '("\\.vcxproj\\'" . xml-mode))
 
 ;; ANSI colors for .log files https://stackoverflow.com/a/23382008/2974621
 (add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
