@@ -83,18 +83,18 @@
 
 
 ;; Enable mouse support
-(unless window-system
-  (require 'mouse)
-  (xterm-mouse-mode t)
-  (global-set-key [mouse-4] (lambda ()
-                              (interactive)
-                              (previous-line 1)))
-  (global-set-key [mouse-5] (lambda ()
-                              (interactive)
-                              (next-line 1)))
-  (defun track-mouse (e))
-  (setq mouse-sel-mode t)
-  )
+;; (unless window-system
+;;   (require 'mouse)
+;;   (xterm-mouse-mode t)
+;;   (global-set-key [mouse-4] (lambda ()
+;;                               (interactive)
+;;                               (previous-line 1)))
+;;   (global-set-key [mouse-5] (lambda ()
+;;                               (interactive)
+;;                               (next-line 1)))
+;;   (defun track-mouse (e))
+;;   (setq mouse-sel-mode t)
+;;   )
 
 (defun add-include-path (path &optional buffer)
   "Add PATH to flycheck and semantic include-path.  Optional BUFFER."
@@ -127,6 +127,18 @@
             )
           )
       (message (format "File not found: `%s'" xfile)))))
+
+(add-hook 'python-mode-hook
+          (lambda () (setq python-indent-offset 4)))
+
+(defun er-kill-other-buffers ()
+  "Kill all buffers but the current one.
+Don't mess with special buffers."
+  (interactive)
+  (dolist (buffer (buffer-list))
+    (unless (or (eql buffer (current-buffer)) (not (buffer-file-name buffer)))
+      (kill-buffer buffer))))
+(global-set-key (kbd "C-c k") #'er-kill-other-buffers)
 
 (provide 'misc)
 ;;; misc.el ends here

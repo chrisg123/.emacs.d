@@ -35,6 +35,8 @@
 
 (setq-default indent-tabs-mode nil)
 
+(setq electric-indent-mode nil)
+
 (provide 'my-indent)
 
 ;;; my-indent.el ends here

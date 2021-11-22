@@ -32,6 +32,8 @@
              (add-to-list 'org-file-apps '("\\.mp3\\'" . "mplayer %s"))
              (add-to-list 'org-file-apps '("\\.m4a\\'" . "mplayer %s"))
              (add-to-list 'org-file-apps '("\\.webm\\'" . "mplayer %s"))
+             (add-to-list 'org-file-apps '("\\.mpeg\\'" . "mplayer %s"))
+             (add-to-list 'org-file-apps '("\\.mkv\\'" . "mplayer %s"))
              (add-to-list 'org-file-apps '("\\.htm\\'" . "firefox %s"))
              (add-to-list 'org-file-apps '("\\.html\\'" . "firefox %s"))
              ))
