@@ -118,7 +118,6 @@
  'org-babel-load-languages
  '(
    (shell . t)
-   (shstream . t)
    (python . t)
 ))
 
