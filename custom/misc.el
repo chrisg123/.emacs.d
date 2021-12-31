@@ -140,7 +140,7 @@ Don't mess with special buffers."
       (kill-buffer buffer))))
 (global-set-key (kbd "C-c k") #'er-kill-other-buffers)
 
-(setq shell-command-switch "-ic")
+
 
 (provide 'misc)
 ;;; misc.el ends here

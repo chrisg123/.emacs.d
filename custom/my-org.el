@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'ob-async)
+
 (defvar org-log-done)
 (setq org-log-done 'time)
 
@@ -11,7 +13,16 @@
 (defvar org-edit-src-content-indentation)
 (setq org-edit-src-content-indentation 0)
 
-(add-hook 'org-mode-hook (lambda() (org-indent-mode) (hide-source-block-delimeters)))
+(defun org-mode-keybinding()
+  "Setup keybinding for 'org-mode'."
+)
+
+(add-hook 'org-mode-hook
+          (lambda()
+            (org-indent-mode)
+            (hide-source-block-delimeters)
+            (org-mode-keybinding)
+            (setq-default org-export-use-babel nil)))
 
 ;; PDFs visited in Org-mode are opened in Evince (and not in the default choice)
 ;; https://stackoverflow.com/a/8836108/2974621
@@ -78,7 +89,7 @@
   (let ((input (read-from-minibuffer "Title: ")))
     (insert (format "#+TITLE: %s" input)))(newline)
     (insert "#+DATE:")(newline)
-    (insert "#+OPTIONS: toc:nil") ; no table of contents
+    (insert "#+OPTIONS: toc:nil num:nil") ; no table of contents or numbering
   (end-of-line)(newline)(newline)
   (save-buffer t)
   (revert-buffer :ignore-auto :nonconfirm)
@@ -102,6 +113,14 @@
             (string-match org-bracket-link-regexp x)
             (substring x (match-beginning 1) (match-end 1))) text)))))
 
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(
+   (shell . t)
+   (shstream . t)
+   (python . t)
+))
 
 (provide 'my-org)
 
