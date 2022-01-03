@@ -4,6 +4,8 @@
 
 (require 'ob-async)
 
+(remove-hook 'org-mode-hook 'org-babel-hide-all-hashes)
+
 (defvar org-log-done)
 (setq org-log-done 'time)
 
@@ -22,7 +24,7 @@
             (org-indent-mode)
             (hide-source-block-delimeters)
             (org-mode-keybinding)
-            (setq-default org-export-use-babel nil)))
+            ))
 
 ;; PDFs visited in Org-mode are opened in Evince (and not in the default choice)
 ;; https://stackoverflow.com/a/8836108/2974621
@@ -49,6 +51,26 @@
              (add-to-list 'org-file-apps '("\\.html\\'" . "firefox %s"))
              ))
 
+(defun escape-src-block-tags(str)
+  "Escape source code declaration block tags in STR."
+  (let ((a (replace-regexp-in-string "|" "\\\\|" str)))
+    (replace-regexp-in-string "\\+" "\\\\+" a))
+)
+
+(defvar src-block-tags-regexp
+  (escape-src-block-tags
+   (string-join
+    '("#+BEGIN_SRC"
+      "#+END_SRC"
+      "#+begin_"
+      "#+end_"
+      "#+HEADER"
+      "#+name"
+      "#+RESULTS"
+      "#+BEGIN_QUOTE"
+      "#+END_QUOTE"
+      )"|")))
+
 (defun insert-source-block()
   "Insert source code declaration block."
   (interactive)
@@ -57,25 +79,33 @@
     (move-to-column col t)(insert "#+END_SRC")(newline)
     (forward-line -2)(move-to-column col t)))
 
-(defvar src-block-overlays)
+(defvar src-block-overlays (list))
 
 (defun hide-source-block-delimeters()
   "Hide source block delimiters."
   (interactive)
   (save-excursion
-       (goto-char (point-max))
-       (setq src-block-overlays (list))
-       (while (re-search-backward "#\\+BEGIN_SRC\\|#\\+END_SRC" nil t)
-     (let ((ov-src-block-delim
-        (make-overlay (line-beginning-position) (1+ (line-end-position)))))
-       (overlay-put ov-src-block-delim 'src-block-delim t)
-       (overlay-put ov-src-block-delim 'invisible t)
-       (push ov-src-block-delim src-block-overlays)))))
+    (goto-char (point-max))
+    (let ((case-fold-search t))
+      (while (re-search-backward src-block-tags-regexp nil t)
+        (if (string-blank-p (buffer-substring-no-properties
+                             (line-beginning-position) (point)))
+            (progn
+              (remove-overlays (line-beginning-position) (line-end-position))
+              (let ((ov-src-block-delim
+                     (make-overlay
+                      (line-beginning-position) (+ 1 (line-end-position)))))
+                (overlay-put ov-src-block-delim 'src-block-delim t)
+                (overlay-put ov-src-block-delim 'invisible t)
+                (push ov-src-block-delim src-block-overlays)
+                )))))))
+
 
 (defun unhide-source-block-delimiters()
   "Unhide source block delimiters."
   (interactive)
-  (delete-overlays src-block-overlays))
+  (delete-overlays src-block-overlays)
+  (org-babel-hide-all-hashes))
 
 (defun delete-overlays (ovs)
   "Delete OVS."
@@ -89,7 +119,8 @@
   (let ((input (read-from-minibuffer "Title: ")))
     (insert (format "#+TITLE: %s" input)))(newline)
     (insert "#+DATE:")(newline)
-    (insert "#+OPTIONS: toc:nil num:nil") ; no table of contents or numbering
+    (insert "#+OPTIONS: toc:nil num:nil")(newline)
+    (insert "#+PROPERTY: header-args :eval never-export")
   (end-of-line)(newline)(newline)
   (save-buffer t)
   (revert-buffer :ignore-auto :nonconfirm)
