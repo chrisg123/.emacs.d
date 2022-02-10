@@ -63,5 +63,6 @@
 (require 'hide-comnt)
 (require 'ol-man)
 (require 'copy-file-path)
+(require 'my-tramp)
 ;;; init.el ends here
 

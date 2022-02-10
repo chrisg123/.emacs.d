@@ -3,7 +3,7 @@
 ;;; Code:
 
 (require 'ob-async)
-
+(require 'ox)
 (remove-hook 'org-mode-hook 'org-babel-hide-all-hashes)
 
 (defvar org-log-done)
@@ -19,10 +19,28 @@
   "Setup keybinding for 'org-mode'."
 )
 
+(defun oeg(property)
+  "Get value of PROPERTY.  Shorthand for org-entry-get."
+  (org-entry-get nil property t)
+)
+(defun org-babel-get-result (name)
+  "Get results at NAME into emacs-lisp."
+  (save-excursion
+    (org-babel-goto-named-result name)
+    (org-babel-read-result)))
+
+(defun org-export-ascii-replace-nbs (text backend info)
+  "Replace non-breaking-space with regular space for ascii BACKEND."
+  (when (org-export-derived-backend-p backend 'ascii)
+    (let ((nbs (char-to-string #xa0)) (spc (char-to-string #x20)))
+          (replace-regexp-in-string nbs spc text))))
+
+(add-to-list 'org-export-filter-final-output-functions 'org-export-ascii-replace-nbs)
+;;(add-hook 'org-export-before-parsing-hook #'org-export-ascii-replace-nbs)
+
 (add-hook 'org-mode-hook
           (lambda()
             (org-indent-mode)
-            (hide-source-block-delimeters)
             (org-mode-keybinding)
             ))
 
@@ -50,6 +68,9 @@
              (add-to-list 'org-file-apps '("\\.htm\\'" . "firefox %s"))
              (add-to-list 'org-file-apps '("\\.html\\'" . "firefox %s"))
              ))
+
+(add-hook 'org-src-mode-hook
+          '(lambda() (global-display-line-numbers-mode 1)))
 
 (defun escape-src-block-tags(str)
   "Escape source code declaration block tags in STR."
@@ -120,7 +141,7 @@
     (insert (format "#+TITLE: %s" input)))(newline)
     (insert "#+DATE:")(newline)
     (insert "#+OPTIONS: toc:nil num:nil")(newline)
-    (insert "#+PROPERTY: header-args :eval never-export")
+    (insert "#+PROPERTY: header-args :eval never-export :results output")
   (end-of-line)(newline)(newline)
   (save-buffer t)
   (revert-buffer :ignore-auto :nonconfirm)
@@ -141,7 +162,7 @@
     (if (not text)
     (error "Not in org link")
       (kill-new ((lambda (x)
-            (string-match org-bracket-link-regexp x)
+            (string-match org-link-bracket-re x)
             (substring x (match-beginning 1) (match-end 1))) text)))))
 
 
@@ -150,7 +171,10 @@
  '(
    (shell . t)
    (python . t)
+   (ditaa . t)
 ))
+
+(setq org-ditaa-jar-path "/usr/share/ditaa/lib/ditaa.jar")
 
 (provide 'my-org)
 

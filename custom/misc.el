@@ -141,6 +141,15 @@ Don't mess with special buffers."
 (global-set-key (kbd "C-c k") #'er-kill-other-buffers)
 
 
+(defun set-title-gnu-screen ()
+  "Set title for GNU screen."
+  (if (getenv "STY")
+      (let ((title (concat "emacs:" (buffer-name)))
+            (esc "\ek%s\e\\"))
+        (send-string-to-terminal (format esc title)))))
+
+(add-to-list 'window-selection-change-functions
+             (lambda(_) (set-title-gnu-screen)))
 
 (provide 'misc)
 ;;; misc.el ends here

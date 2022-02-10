@@ -37,7 +37,7 @@ PATH should be a topic that can be thrown at the man command."
       (match-string 1 (buffer-name))
     (error "Cannot create link to this man page")))
 
-(defun org-man-export (link description format _)
+(defun org-man-export (link description &optional format _)
   "Export a man page link from Org files.  LINK DESCRIPTION FORMAT."
   (let ((path (format "http://man.he.net/?topic=%s&section=all" link))
         (desc (or description link)))

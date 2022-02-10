@@ -7,6 +7,7 @@
 (defvar my-default-tab-width)
 (setq my-default-tab-width 4)
 (setq-default tab-width my-default-tab-width)
+(setq-default fill-column 81)
 
 (defun enable-tabs()
   "Enable tabs."
@@ -31,11 +32,13 @@
 (custom-set-faces
  '(whitespace-space ((t (:foreground "#262626")))))
 
-(global-whitespace-mode t)
+
 
 (setq-default indent-tabs-mode nil)
 
 (setq electric-indent-mode nil)
+
+(global-whitespace-mode t)
 
 (provide 'my-indent)
 
