@@ -35,6 +35,40 @@
     (let ((nbs (char-to-string #xa0)) (spc (char-to-string #x20)))
           (replace-regexp-in-string nbs spc text))))
 
+(defun org-babel-color-results()
+  "Color org babel results.
+Use the :wrap header argument on your code block for best results.
+Without it, org may color overtop with whatever default coloring it
+uses for literal examples.
+Depends on the xterm-color package."
+  (interactive)
+  (when-let ((result-start (org-babel-where-is-src-block-result nil nil)))
+    (save-excursion
+      (goto-char result-start)
+      (when (looking-at org-babel-result-regexp)
+        (let ((element (org-element-at-point)))
+          (pcase (org-element-type element)
+            (`fixed-width
+             (let ((post-affiliated (org-element-property :post-affiliated element))
+                   (end (org-element-property :end element))
+                   (contents (org-element-property :value element))
+                   (post-blank (org-element-property :post-blank element)))
+               (goto-char post-affiliated)
+               (delete-region post-affiliated end)
+               (insert (xterm-color-filter contents))
+               (org-babel-examplify-region post-affiliated (point))
+               (insert (make-string post-blank ?\n ))
+               ))
+            ((or `center-block `quote-block `verse-block `special-block)
+             (let ((contents-begin (org-element-property :contents-begin element))
+                   (contents-end (org-element-property :contents-end element)))
+               (goto-char contents-begin)
+               (let ((contents (buffer-substring contents-begin contents-end)))
+                 (delete-region contents-begin contents-end)
+                 (insert (xterm-color-filter contents)))))))))))
+
+(add-hook 'org-babel-after-execute-hook 'org-babel-color-results)
+
 (add-to-list 'org-export-filter-final-output-functions 'org-export-ascii-replace-nbs)
 ;;(add-hook 'org-export-before-parsing-hook #'org-export-ascii-replace-nbs)
 
@@ -140,7 +174,7 @@
   (let ((input (read-from-minibuffer "Title: ")))
     (insert (format "#+TITLE: %s" input)))(newline)
     (insert "#+DATE:")(newline)
-    (insert "#+OPTIONS: toc:nil num:nil")(newline)
+    (insert "#+OPTIONS: toc:nil num:nil tags:nil")(newline)
     (insert "#+PROPERTY: header-args :eval never-export :results output")
   (end-of-line)(newline)(newline)
   (save-buffer t)

@@ -11,6 +11,8 @@
 
 (semantic-mode 1)
 
+(menu-bar-mode -1)
+
 ;; Disable the splash screen
 (setq inhibit-splash-screen t)
 
