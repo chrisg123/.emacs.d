@@ -23,6 +23,13 @@
   "Get value of PROPERTY.  Shorthand for org-entry-get."
   (org-entry-get nil property t)
 )
+
+(defun pfmt(string &rest properties)
+  "Format a STRING out of a format-string and org PROPERTIES."
+  (apply 'format
+         (append (list string)
+                 (mapcar (lambda(x) (org-entry-get nil x t)) properties))))
+
 (defun org-babel-get-result (name)
   "Get results at NAME into emacs-lisp."
   (save-excursion
@@ -34,6 +41,9 @@
   (when (org-export-derived-backend-p backend 'ascii)
     (let ((nbs (char-to-string #xa0)) (spc (char-to-string #x20)))
           (replace-regexp-in-string nbs spc text))))
+
+(add-to-list 'org-export-filter-final-output-functions 'org-export-ascii-replace-nbs)
+;;(add-hook 'org-export-before-parsing-hook #'org-export-ascii-replace-nbs)
 
 (defun org-babel-color-results()
   "Color org babel results.
@@ -68,9 +78,6 @@ Depends on the xterm-color package."
                  (insert (xterm-color-filter contents)))))))))))
 
 (add-hook 'org-babel-after-execute-hook 'org-babel-color-results)
-
-(add-to-list 'org-export-filter-final-output-functions 'org-export-ascii-replace-nbs)
-;;(add-hook 'org-export-before-parsing-hook #'org-export-ascii-replace-nbs)
 
 (add-hook 'org-mode-hook
           (lambda()
@@ -126,13 +133,21 @@ Depends on the xterm-color package."
       "#+END_QUOTE"
       )"|")))
 
-(defun insert-source-block()
-  "Insert source code declaration block."
+(defun org-insert-source-code-block(&optional language file)
+  "Insert source code block for LANGUAGE.  Optionally pull in FILE contents.
+Will prompt for LANGUAGE when called interactively.
+With a `\\[universal-argument]' prefix, prompts for FILE.
+The `:tangle FILE` header argument will be added when pulling in file contents."
   (interactive)
-  (let ((col (current-column))(input (read-from-minibuffer "language: ")))
-    (insert (format "#+BEGIN_SRC %s" input))(newline)(newline)
-    (move-to-column col t)(insert "#+END_SRC")(newline)
-    (forward-line -2)(move-to-column col t)))
+  (let ((col (current-column))
+        (lang (or language (read-from-minibuffer "Source block language: ") ))
+        (file (if current-prefix-arg (read-file-name "Enter file name: ") nil)))
+    (insert
+     (format "#+begin_src %s%s" lang (if file (concat " :tangle " file) "")))
+    (newline)(newline)
+    (move-to-column col t)(insert "#+end_src")(newline)
+    (forward-line -2)(move-to-column col t)
+    (if file (insert-file-contents file))))
 
 (defvar src-block-overlays (list))
 
@@ -209,6 +224,7 @@ Depends on the xterm-color package."
 ))
 
 (setq org-ditaa-jar-path "/usr/share/ditaa/lib/ditaa.jar")
+
 
 (provide 'my-org)
 

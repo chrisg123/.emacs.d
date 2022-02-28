@@ -9,6 +9,9 @@
 
 (defvar linum-format)
 (setq linum-format "%4d \u2502 ")
+
+(setq display-line-numbers-width 5)
+
 (provide 'my-line-numbers)
 
 ;;; my-line-numbers.el ends here

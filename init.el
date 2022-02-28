@@ -50,6 +50,8 @@
 (require 'my-cxx)
 (require 'my-haskell)
 (require 'my-kotlin)
+(require 'my-swift)
+(require 'my-python)
 (require 'my-projectile)
 (require 'misc)
 (require 'my-yasnippet)

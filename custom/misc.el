@@ -64,14 +64,6 @@
               (lambda() (interactive) (print "No whitespace cleanup for vb6 silly.")))
           ))
 
-(elpy-enable)
-(setq elpy-rpc-backend "jedi")
-(setq eldoc-idle-delay 1)
-
-(when (load "flycheck" t t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
-
 (show-paren-mode t)
 
 (put 'narrow-to-region 'disabled nil)
@@ -129,9 +121,6 @@
             )
           )
       (message (format "File not found: `%s'" xfile)))))
-
-(add-hook 'python-mode-hook
-          (lambda () (setq python-indent-offset 4)))
 
 (defun er-kill-other-buffers ()
   "Kill all buffers but the current one.

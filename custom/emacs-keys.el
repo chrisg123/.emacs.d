@@ -3,7 +3,7 @@
 ;;; Code:
 (define-key global-map (kbd "C-c o") 'insert-org-mode-header)
 
-(define-key global-map (kbd "C-c s") 'insert-source-block)
+(define-key global-map (kbd "C-c s") 'org-insert-source-code-block)
 
 (global-set-key (kbd "C-x <up>") 'windmove-up)
 (global-set-key (kbd "C-x <down>") 'windmove-down)
