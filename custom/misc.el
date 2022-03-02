@@ -61,7 +61,10 @@
             (setq visual-basic-mode-indent 4)
             (setq-default indent-tabs-mode nil)
             (define-key visual-basic-mode-map (kbd "C-c w")
-              (lambda() (interactive) (print "No whitespace cleanup for vb6 silly.")))
+              (lambda()
+                (interactive) (print "No whitespace cleanup for vb6.")))
+            (define-key visual-basic-mode-map (kbd "C-c C-p") 'visual-basic-beginning-of-defun)
+            (define-key visual-basic-mode-map (kbd "C-c C-n") 'visual-basic-end-of-defun)
           ))
 
 (show-paren-mode t)
@@ -139,6 +142,7 @@ Don't mess with special buffers."
             (esc "\ek%s\e\\"))
         (send-string-to-terminal (format esc title)))))
 
+(defvar window-selection-change-functions '())
 (add-to-list 'window-selection-change-functions
              (lambda(_) (set-title-gnu-screen)))
 

@@ -18,7 +18,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes '(manoj-dark))
+ '(custom-enabled-themes (quote (manoj-dark)))
  '(elpy-syntax-check-command "pylint")
  '(global-semantic-idle-scheduler-mode t)
  '(global-semanticdb-minor-mode t)
@@ -33,9 +33,12 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "unspecified-bg" :foreground "WhiteSmoke" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
  '(diff-header ((t (:background "brightblack"))))
+ '(ediff-current-diff-A ((t (:background "color-19"))))
+ '(ediff-current-diff-B ((t (:background "magenta"))))
  '(ediff-even-diff-A ((t (:extend t :background "color-245"))))
  '(ediff-even-diff-B ((t (:extend t :background "brightblack"))))
  '(ediff-odd-diff-A ((t (:extend t :background "brightblack"))))
+ '(ediff-odd-diff-B ((t (:background "color-17"))))
  '(font-lock-keyword-face ((t (:foreground "cyan"))))
  '(helm-selection ((t (:background "color-238" :distant-foreground "black"))))
  '(helm-visible-mark ((t (:background "color-19"))))
