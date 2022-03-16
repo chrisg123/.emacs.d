@@ -4,7 +4,7 @@
 ;;; Code:
 (require 'lsp-mode)
 (require 'lsp-ui)
-
+(require 'lsp-ui-doc)
 ;;(lsp-ui-flycheck-add-mode 'kotlin-mode)
 (add-to-list 'flycheck-checkers 'lsp-ui)
 
@@ -16,7 +16,9 @@
 
 (defun lsp-mode-settings()
   "Custom lsp-mode settings."
-  (setq lsp-log-io t))
+  (setq lsp-log-io t)
+  (setq lsp-ui-doc-max-width 80)
+  )
 
 (add-hook 'lsp-mode-hook
 	  (lambda()
@@ -30,6 +32,8 @@
 	    (lsp)
 	    (flycheck-mode)
 	    ))
+
+
 
 (provide 'my-lsp)
 

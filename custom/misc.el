@@ -146,5 +146,9 @@ Don't mess with special buffers."
 (add-to-list 'window-selection-change-functions
              (lambda(_) (set-title-gnu-screen)))
 
+
+(require 'bmx-mode)
+(bmx-mode-setup-defaults)
+
 (provide 'misc)
 ;;; misc.el ends here

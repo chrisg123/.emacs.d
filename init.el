@@ -44,8 +44,8 @@
 (require 'xclip)
 (require 'my-lsp)
 (require 'my-line-numbers)
-(require 'my-helm)
 (require 'my-org)
+(require 'my-helm)
 (require 'my-c)
 (require 'my-cxx)
 (require 'my-haskell)
@@ -65,6 +65,7 @@
 (require 'hide-comnt)
 (require 'ol-man)
 (require 'copy-file-path)
+(require 'transpose-frame)
 (require 'my-tramp)
 ;;; init.el ends here
 
