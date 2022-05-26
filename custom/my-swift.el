@@ -7,6 +7,7 @@
 (require 'lsp-mode)
 (require 'org-src)
 (require 'tramp-sh)
+(require 'swift-mode)
 
 (defvar lsp-sourcekit-executable)
 (defvar my-xctoolchain
@@ -39,7 +40,9 @@
 
 (add-hook 'swift-mode-hook
   (lambda()
-    (setq tramp-remote-path (list my-xctoolchain))
+    (define-key swift-mode-map (kbd "C-c C-p") 'swift-mode:beginning-of-defun)
+    (define-key swift-mode-map (kbd "C-c C-n") 'swift-mode:end-of-defun)
+    (setq tramp-remote-path (append (list my-xctoolchain) tramp-remote-path))
     (lsp-register-client
      (make-lsp-client :new-connection (lsp-tramp-connection "sourcekit-lsp")
                       :major-modes '(swift-mode)

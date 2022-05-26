@@ -4,6 +4,7 @@
 
 (require 'ob-async)
 (require 'ox)
+
 (remove-hook 'org-mode-hook 'org-babel-hide-all-hashes)
 
 (defvar org-log-done)
@@ -29,6 +30,9 @@
   (apply 'format
          (append (list string)
                  (mapcar (lambda(x) (org-entry-get nil x t)) properties))))
+(defun fdt()
+  "Get a datetime string suitable for prefix or suffix of a filename."
+  (format-time-string "%Y-%m-%d_%H_%M_%S" (current-time)))
 
 (defun org-babel-get-result (name)
   "Get results at NAME into emacs-lisp."
@@ -141,7 +145,7 @@ The `:tangle FILE` header argument will be added when pulling in file contents."
   (interactive)
   (let ((col (current-column))
         (lang (or language (read-from-minibuffer "Source block language: ") ))
-        (file (if current-prefix-arg (read-file-name "Enter file name: ") nil)))
+        (file (if current-prefix-arg (read-file-name "Find file: ") nil)))
     (insert
      (format "#+begin_src %s%s" lang (if file (concat " :tangle " file) "")))
     (newline)(newline)
@@ -221,6 +225,7 @@ The `:tangle FILE` header argument will be added when pulling in file contents."
    (shell . t)
    (python . t)
    (ditaa . t)
+   (swift . t)
 ))
 
 (setq org-ditaa-jar-path "/usr/share/ditaa/lib/ditaa.jar")

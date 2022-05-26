@@ -18,12 +18,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (manoj-dark)))
+ '(custom-enabled-themes '(manoj-dark))
  '(elpy-syntax-check-command "pylint")
  '(global-semantic-idle-scheduler-mode t)
  '(global-semanticdb-minor-mode t)
  '(package-selected-packages
-   '(swift-mode lsp-sourcekit powershell multiple-cursors xterm-color ob-async csharp-mode sudo-edit string-inflection flycheck-rust flycheck-kotlin kotlin-mode lsp-ui org jedi linum-relative flycheck-pycheckers python-mode xah-math-input org-projectile yaml-mode auto-complete company ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx helm-c-yasnippet ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm))
+   '(bmx-mode company-sourcekit elpy pyvenv lsp-ui transpose-frame ob-swift swift-mode lsp-sourcekit powershell multiple-cursors xterm-color ob-async csharp-mode sudo-edit string-inflection flycheck-rust flycheck-kotlin kotlin-mode org jedi linum-relative flycheck-pycheckers python-mode xah-math-input org-projectile yaml-mode auto-complete company ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides company-nginx helm-c-yasnippet ac-php company-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm))
  '(safe-local-variable-values '((c-indent-level . 4)))
  '(yaml-indent-offset 4))
 (custom-set-faces
@@ -70,6 +70,7 @@
  '(smerge-upper ((t (:extend t :background "red"))))
  '(vbnet-funcall-face ((t (:foreground "brightcyan"))))
  '(vbnet-namespace-face ((t (:foreground "brightmagenta"))))
+ '(whitespace-hspace ((t (:background "brightblack" :foreground "color-237"))))
  '(whitespace-line ((t (:background "black" :foreground "violet"))))
  '(whitespace-space ((t (:foreground "#262626"))))
  '(whitespace-tab ((t (:foreground "#636363")))))
