@@ -8,7 +8,7 @@
 (setq column-number-mode t)
 
 (global-flycheck-mode)
-
+(global-xah-math-input-mode t)
 (semantic-mode 1)
 
 (menu-bar-mode -1)
@@ -25,8 +25,8 @@
     ;; while using gnu-screen localy
     ;; Disable italic. Does not play well with gnu screen.
     (progn (set-face-italic 'font-lock-comment-face nil)
-	   (set-face-italic 'font-lock-doc-face nil)
-	   (set-face-italic 'font-lock-preprocessor-face nil)))
+	       (set-face-italic 'font-lock-doc-face nil)
+	       (set-face-italic 'font-lock-preprocessor-face nil)))
 
 ;; remove background color so transparency works.
 ;; TODO: maybe check if compositing is enabled first.
@@ -65,7 +65,7 @@
                 (interactive) (print "No whitespace cleanup for vb6.")))
             (define-key visual-basic-mode-map (kbd "C-c C-p") 'visual-basic-beginning-of-defun)
             (define-key visual-basic-mode-map (kbd "C-c C-n") 'visual-basic-end-of-defun)
-          ))
+            ))
 
 (show-paren-mode t)
 
@@ -105,22 +105,25 @@
             (if buffer (switch-to-buffer buffer))
             (semantic-add-system-include path)
             (flycheck-buffer)
-        )
+            )
         (message "Canceled."))
     (message "Path is not a directory.")))
 
 (defun extra-include(path)
   "Load includes from `.extra_include' file in PATH."
   (interactive
-   (list (string-trim-right (read-directory-name "Path to `.extra_include' parent directory: "))))
-  (let ((xfile (format "%s/.extra_include" (replace-regexp-in-string "/*\s*$" "" path)))
+   (list (string-trim-right (read-directory-name
+                             "Path to `.extra_include' parent directory: "))))
+  (let ((xfile (format "%s/.extra_include"
+                       (replace-regexp-in-string "/*\s*$" "" path)))
         (buffer (current-buffer)))
     (if (file-exists-p xfile)
         (progn
           (message "file exists")
           (with-temp-buffer
             (insert-file-contents xfile)
-            (mapcar (lambda (x) (add-include-path x buffer)) (split-string (buffer-string) "\n" t))
+            (mapcar (lambda (x) (add-include-path x buffer))
+                    (split-string (buffer-string) "\n" t))
             )
           )
       (message (format "File not found: `%s'" xfile)))))
@@ -146,9 +149,41 @@ Don't mess with special buffers."
 (add-to-list 'window-selection-change-functions
              (lambda(_) (set-title-gnu-screen)))
 
+(defun copy-buffer-file-name()
+  "Copy 'buffer-file-name' to xsel clipboard."
+  (interactive)
+  (shell-command (format "printf %s | xsel --clipboard -i" (buffer-file-name))))
 
-(require 'bmx-mode)
-(bmx-mode-setup-defaults)
+(defun insert-uuid()
+  "Insert uuid at point."
+  (interactive)
+  (insert (replace-regexp-in-string "\n$" ""
+                                    (shell-command-to-string "uuidgen"))))
+(defun my-reverse-region (beg end)
+ "Reverse characters between BEG and END."
+ (interactive "r")
+ (let ((region (buffer-substring beg end)))
+   (delete-region beg end)
+   (insert (nreverse region))))
+
+(defun xterm-color-colorize-shell-command-output ()
+  "Colorize `shell-command' output."
+  (let ((bufs
+         (seq-remove
+          (lambda (x)
+            (not (or (string-prefix-p " *Echo Area" (buffer-name x))
+                     (string-prefix-p "*Shell Command" (buffer-name x)))))
+          (buffer-list))))
+    (dolist (buf bufs)
+      (with-current-buffer buf
+        (xterm-color-colorize-buffer)))))
+
+(defun xterm-color-colorize-shell-command-output-advice (proc &rest rest)
+  "PROC REST."
+  (xterm-color-colorize-shell-command-output))
+
+(advice-add 'shell-command :after #'xterm-color-colorize-shell-command-output-advice)
+;; (advice-remove 'shell-command #'xterm-color-colorize-shell-command-output-advice)
 
 (provide 'misc)
 ;;; misc.el ends here

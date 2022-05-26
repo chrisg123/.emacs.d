@@ -3,7 +3,7 @@
 ;;; [[https://dougie.io/emacs/indentation/][ref]]
 ;;; [[http://ergoemacs.org/emacs/whitespace-mode.html][ref]]
 ;;; Code:
-
+(require 'whitespace)
 (defvar my-default-tab-width)
 (setq my-default-tab-width 4)
 (setq-default tab-width my-default-tab-width)
@@ -38,7 +38,7 @@
 
 (setq nobreak-char-display nil)
 
-(global-whitespace-mode t)
+;;(global-whitespace-mode t)
 
 (defun my:force-modes (rule-mode &rest modes)
     "switch on/off several modes depending of state of
@@ -57,16 +57,16 @@
 
 (defun my:push-whitespace (&rest skip)
   (if my:prev-whitespace-pushed () (progn
-                                     (setq my:prev-whitespace-mode global-whitespace-mode)
+                                     (setq my:prev-whitespace-mode whitespace-mode)
                                      (setq my:prev-whitespace-pushed t)
-                                     (my:force-modes nil 'global-whitespace-mode)
+                                     (my:force-modes nil 'whitespace-mode)
                                      ))
   )
 
 (defun my:pop-whitespace (&rest skip)
   (if my:prev-whitespace-pushed (progn
                                   (setq my:prev-whitespace-pushed nil)
-                                  (my:force-modes my:prev-whitespace-mode 'global-whitespace-mode)
+                                  (my:force-modes my:prev-whitespace-mode 'whitespace-mode)
                                   ))
   )
 

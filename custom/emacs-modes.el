@@ -16,9 +16,10 @@
 ;; ANSI colors for .log files https://stackoverflow.com/a/23382008/2974621
 (add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
 
-;; conf-mode for mysql my.cnf
+;; conf-mode
 (add-to-list 'auto-mode-alist '("\\.cnf\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.muttrc\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.*rc\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("/yapf/style\\'" . conf-mode))
 
 (provide 'emacs-modes)
 

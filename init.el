@@ -67,5 +67,6 @@
 (require 'copy-file-path)
 (require 'transpose-frame)
 (require 'my-tramp)
+(require 'format-all)
 ;;; init.el ends here
 
