@@ -2234,6 +2234,22 @@ Indent continuation lines according to some rules.
                                   (vbnet-regexp 'select-end))
         (+ (current-indentation) vbnet-mode-indent))
 
+       ((looking-at (rx-to-string
+                     `(and
+                       line-start
+                       (* (or space "&")) "\""
+                       (* (not (any "\""))) "\""
+                       (or " &" " _" (* space))
+                       (* space) line-end)))
+        (progn
+
+          (vbnet-find-matching-stmt "\\(?:.*\\(\"\\)\\)"
+                                    "\\(?:\\(\"\\)[[:space:]]*\\)")
+          (re-search-forward "\"")
+          (max 0 (+ (current-column) -1)))
+
+        )
+
        (t
         ;; Other cases which depend on the previous line.
         (vbnet-previous-line-of-code)

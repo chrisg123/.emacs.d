@@ -146,5 +146,28 @@ Don't mess with special buffers."
 (add-to-list 'window-selection-change-functions
              (lambda(_) (set-title-gnu-screen)))
 
+(defconst brace-regexp
+  "[^{]{[^{}]*}")
+
+(defconst vbnet-string-interpolation-regexp
+  "$\\('.*?[^\\]'\\|\".*?[^\\]\"\\)")
+
+(defun vbnet-string-interpolation-font-lock-find (limit)
+  "LIMIT."
+  (while (re-search-forward vbnet-string-interpolation-regexp limit t)
+    (put-text-property (match-beginning 0) (match-end 0)
+                       'face 'font-lock-string-face)
+    (let ((start (match-beginning 0)))
+      (while (re-search-backward brace-regexp start t)
+        (put-text-property (1+ (match-beginning 0)) (match-end 0)
+                           'face 'font-lock-type-face))))
+  nil)
+
+(with-eval-after-load 'python
+  (font-lock-add-keywords
+   'vbnet-mode
+   `((vbnet-string-interpolation-font-lock-find))
+   'append))
+
 (provide 'misc)
 ;;; misc.el ends here
