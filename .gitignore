@@ -14,3 +14,5 @@ ac-comphist.dat
 .org-id-locations
 abbrev_defs
 .cache
+/bookmarks
+/tramp.bak
