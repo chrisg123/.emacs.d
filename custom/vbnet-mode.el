@@ -1277,7 +1277,7 @@ fast enough.
 ;; This is some approximation of the set of reserved words in Visual Basic.
 (eval-and-compile
   (defvar vbnet-all-keywords
-    '("Add" "Aggregate" "And" "App" "AppActivate" "Application" "Array" "As"
+    '("Add" "Aggregate" "And" "AndAlso" "App" "AppActivate" "Application" "Array" "As"
       "Asc" "AscB" "Atn" "Attribute"
       "Beep" "Begin" "BeginTrans" "Boolean" "ByVal" "ByRef"
       "Catch" "CBool" "CByte" "CCur"
@@ -1308,7 +1308,7 @@ fast enough.
       "New" "Next" "Not" "Now" "Nothing" "Object" "Oct" "On" "Open"
       "OpenDatabase"
       "Operator" "Option" "Optional"
-      "Or" "PPmt" "PV" "Parameter" "Parameters" "Partition"
+      "Or" "OrElse" "PPmt" "PV" "Parameter" "Parameters" "Partition"
       "Picture" "Pmt" "Print" "Printer" "Printers" "Private" "ProjectTemplate"
       "Property"
       "Properties" "Public" "Put" "QBColor" "QueryDef" "QueryDefs"

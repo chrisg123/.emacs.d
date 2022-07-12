@@ -19,13 +19,13 @@
   (with-temp-buffer
     (insert text)
     (call-process-region
-     text nil "/mnt/c/Windows/system32/clip.exe" nil t nil)))
+     text nil "/mnt/c/Windows/System32/clip.exe" nil t nil)))
 
 (defun clip-exe-paste-function()
   "Pase from clipboard with clip.exe."
   (let ((xclip-output
          (shell-command-to-string
-          "powershell.exe -command Get-Clipboard | sed 's/\r//g'")))
+          "/mnt/c/Windows/system32/WindowsPowerShell/v1.0/powershell.exe -command Get-Clipboard 2> /dev/null | sed 's/\r//g'")))
     (unless (string= (car kill-ring) xclip-output)
       xclip-output )))
 
@@ -37,7 +37,7 @@
      ((string-match "-[Mm]icrosoft" operating-system-release)
       (progn
         (setq interprogram-cut-function 'clip-exe-cut-function)
-        (setq interprogram-paste-function 'clip-exe-paste-function)
+        ;;(setq interprogram-paste-function 'clip-exe-paste-function)
         ))
 
      ((eq system-type 'darwin)

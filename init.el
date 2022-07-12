@@ -29,7 +29,7 @@
 ;; Note: (package-selected-packages) is declared in (custom-file).
 (unless package-archive-contents
   (package-refresh-contents))
-(package-install-selected-packages)
+;;(package-install-selected-packages)
 
 ;; Load custom scripts.
 (add-to-list 'load-path "~/.emacs.d/custom/")

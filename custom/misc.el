@@ -71,6 +71,13 @@
             (define-key visual-basic-mode-map (kbd "C-c C-n") 'visual-basic-end-of-defun)
             ))
 
+(add-hook 'vbnet-mode-hook
+          (lambda()
+            (define-key vbnet-mode-map (kbd "C-c C-c") 'compile)
+            (setq compile-command "./build.sh")
+            (setq compilation-read-command nil)
+            ))
+
 (show-paren-mode t)
 
 (put 'narrow-to-region 'disabled nil)
@@ -185,6 +192,10 @@ Don't mess with special buffers."
 (defconst vbnet-string-interpolation-regexp
   "$\\('.*?[^\\]'\\|\".*?[^\\]\"\\)")
 
+(defconst vbnet-of-type-declaration-regexp
+  "\\(?:Of[[:space:]]*\\([^)]*\\)\\)"
+)
+
 (defun vbnet-string-interpolation-font-lock-find (limit)
   "LIMIT."
   (while (re-search-forward vbnet-string-interpolation-regexp limit t)
@@ -196,10 +207,24 @@ Don't mess with special buffers."
                            'face 'font-lock-type-face))))
   nil)
 
-(with-eval-after-load 'python
+(defun vbnet-of-type-declaration-font-lock-find (limit)
+  "LIMIT."
+  (while (re-search-forward vbnet-of-type-declaration-regexp limit t)
+    (put-text-property (match-beginning 1) (match-end 1)
+                       'face 'font-lock-type-face)
+    ;; (let ((start (match-beginning 0)))
+    ;;   (while (re-search-backward brace-regexp start t)
+    ;;     (put-text-property (1+ (match-beginning 0)) (match-end 0)
+    ;;                        'face 'font-lock-type-face)))
+    )
+  nil)
+
+(with-eval-after-load 'vbnet-mode
   (font-lock-add-keywords
    'vbnet-mode
-   `((vbnet-string-interpolation-font-lock-find))
+   `((vbnet-string-interpolation-font-lock-find)
+     ;;(vbnet-of-type-declaration-font-lock-find)
+     )
    'append))
 
 ;; bash-completion seems to be messing up shell-command completion
