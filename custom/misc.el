@@ -8,11 +8,17 @@
 (require 'xterm-color)
 (require 'compile)
 (require 'magit)
+(require 'vbnet-mode)
+(require 'flycheck)
 
 (setq column-number-mode t)
+(show-paren-mode t)
 
 (global-flycheck-mode)
-(global-xah-math-input-mode t)
+(when (boundp 'global-xah-math-input-mode)
+      (global-xah-math-input-mode t)
+      )
+
 (semantic-mode 1)
 
 (menu-bar-mode -1)
@@ -58,8 +64,46 @@
 
 (defvar visual-basic-mode-indent)
 (defvar visual-basic-mode-map)
-;;(defvar visual-basic-ide-pathname)
-;;(setq visual-basic-ide-pathname "/bin/bash -c VB.exe")
+
+
+(defvar vbnet-compilation-finished-functions '())
+(defvar vbnet-run-command)
+
+
+(defun vbnet-compilation-finished (buffer desc)
+  "BUFFER, DESC."
+  (interactive)
+  (message "Buffer %s: %s" buffer desc)
+
+  (when vbnet-compilation-finished-functions
+    (let ((xs vbnet-compilation-finished-functions))
+      (setq vbnet-compilation-finished-functions '())
+      (mapc (lambda(x) (eval x)) xs)
+      ))
+  )
+
+(defun vbnet-run()
+  "Run `\\[vbnet-run-command] asyncronously.  With a `\\[universal-argument]' \
+prefix, `compile-command` is run before `vbnet-run-command`."
+  (interactive)
+  (vbnet-kill-async-buffer)
+  (if current-prefix-arg
+      (progn
+        (add-to-list 'vbnet-compilation-finished-functions
+                     (function (async-shell-command vbnet-run-command)))
+        (compile compile-command))
+
+    (async-shell-command vbnet-run-command))
+  )
+
+(defun vbnet-kill-async-buffer ()
+  "__________."
+  (interactive)
+  (setq kill-buffer-query-functions
+        (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
+  (kill-matching-buffers "*Async Shell Command*" 0 t)
+  )
+
 (add-hook 'visual-basic-mode-hook
           (lambda()
             (setq visual-basic-mode-indent 4)
@@ -74,11 +118,13 @@
 (add-hook 'vbnet-mode-hook
           (lambda()
             (define-key vbnet-mode-map (kbd "C-c C-c") 'compile)
+            (define-key vbnet-mode-map (kbd "C-c C-r") 'vbnet-run)
+            (define-key vbnet-mode-map (kbd "C-c C-k") 'vbnet-kill-async-buffer)
             (setq compile-command "./build.sh")
+            (setq vbnet-run-command "./build.sh -r")
             (setq compilation-read-command nil)
+            (add-hook 'compilation-finish-functions 'vbnet-compilation-finished)
             ))
-
-(show-paren-mode t)
 
 (put 'narrow-to-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -154,11 +200,11 @@ Don't mess with special buffers."
   (insert (replace-regexp-in-string "\n$" ""
                                     (shell-command-to-string "uuidgen"))))
 (defun my-reverse-region (beg end)
- "Reverse characters between BEG and END."
- (interactive "r")
- (let ((region (buffer-substring beg end)))
-   (delete-region beg end)
-   (insert (nreverse region))))
+  "Reverse characters between BEG and END."
+  (interactive "r")
+  (let ((region (buffer-substring beg end)))
+    (delete-region beg end)
+    (insert (nreverse region))))
 
 (defun xterm-color-colorize-shell-command-output ()
   "Colorize `shell-command' output."
@@ -194,7 +240,7 @@ Don't mess with special buffers."
 
 (defconst vbnet-of-type-declaration-regexp
   "\\(?:Of[[:space:]]*\\([^)]*\\)\\)"
-)
+  )
 
 (defun vbnet-string-interpolation-font-lock-find (limit)
   "LIMIT."
