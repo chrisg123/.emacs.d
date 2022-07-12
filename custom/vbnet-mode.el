@@ -1181,6 +1181,8 @@ See `imenu-create-index-function' for more information."
      '(end-module      "^[ \t]*[Ee]nd[ \t]+[Mm]odule\\b")
      '(using           "^[ \t]*\\([Uu]sing\\)\\b")
      '(end-using       "^[ \t]*[Ee]nd[ \t]+[Uu]sing\\b")
+     '(with-brace      "^[ \t].*\\([Ww]ith\\)\\b\s+{\s*$")
+     '(end-with-brace  "^[ \t]*\\(}\\)\s*")
      '(blank           "^[ \t]*$")
      '(comment         "^[ \t]*\\s<.*$")
 
@@ -1592,6 +1594,7 @@ don't do that."
          (list '(prop-start prop-end 2 0)
                '(select select-end 1 0)
                '(with end-with 1 0)
+               '(with-brace end-with-brace 1 0)
                '(using end-using 1 0)
                '(if endif 1 0)
                '(for next "Next" 0)
@@ -2213,6 +2216,11 @@ Indent continuation lines according to some rules.
                                   (vbnet-regexp 'end-with))
         (current-indentation))
 
+       ((looking-at (vbnet-regexp 'end-with-brace))
+        (vbnet-find-matching-stmt (vbnet-regexp 'with-brace)
+                                  (vbnet-regexp 'end-with-brace))
+        (current-indentation))
+
        ((looking-at (vbnet-regexp 'end-try))
         (vbnet-find-matching-stmt (vbnet-regexp 'try)
                                   (vbnet-regexp 'end-try))
@@ -2234,26 +2242,34 @@ Indent continuation lines according to some rules.
                                   (vbnet-regexp 'select-end))
         (+ (current-indentation) vbnet-mode-indent))
 
-       ((looking-at (rx-to-string
-                     `(and
-                       line-start
-                       (* (or space "&")) "\""
-                       (* (not (any "\""))) "\""
-                       (or " &" " _" (* space))
+       ;; Align string literals
+       ((looking-at
+         (rx-to-string `(and line-start (* (or space "&")) "\""
+                       (* (not (any "\""))) "\"" (or " &" " _" (* space))
                        (* space) line-end)))
         (progn
-
           (vbnet-find-matching-stmt "\\(?:.*\\(\"\\)\\)"
                                     "\\(?:\\(\"\\)[[:space:]]*\\)")
           (re-search-forward "\"")
           (max 0 (+ (current-column) -1)))
+        )
 
+       ;; With { ... } statements
+       ((looking-at
+         (rx-to-string
+          `(and line-start (* space) "." (* any) "," (* space) line-end)))
+        (progn
+          (vbnet-find-matching-stmt (vbnet-regexp 'with-brace)
+                                    (vbnet-regexp 'end-with-brace))
+          (print (what-cursor-position))
+          (print (current-indentation))
+          (max 0 (+ (current-indentation) vbnet-mode-indent))
+          )
         )
 
        (t
         ;; Other cases which depend on the previous line.
         (vbnet-previous-line-of-code)
-
         ;; Skip over label lines, which always have 0 indent.
         (while (looking-at (vbnet-regexp 'label))
           (vbnet-previous-line-of-code))
@@ -2264,6 +2280,7 @@ Indent continuation lines according to some rules.
           (vbnet--get-indent-column-for-continued-line original-point))
 
          (t
+
           (vbnet--back-to-start-of-continued-statement t) ;; why?
 
           (let ((indent (current-indentation)))
@@ -2295,6 +2312,7 @@ Indent continuation lines according to some rules.
              ((or (looking-at (vbnet-regexp 'try))
                   (looking-at (vbnet-regexp 'catch))
                   (looking-at (vbnet-regexp 'finally)))
+
               (+ indent vbnet-mode-indent))
 
              ((or (looking-at (vbnet-regexp 'do))
@@ -2302,11 +2320,13 @@ Indent continuation lines according to some rules.
                   (looking-at (vbnet-regexp 'while))
                   (looking-at (vbnet-regexp 'with))
                   (looking-at (vbnet-regexp 'using)))
+
               (+ indent vbnet-mode-indent))
 
              (t
               ;; By default, just copy indent from prev line.
-              indent))))))))))
+              indent
+              ))))))))))
 
 
 
