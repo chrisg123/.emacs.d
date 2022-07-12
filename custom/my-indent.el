@@ -7,7 +7,7 @@
 (defvar my-default-tab-width)
 (setq my-default-tab-width 4)
 (setq-default tab-width my-default-tab-width)
-(setq-default fill-column 81)
+(setq-default fill-column 80)
 
 (defun enable-tabs()
   "Enable tabs."
@@ -75,6 +75,8 @@
 
 (advice-add 'lsp-ui-doc--display :before #'my:push-whitespace)
 (advice-add 'lsp-ui-doc--hide-frame :after #'my:pop-whitespace)
+
+(add-hook 'prog-mode-hook (function (lambda () (whitespace-mode t))))
 
 (provide 'my-indent)
 

@@ -110,6 +110,7 @@ Depends on the xterm-color package."
              (add-to-list 'org-file-apps '("\\.mp3\\'" . "mplayer %s"))
              (add-to-list 'org-file-apps '("\\.m4a\\'" . "mplayer %s"))
              (add-to-list 'org-file-apps '("\\.webm\\'" . "mplayer %s"))
+             (add-to-list 'org-file-apps '("\\.oga\\'" . "mplayer -novideo %s"))
              (add-to-list 'org-file-apps '("\\.mpeg\\'" . "mplayer %s"))
              (add-to-list 'org-file-apps '("\\.mkv\\'" . "mplayer %s"))
              (add-to-list 'org-file-apps '("\\.htm\\'" . "firefox %s"))
@@ -228,10 +229,10 @@ The `:tangle FILE` header argument will be added when pulling in file contents."
    (python . t)
    (ditaa . t)
    (swift . t)
+   (perl . t)
 ))
 
 (setq org-ditaa-jar-path "/usr/share/ditaa/lib/ditaa.jar")
-
 
 (provide 'my-org)
 

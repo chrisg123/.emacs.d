@@ -61,7 +61,7 @@
 
 (defun swift-test()
   (interactive)
-  (shell-command "swift test 2>&1 | xcbeautify")
+  (shell-command "set -o pipefail; swift test | xcbeautify")
   )
 
 (defun swift-extra-font-lock()

@@ -5,6 +5,10 @@
 ;;; Code:
 
 ;; display the current column number
+(require 'xterm-color)
+(require 'compile)
+(require 'magit)
+
 (setq column-number-mode t)
 
 (global-flycheck-mode)
@@ -77,22 +81,6 @@
 (set-face-attribute 'Man-overstrike nil :inherit font-lock-type-face :bold t)
 (set-face-attribute 'Man-underline nil :inherit font-lock-keyword-face :underline t)
 
-
-
-;; Enable mouse support
-;; (unless window-system
-;;   (require 'mouse)
-;;   (xterm-mouse-mode t)
-;;   (global-set-key [mouse-4] (lambda ()
-;;                               (interactive)
-;;                               (previous-line 1)))
-;;   (global-set-key [mouse-5] (lambda ()
-;;                               (interactive)
-;;                               (next-line 1)))
-;;   (defun track-mouse (e))
-;;   (setq mouse-sel-mode t)
-;;   )
-
 (defun add-include-path (path &optional buffer)
   "Add PATH to flycheck and semantic include-path.  Optional BUFFER."
   (interactive
@@ -136,7 +124,6 @@ Don't mess with special buffers."
     (unless (or (eql buffer (current-buffer)) (not (buffer-file-name buffer)))
       (kill-buffer buffer))))
 (global-set-key (kbd "C-c k") #'er-kill-other-buffers)
-
 
 (defun set-title-gnu-screen ()
   "Set title for GNU screen."
@@ -183,7 +170,15 @@ Don't mess with special buffers."
   (xterm-color-colorize-shell-command-output))
 
 (advice-add 'shell-command :after #'xterm-color-colorize-shell-command-output-advice)
-;; (advice-remove 'shell-command #'xterm-color-colorize-shell-command-output-advice)
+
+;; https://stackoverflow.com/a/63710493/2974621
+(setq compilation-environment '("TERM=xterm-256color"))
+(defun my/advice-compilation-filter (f proc string)
+  "F PROC STRING."
+  (funcall f proc (xterm-color-filter string)))
+
+(advice-add 'compilation-filter :around #'my/advice-compilation-filter)
+
 (defconst brace-regexp
   "[^{]{[^{}]*}")
 
@@ -206,6 +201,14 @@ Don't mess with special buffers."
    'vbnet-mode
    `((vbnet-string-interpolation-font-lock-find))
    'append))
+
+;; bash-completion seems to be messing up shell-command completion
+;; (require 'bash-completion)
+;; (bash-completion-setup)
+
+(setq magit-diff-hide-trailing-cr-characters t)
+
+(setq compilation-scroll-output t)
 
 (provide 'misc)
 ;;; misc.el ends here

@@ -68,5 +68,7 @@
 (require 'transpose-frame)
 (require 'my-tramp)
 (require 'format-all)
+(require 'zpl-mode)
+(require 'my-perl)
 ;;; init.el ends here
 

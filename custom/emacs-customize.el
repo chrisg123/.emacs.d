@@ -105,7 +105,7 @@
  '(global-semanticdb-minor-mode t)
  '(org-agenda-loop-over-headlines-in-active-region nil)
  '(package-selected-packages
-   '(rust-mode yaml-mode elpy swift-mode yaml json-mode flycheck python company-jedi yapfify pydoc pyenv-mode company-sourcekit pyvenv lsp-ui transpose-frame ob-swift lsp-sourcekit powershell multiple-cursors xterm-color ob-async csharp-mode sudo-edit string-inflection flycheck-rust flycheck-kotlin kotlin-mode org jedi linum-relative flycheck-pycheckers xah-math-input org-projectile auto-complete ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides helm-c-yasnippet ac-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm))
+   '(helm-perldoc bash-completion rust-mode yaml-mode elpy swift-mode yaml json-mode flycheck python company-jedi yapfify pydoc pyenv-mode company-sourcekit pyvenv lsp-ui transpose-frame ob-swift lsp-sourcekit powershell multiple-cursors xterm-color ob-async csharp-mode sudo-edit string-inflection flycheck-rust flycheck-kotlin kotlin-mode org jedi linum-relative flycheck-pycheckers xah-math-input org-projectile auto-complete ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides helm-c-yasnippet ac-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm))
  '(safe-local-variable-values '((c-indent-level . 4)))
  '(yaml-indent-offset 2))
 (custom-set-faces

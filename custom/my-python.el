@@ -8,6 +8,7 @@
 (require 'elpy-rpc)
 (require 'format-all)
 (require 'rx)
+(require 'grep)
 
 (defvar elpy-rpc-backend)
 (setq elpy-rpc-backend "jedi")
@@ -23,6 +24,7 @@
             (setq python-indent-offset 4)
             (add-to-list 'format-all-formatters '("Python" yapf))
             (python-extra-font-lock)
+            (setq grep-find-ignored-directories (append grep-find-ignored-directories (list "venv")))
             ))
 
 (defun my-venv()
