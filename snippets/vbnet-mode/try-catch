@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: vbnet try-catch
+# key: Try
+# --
+Try
+    ${1:' TODO}
+Catch ex As Exception
+    ${2: ' TODO}
+End Try
