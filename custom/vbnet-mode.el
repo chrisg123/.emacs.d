@@ -991,8 +991,8 @@ See `imenu-create-index-function' for more information."
      `(block-start  ;; general-purpose block start
        ,(concat
          "^[ \t]*" ;; leading whitespace
-         "\\([Pp]ublic\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
-         "[Pp]rivate\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
+         "\\(\\(?:Default \\)?[Pp]ublic\\(?: [Rr]ead[Oo]nly\\)?\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
+         "[Pp]rivate\\(?: [Dd]elegate\\)?\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
          "[Ff]riend\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
          "[Ss]tatic\\)"
          "[ \t]+"
@@ -1087,7 +1087,7 @@ See `imenu-create-index-function' for more information."
      `(prop-start
        ,(concat
          "^[ \t]*" ;; leading whitespace
-         "\\([Pp]ublic\\(?: [Ss]hared\\)?[ \t]+\\|"
+         "\\(\\(?:Default \\)?[Pp]ublic\\(?: [Rr]ead[Oo]nly\\)?\\(?: [Ss]hared\\)?[ \t]+\\|"
          "[Pp]rivate\\(?: [Ss]hared\\)?[ \t]+\\|"
          "\\)"                                   ;; no qualifier at all
          "\\([Pp]roperty\\)"
@@ -1102,6 +1102,7 @@ See `imenu-create-index-function' for more information."
          "^[ \t]*" ;; leading whitespace
          "\\([Pp]ublic\\b\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
          "[Pp]rivate\\b\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
+         "[Pp]artial\\b\\(?: [Ff]riend\\)?\\|"
          "[Ss]tatic\\b\\|"
          "\\)"
          "[ \t]*"
@@ -1291,7 +1292,7 @@ fast enough.
       "CurDir" "Currency"
       "DBEngine" "DDB" "Data" "Database" "Databases"
       "Date" "DateAdd" "DateDiff" "DatePart" "DateSerial" "DateValue" "Day"
-      "Debug" "Declare" "Deftype" "DeleteSetting" "Dim" "Dir" "Do"
+      "Debug" "Declare" "Default" "Deftype" "Delegate" "DeleteSetting" "Dim" "Dir" "Do"
       "DoEvents" "Domain"
       "Double" "Dynaset" "EOF" "Each" "Else" "End" "EndProperty"
       "Enum" "Environ" "Erase" "Err" "Error" "Exit" "Exp" "FV" "False" "Field"
@@ -1301,7 +1302,7 @@ fast enough.
       "Get" "GetAllSettings" "GetAttr" "GetObject" "GetSetting" "Global" "GoSub"
       "GoTo" "Group" "Groups" "Hex" "Hour" "IIf" "IMEStatus" "IPmt" "IRR"
       "If" "Implements" "InStr" "Input" "Int" "Integer" "Is" "IsArray" "IsDate"
-      "IsEmpty" "IsError" "IsMissing" "IsNull" "IsNumeric" "IsObject" "Kill"
+      "IsEmpty" "IsError" "IsMissing" "IsNot" "IsNull" "IsNumeric" "IsObject" "Kill"
       "LBound" "LCase" "LOF" "LSet" "LTrim" "Left" "Len" "Let" "Like" "Line"
       "Load" "LoadPicture" "LoadResData" "LoadResPicture" "LoadResString" "Loc"
       "Lock" "Log" "Long" "Loop" "MDIForm" "MIRR" "Me" "MenuItems"
@@ -1310,7 +1311,7 @@ fast enough.
       "New" "Next" "Not" "Now" "Nothing" "Object" "Oct" "On" "Open"
       "OpenDatabase"
       "Operator" "Option" "Optional"
-      "Or" "OrElse" "PPmt" "PV" "Parameter" "Parameters" "Partition"
+      "Or" "OrElse" "PPmt" "PV" "ParamArray" "Parameter" "Parameters" "Partial" "Partition"
       "Picture" "Pmt" "Print" "Printer" "Printers" "Private" "ProjectTemplate"
       "Property"
       "Properties" "Public" "Put" "QBColor" "QueryDef" "QueryDefs"
@@ -1551,7 +1552,6 @@ fast enough.
     (expand-abbrev)
     (vbnet-indent-line))
   (call-interactively 'newline-and-indent))
-
 
 (defun vbnet-moveto-beginning-of-block ()
   "Moves to the line containing the start of the smallest containing block,
@@ -2244,13 +2244,13 @@ Indent continuation lines according to some rules.
 
        ;; Align string literals
        ((looking-at
-         (rx-to-string `(and line-start (* (or space "&")) "\""
-                       (* (not (any "\""))) "\"" (or " &" " _" (* space))
+         (rx-to-string `(and line-start (* (or space "&" "$")) "\""
+                       (* (not (any "\""))) "\"" (or " &" " _" ")" (* space))
                        (* space) line-end)))
         (progn
           (vbnet-find-matching-stmt "\\(?:.*\\(\"\\)\\)"
                                     "\\(?:\\(\"\\)[[:space:]]*\\)")
-          (re-search-forward "\"")
+          (re-search-forward (rx-to-string `(and (or "$" "\""))))
           (max 0 (+ (current-column) -1)))
         )
 
@@ -2261,8 +2261,6 @@ Indent continuation lines according to some rules.
         (progn
           (vbnet-find-matching-stmt (vbnet-regexp 'with-brace)
                                     (vbnet-regexp 'end-with-brace))
-          (print (what-cursor-position))
-          (print (current-indentation))
           (max 0 (+ (current-indentation) vbnet-mode-indent))
           )
         )
@@ -2278,6 +2276,24 @@ Indent continuation lines according to some rules.
 
          ((looking-at (vbnet-regexp 'continuation))
           (vbnet--get-indent-column-for-continued-line original-point))
+
+         ((looking-at (rx-to-string `(and line-start (* any) (or "." "=") (* space) line-end)))
+          (+ (current-indentation) vbnet-mode-indent))
+
+         ((looking-at (rx-to-string `(and line-start (* any) (or "." "=") (* space) line-end)))
+          (+ (current-indentation) vbnet-mode-indent))
+
+         ((looking-at (rx-to-string `(and line-start (* (not "(")) (or ")") (* space) line-end)))
+          (progn ;; step back until we find the opening bracket
+            (while
+                (not
+                 (looking-at
+                  (rx-to-string
+                   `(and line-start (* space) (* (or (+ alnum) "." "_")) "(" (* any) (or "&" "_"))
+                   )))
+                 (vbnet-previous-line-of-code))
+            (current-indentation))
+          )
 
          (t
 
