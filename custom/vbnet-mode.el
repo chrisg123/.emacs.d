@@ -508,7 +508,7 @@ This is meaningful only if flymake is loaded."
   :type 'string :group 'vbnet)
 
 ;; KJW Provide for my preference in if statements
-(defcustom vbnet-allow-single-line-if nil
+(defcustom vbnet-allow-single-line-if t
   "*Whether to allow single line if."
   :type 'boolean :group 'vbnet)
 
@@ -991,10 +991,10 @@ See `imenu-create-index-function' for more information."
      `(block-start  ;; general-purpose block start
        ,(concat
          "^[ \t]*" ;; leading whitespace
-         "\\(\\(?:Default \\)?[Pp]ublic\\(?: [Rr]ead[Oo]nly\\)?\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
-         "[Pp]rivate\\(?: [Dd]elegate\\)?\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
+         "\\(\\(?:Default \\)?[Pp]ublic\\(?: [Oo]verrides\\)?\\(?: [Rr]ead[Oo]nly\\)?\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
+         "[Pp]rivate\\(?: [Aa]sync\\)?\\(?: [Dd]elegate\\)?\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
          "[Ff]riend\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
-         "[Ss]tatic\\)"
+         "[Ss]tatic\\)?"
          "[ \t]+"
          "\\([Ss]ub\\|"
          "[Ff]unction\\|"
@@ -1055,9 +1055,10 @@ See `imenu-create-index-function' for more information."
      `(func-start
        ,(concat
          "^[ \t]*" ;; leading whitespace
-         "\\([Pp]ublic\\(?: [Ss]hared\\)?\\|"
-         "[Pp]rivate\\(?: [Ss]hared\\)?\\|"
-         "[Ff]riend\\(?: [Ss]hared\\)?\\|"
+         "\\([Pp]ublic\\(?: [Aa]sync\\)?\\(?: [Oo]verrides\\)?\\(?: [Ss]hared\\)?\\|"
+         "[Pp]rotected\\(?: [Aa]sync\\)?\\(?: [Oo]verrides\\)?\\(?: [Ss]hared\\)?\\|"
+         "[Pp]rivate\\(?: [Aa]sync\\)?\\(?: [Ss]hared\\)?\\|"
+         "[Ff]riend\\(?: [Aa]sync\\)?\\(?: [Ss]hared\\)?\\|"
          "[Ss]tatic\\)"
          "[ \t]+"
          "\\([Ff]unction\\)"
@@ -1066,28 +1067,31 @@ See `imenu-create-index-function' for more information."
          "[ \t]*"
          "\(?"))  ;; open-paren
 
-     '(func-end      "^[ \t]*[Ee]nd +[Ff]unction")
+     '(func-end      "^[ \t]*[Ee]nd +[Ff]unction\\(?: *\n\\)")
 
      `(sub-start
        ,(concat
          "^[ \t]*" ;; leading whitespace
-         "\\([Pp]ublic\\(?: [Ss]hared\\)?\\|"
-         "[Pp]rivate\\(?: [Ss]hared\\)?\\|"
+         "\\(?:"
+         "\\([Pp]ublic\\(?: [Aa]sync\\)?\\(?: [Oo]verrides\\)?\\(?: [Ss]hared\\)?\\|"
+         "[Pp]rotected\\(?: [Aa]sync\\)?\\(?: [Oo]verrides\\)?\\(?: [Ss]hared\\)?\\|"
+         "[Pp]rivate\\(?: [Aa]sync\\)?\\(?: [Ss]hared\\)?\\|"
          "[Ss]tatic\\|"
-         "[Ff]riend\\)"
+         "[Ff]riend\\(?: [Aa]sync\\)?\\)"
          "[ \t]+"
+         "\\)?"
          "\\([Ss]ub\\)"
          "[ \t]+"
          "\\([^ \t\(\n]+\\)" ;; name of sub
          "[ \t]*"
          "\(?"))  ;; optional open-paren
 
-     '(sub-end      "^[ \t]*[Ee]nd +[Ss]ub")
+     '(sub-end      "^[ \t]*[Ee]nd +[Ss]ub[^\)]\\(?: *\n\\)?")
 
      `(prop-start
        ,(concat
          "^[ \t]*" ;; leading whitespace
-         "\\(\\(?:Default \\)?[Pp]ublic\\(?: [Rr]ead[Oo]nly\\)?\\(?: [Ss]hared\\)?[ \t]+\\|"
+         "\\(\\(?:Default \\)?[Pp]ublic\\(?: [Oo]verrides\\)?\\(?: [Rr]ead[Oo]nly\\)?\\(?: [Ss]hared\\)?[ \t]+\\|"
          "[Pp]rivate\\(?: [Ss]hared\\)?[ \t]+\\|"
          "\\)"                                   ;; no qualifier at all
          "\\([Pp]roperty\\)"
@@ -1113,6 +1117,20 @@ See `imenu-create-index-function' for more information."
 
      '(class-end      "^[ \t]*[Ee]nd +[Cc]lass")
 
+     `(module-start
+       ,(concat
+         "^[ \t]*" ;; leading whitespace
+         "\\([Pp]ublic\\b\\|"
+         "[Pp]rivate\\b\\|"
+         "\\)"
+         "[ \t]*"
+         "\\([Mm]odule\\)"
+         "[ \t]+"
+         "\\([^ \t\(\n]+\\)" ;; name of module
+         "[ \t]*"))  ;; optional ws
+
+     '(module-end      "^[ \t]*[Ee]nd +[Mm]odule")
+
      `(struct-start
        ,(concat
          "^[ \t]*"
@@ -1128,6 +1146,7 @@ See `imenu-create-index-function' for more information."
 
      '(struct-end      "^[ \t]*[Ee]nd +[Ss]tructure")
 
+      ;; "\\(?: \\([ \t]+[Aa]s\\)\\([ \t]+[^ \t\(\n]+\\)\\)?" ;; optional base type
      `(enum-start
        ,(concat
          "^[ \t]*"
@@ -1138,7 +1157,6 @@ See `imenu-create-index-function' for more information."
          "\\([Ee]num\\)"
          "[ \t]+"
          "\\([^ \t\(\n]+\\)" ;; name of enum
-         "\\(?:\\([ \t]+[Aa]s\\)\\([ \t]+[^ \t\(\n]+\\)\\)?" ;; optional base type
          "[ \t]*"))  ;; optional trailing ws
 
      '(enum-end      "^[ \t]*[Ee]nd +[Ee]num")
@@ -1182,8 +1200,8 @@ See `imenu-create-index-function' for more information."
      '(end-module      "^[ \t]*[Ee]nd[ \t]+[Mm]odule\\b")
      '(using           "^[ \t]*\\([Uu]sing\\)\\b")
      '(end-using       "^[ \t]*[Ee]nd[ \t]+[Uu]sing\\b")
-     '(with-brace      "^[ \t].*\\([Ww]ith\\)\\b\s+{\s*$")
-     '(end-with-brace  "^[ \t]*\\(}\\)\s*")
+     '(brace-start      "^[ \t].*\\([Ww]ith\\|[Ff]rom\\|=\\)\s+{\s*$")
+     '(brace-end  "^[ \t]*\\(}\\)\s*")
      '(blank           "^[ \t]*$")
      '(comment         "^[ \t]*\\s<.*$")
 
@@ -1280,8 +1298,8 @@ fast enough.
 ;; This is some approximation of the set of reserved words in Visual Basic.
 (eval-and-compile
   (defvar vbnet-all-keywords
-    '("Add" "Aggregate" "And" "AndAlso" "App" "AppActivate" "Application" "Array" "As"
-      "Asc" "AscB" "Atn" "Attribute"
+    '("Add" "AddressOf" "Aggregate" "And" "AndAlso" "App" "AppActivate" "Application" "Array" "As"
+      "Asc" "AscB" "Async" "Atn" "Attribute" "Await"
       "Beep" "Begin" "BeginTrans" "Boolean" "ByVal" "ByRef"
       "Catch" "CBool" "CByte" "CCur"
       "CDate" "CDbl" "CInt" "CLng" "CSng" "CStr" "CVErr" "CVar" "Call"
@@ -1295,15 +1313,15 @@ fast enough.
       "Debug" "Declare" "Default" "Deftype" "Delegate" "DeleteSetting" "Dim" "Dir" "Do"
       "DoEvents" "Domain"
       "Double" "Dynaset" "EOF" "Each" "Else" "End" "EndProperty"
-      "Enum" "Environ" "Erase" "Err" "Error" "Exit" "Exp" "FV" "False" "Field"
-      "Fields" "FileAttr" "FileCopy" "FileDateTime" "FileLen" "Fix" "Font" "For"
+      "Enum" "Environ" "Erase" "Err" "Error" "Exit" "Exp" "FV" "False"
+      "Fields" "FileAttr" "FileCopy" "FileDateTime" "FileLen" "Fix" "From" "Font" "For"
       "Form" "FormTemplate" "Format" "Forms" "FreeFile" "FreeLocks" "Friend"
       "Function"
       "Get" "GetAllSettings" "GetAttr" "GetObject" "GetSetting" "Global" "GoSub"
       "GoTo" "Group" "Groups" "Hex" "Hour" "IIf" "IMEStatus" "IPmt" "IRR"
-      "If" "Implements" "InStr" "Input" "Int" "Integer" "Is" "IsArray" "IsDate"
+      "If" "Implements" "In" "InStr" "Input" "Int" "Integer" "Is" "IsArray" "IsDate"
       "IsEmpty" "IsError" "IsMissing" "IsNot" "IsNull" "IsNumeric" "IsObject" "Kill"
-      "LBound" "LCase" "LOF" "LSet" "LTrim" "Left" "Len" "Let" "Like" "Line"
+      "LBound" "LCase" "LOF" "LSet" "LTrim" "Len" "Let" "Like" "Line"
       "Load" "LoadPicture" "LoadResData" "LoadResPicture" "LoadResString" "Loc"
       "Lock" "Log" "Long" "Loop" "MDIForm" "MIRR" "Me" "MenuItems"
       "MenuLine" "Mid" "Minute" "MkDir" "Month" "MsgBox"
@@ -1312,7 +1330,7 @@ fast enough.
       "OpenDatabase"
       "Operator" "Option" "Optional"
       "Or" "OrElse" "PPmt" "PV" "ParamArray" "Parameter" "Parameters" "Partial" "Partition"
-      "Picture" "Pmt" "Print" "Printer" "Printers" "Private" "ProjectTemplate"
+      "Picture" "Pmt" "Print" "Printer" "Printers" "Private" "ProjectTemplate" "Protected"
       "Property"
       "Properties" "Public" "Put" "QBColor" "QueryDef" "QueryDefs"
       "RSet" "RTrim" "Randomize" "Rate" "ReadOnly" "ReDim" "Recordset" "Recordsets"
@@ -1329,11 +1347,11 @@ fast enough.
       "TableDef" "TableDefs" "Tan" "Then" "Time" "TimeSerial" "TimeValue"
       "Timer" "To"
       ;;"Trim"
-      "True" "Try" "Type" "TypeName" "UBound" "UCase" "Unload"
+      "Throw" "True" "Try" "Type" "TypeName" "UBound" "UCase" "Unload"
       "Unlock" "Using" "Val" "Variant" "VarType" "Verb" "Weekday" "Wend"
       "While" "Width" "With" "Workspace" "Workspaces" "Write" "Year"
       "NotInheritable" "Shared" "OrElse"
-      "Overridable" "WithEvents" "Finally" "Imports" "Compare" "Handles"
+      "Overridable" "Overrides" "WithEvents" "Finally" "Imports" "Compare" "Handles"
       "Of" "Module"
       )))
 
@@ -1388,10 +1406,10 @@ fast enough.
            '(2 font-lock-type-face nil t))
 
      ;; Field - as in a struct
-     (list (vbnet-regexp 'field)
-           '(1 font-lock-variable-name-face nil t)
-           '(2 font-lock-keyword-face nil t)
-           '(3 font-lock-type-face nil t))
+     ;; (list (vbnet-regexp 'field)
+     ;;       '(1 font-lock-variable-name-face nil t)
+     ;;       '(2 font-lock-keyword-face nil t)
+     ;;       '(3 font-lock-type-face nil t))
 
      ;; As fragment
      (list (vbnet-regexp 'as)
@@ -1429,9 +1447,14 @@ fast enough.
      (list (vbnet-regexp 'enum-start)
            '(1 font-lock-keyword-face nil t)  ;; protection
            '(2 font-lock-keyword-face nil t)  ;; "Enum"
-           '(3 font-lock-type-face)  ;; name of enum
-           '(4 font-lock-keyword-face)  ;; "As" (optional)
-           '(5 font-lock-type-face))  ;; derived type (optional)
+           '(3 font-lock-type-face))  ;; name of enum
+
+     ;; (list (vbnet-regexp 'enum-start)
+     ;;       '(1 font-lock-keyword-face nil t)  ;; protection
+     ;;       '(2 font-lock-keyword-face nil t)  ;; "Enum"
+     ;;       '(3 font-lock-type-face)  ;; name of enum
+     ;;       '(4 font-lock-keyword-face)  ;; "As" (optional)
+     ;;       '(5 font-lock-type-face))  ;; derived type (optional)
 
      ;; namespace decl
      (list (vbnet-regexp 'namespace-start)
@@ -1572,9 +1595,7 @@ See also, the related functions,  `vbnet-moveto-beginning-of-block',
  `vbnet-moveto-beginning-of-defun', and `vbnet-moveto-end-of-defun'."
   (interactive)
   (if (re-search-forward (vbnet-regexp 'block-end) nil t)
-      (back-to-indentation)))
-
-
+      (move-end-of-line 1)))
 
 (defun vbnet-close-current-block ()
   "Inserts the \"End Xxxx\" (etc) string to close the current
@@ -1589,12 +1610,36 @@ class declaration, it will insert \"End Class\" even if there is
 an \"End Class\" on the line immediately following point.  So
 don't do that."
   (interactive)
+  (when (or
+         (current-line-matches (vbnet-regexp 'prop-start))
+         (current-line-matches (vbnet-regexp 'select))
+         (current-line-matches (vbnet-regexp 'brace-start))
+         (current-line-matches (vbnet-regexp 'with))
+         (current-line-matches (vbnet-regexp 'using))
+         (current-line-matches (vbnet-regexp 'if))
+         (current-line-matches (vbnet-regexp 'for))
+         (current-line-matches (vbnet-regexp 'while))
+         (current-line-matches (vbnet-regexp 'sub-start))
+         (current-line-matches (vbnet-regexp 'try))
+         (current-line-matches (vbnet-regexp 'func-start))
+         (current-line-matches (vbnet-regexp 'intf-start))
+         (current-line-matches (vbnet-regexp 'class-start))
+         (current-line-matches (vbnet-regexp 'module-start))
+         (current-line-matches (vbnet-regexp 'struct-start))
+         (current-line-matches (vbnet-regexp 'enum-start))
+         (current-line-matches (vbnet-regexp 'propset-start))
+         (current-line-matches (vbnet-regexp 'propget-start))
+         (current-line-matches (vbnet-regexp 'namespace-start))
+         )
+    (newline)
+    (move-beginning-of-line 1))
+
   (let ((orig-point (point))
         (block-regex-tuples ;; regex regex idx count
          (list '(prop-start prop-end 2 0)
                '(select select-end 1 0)
                '(with end-with 1 0)
-               '(with-brace end-with-brace 1 0)
+               '(brace-start brace-end 1 0)
                '(using end-using 1 0)
                '(if endif 1 0)
                '(for next "Next" 0)
@@ -1604,6 +1649,7 @@ don't do that."
                '(func-start func-end 2 0)
                '(intf-start intf-end 2 0)
                '(class-start class-end 2 0)
+               '(module-start module-end 2 0)
                '(struct-start struct-end 2 0)
                '(enum-start enum-end 2 0)
                '(propset-start propset-end 1 0)
@@ -1632,7 +1678,6 @@ don't do that."
     ;;
 
     (while (not done)
-
       (let (found
             eol)
 
@@ -1681,13 +1726,30 @@ don't do that."
 
     (if block-end
         (progn
+          (when (not (current-line-empty-p))
+            (newline)
+            )
           (insert block-end)
           (vbnet-indent-line)
-          ;; (back-to-indentation)
-          (move-end-of-line 1)
-          (just-one-space 0)
+          (move-beginning-of-line 1)
+          (newline)
+          (forward-line -1)
+          (vbnet-indent-line)
+          ;; ;; (back-to-indentation)
+          ;; (move-beginning-of-line)
+          ;; (move-end-of-line 1)
+          ;; (just-one-space 0)
           ))))
 
+(defun current-line-matches (regexp)
+  "REGEXP."
+  (save-excursion
+    (beginning-of-line)
+    (looking-at-p regexp)))
+
+(defun current-line-empty-p ()
+  "__________."
+  (current-line-matches "[[:blank:]]*$"))
 
 (defun vbnet--moveto-boundary-of-defun (goto-top)
   "Move to a boundary of the Function (or Sub) that surrounds point.
@@ -2106,7 +2168,15 @@ Indent continuation lines according to some rules.
                (forward-char 1))
              (current-column))))))))
 
+(defconst string-literal-regexp
+  (rx-to-string
+   `(and line-start (* " ")
+         (or "$\"" "& \"" "\"") (* any) "\"" (zero-or-one (or " _" " &"))
+         (* " ") line-end))
+  )
 
+(defconst lines-ends-with-dot-regexp
+  (rx-to-string `(and line-start (* any) "." (* " ") line-end)))
 
 (defun vbnet-calculate-indent ()
   "Calculate the indentation for the current point in a vb.net buffer."
@@ -2142,6 +2212,11 @@ Indent continuation lines according to some rules.
                                   (vbnet-regexp 'class-end))
         (current-indentation))
 
+       ((looking-at (vbnet-regexp 'module-end))
+        (vbnet-find-matching-stmt (vbnet-regexp 'module-start)
+                                  (vbnet-regexp 'module-end))
+        (current-indentation))
+
        ((looking-at (vbnet-regexp 'struct-end))
         (vbnet-find-matching-stmt (vbnet-regexp 'struct-start)
                                   (vbnet-regexp 'struct-end))
@@ -2175,7 +2250,11 @@ Indent continuation lines according to some rules.
        ((looking-at (vbnet-regexp 'sub-end))
         (vbnet-find-matching-stmt (vbnet-regexp 'sub-start)
                                   (vbnet-regexp 'sub-end))
-        (current-indentation))
+        (progn
+          (print "sub-end")
+          (current-indentation)
+          )
+        )
 
        ;; The outdenting stmts, which simply match their original.
        ((or (looking-at (vbnet-regexp 'else))
@@ -2216,9 +2295,9 @@ Indent continuation lines according to some rules.
                                   (vbnet-regexp 'end-with))
         (current-indentation))
 
-       ((looking-at (vbnet-regexp 'end-with-brace))
-        (vbnet-find-matching-stmt (vbnet-regexp 'with-brace)
-                                  (vbnet-regexp 'end-with-brace))
+       ((looking-at (vbnet-regexp 'brace-end))
+          (vbnet-find-matching-stmt (vbnet-regexp 'brace-start)
+                                    (vbnet-regexp 'brace-end))
         (current-indentation))
 
        ((looking-at (vbnet-regexp 'end-try))
@@ -2242,32 +2321,144 @@ Indent continuation lines according to some rules.
                                   (vbnet-regexp 'select-end))
         (+ (current-indentation) vbnet-mode-indent))
 
-       ;; Align string literals
-       ((looking-at
-         (rx-to-string `(and line-start (* (or space "&" "$")) "\""
-                       (* (not (any "\""))) "\"" (or " &" " _" ")" (* space))
-                       (* space) line-end)))
-        (progn
-          (vbnet-find-matching-stmt "\\(?:.*\\(\"\\)\\)"
-                                    "\\(?:\\(\"\\)[[:space:]]*\\)")
-          (re-search-forward (rx-to-string `(and (or "$" "\""))))
-          (max 0 (+ (current-column) -1)))
+       ((or
+         (looking-at (rx-to-string `(and line-start (* " ") "End Function)" line-end)))
+         (looking-at (rx-to-string `(and line-start (* " ") "End Sub)" line-end))))
+        (save-excursion
+          (vbnet-previous-line-of-code)
+          (max 0 (- (current-indentation) vbnet-mode-indent))
+          )
         )
 
-       ;; With { ... } statements
+       ((looking-at string-literal-regexp)
+        (save-excursion
+          (princ (format "String literal: %s" (thing-at-point 'line t)))
+          (vbnet-previous-line-of-code)
+          (cond
+           ((looking-at
+             ;; Dim string
+             (rx-to-string
+              `(and line-start (* " ") "Dim" (* any) "=" line-end)))
+            (progn
+              (max 0 (+ (current-indentation) vbnet-mode-indent))))
+           ((looking-at
+             ;; Throw New Exception
+             (rx-to-string
+              `(and line-start (* " ") "Throw New" (* any) "(" line-end)))
+            (progn
+              (max 0 (+ (current-indentation) vbnet-mode-indent))))
+
+           (t
+            (current-indentation)
+            ))))
+
        ((looking-at
+         ;; With,From,= { ... } statements
          (rx-to-string
-          `(and line-start (* space) "." (* any) "," (* space) line-end)))
+          `(and line-start (* " ") "." (* any) " = " (* any) line-end)))
         (progn
-          (vbnet-find-matching-stmt (vbnet-regexp 'with-brace)
-                                    (vbnet-regexp 'end-with-brace))
+          ;;(princ (thing-at-point 'line t))
+          (vbnet-find-matching-stmt (vbnet-regexp 'brace-start)
+                                    (vbnet-regexp 'brace-end))
           (max 0 (+ (current-indentation) vbnet-mode-indent))
           )
         )
 
+       ((looking-at
+         (rx-to-string
+          `(and line-start (* " ") (+ (or "Optional" "ByVal" "ByRef")) (* any) line-end)))
+        (save-excursion
+          (princ "Function or sub argument\n")
+          (vbnet-previous-line-of-code)
+          (cond
+           ((looking-at (vbnet-regexp 'func-start))
+            (progn
+              (princ "(looking-at (vbnet-regexp 'func-start))")
+              (search-forward-regexp (vbnet-regexp 'func-start))
+              (if (looking-at (rx-to-string `(and (* any) ")" (* " ") line-end)))
+                  (max 0 (+ (current-indentation) vbnet-mode-indent))
+                (current-column)
+                )))
+
+           ((looking-at (vbnet-regexp 'sub-start))
+            (progn
+              (princ "(looking-at (vbnet-regexp 'sub-start))")
+              (search-forward-regexp (vbnet-regexp 'sub-start))
+              (if (looking-at (rx-to-string `(and (* any) ")" (* " ") line-end)))
+                  (max 0 (+ (current-indentation) vbnet-mode-indent))
+                (current-column)
+                )))
+
+           (t
+            (current-indentation))
+           )
+          )
+        )
+
+       ((looking-at
+         ;; multi-line function call
+         (rx-to-string `(and line-start (* (not (any "(" "\n"))) ")" line-end)))
+        (progn ;; step back until we find the opening bracket
+          (princ (format "multi-line function call: %s" (thing-at-point 'line t)))
+          (vbnet-previous-line-of-code)
+          (while
+              (not
+               (looking-at
+                (rx-to-string
+                 `(and line-start (* (not (any "(" "\n"))) "(" (* any) line-end))
+                ))
+            (vbnet-previous-line-of-code)
+            )
+
+          (max 0 (+ (current-indentation) vbnet-mode-indent)))
+        )
+
+       ((looking-at
+         ;; Line ending with a comma
+         (rx-to-string `(and line-start (* any) "," (* " ") line-end)))
+        (if (looking-at (rx-to-string `(and line-start (* " ") "Return" (* any) line-end)))
+            (save-excursion
+              (vbnet-moveto-beginning-of-defun)
+              (max 0 (+ (current-indentation) vbnet-mode-indent))
+              )
+
+          (save-excursion
+            (princ (format "Line ending with a comma: %s" (thing-at-point 'line t)))
+            (vbnet-previous-line-of-code)
+            (princ (format "vbnet-previous-line-of-code: %s" (thing-at-point 'line t)))
+            (cond
+             ((looking-at (vbnet-regexp 'func-start))
+              (progn
+                (princ "(looking-at (vbnet-regexp 'func-start)")
+                (search-forward-regexp (vbnet-regexp 'func-start))
+                (current-column)))
+
+             ((looking-at
+               ;; starts with dot
+               (rx-to-string
+                `(and line-start (* " ") "." (* any) line-end)))
+              (progn
+                (princ "starts with dot")
+                (current-indentation)))
+
+             ((looking-at
+               ;; has open brace or bracket
+               (rx-to-string
+                `(and line-start (* any) (or "(" "{") (* any) line-end)))
+              (progn
+                (princ "has open brace or bracket")
+                (max 0 (+ (current-indentation) vbnet-mode-indent))))
+
+             (t
+              (current-indentation)
+              )))))
+
        (t
+
         ;; Other cases which depend on the previous line.
         (vbnet-previous-line-of-code)
+        (princ (format "* vbnet-previous-line-of-code: %s" (thing-at-point 'line t)))
+        ;;(princ (format "Current Line: %s" (thing-at-point 'line t)))
         ;; Skip over label lines, which always have 0 indent.
         (while (looking-at (vbnet-regexp 'label))
           (vbnet-previous-line-of-code))
@@ -2277,31 +2468,125 @@ Indent continuation lines according to some rules.
          ((looking-at (vbnet-regexp 'continuation))
           (vbnet--get-indent-column-for-continued-line original-point))
 
-         ((looking-at (rx-to-string `(and line-start (* any) (or "." "=") (* space) line-end)))
-          (+ (current-indentation) vbnet-mode-indent))
+         ((looking-at (vbnet-regexp 'continuation))
+          (vbnet--get-indent-column-for-continued-line original-point))
 
-         ((looking-at (rx-to-string `(and line-start (* any) (or "." "=") (* space) line-end)))
-          (+ (current-indentation) vbnet-mode-indent))
+         ((looking-at (vbnet-regexp 'func-start))
+          ;; previous line is function
+          (progn
+            (princ "(looking-at (vbnet-regexp 'func-start)")
+            (search-forward-regexp (vbnet-regexp 'func-start))
+            (if (looking-at
+                 (rx-to-string
+                  `(and
+                    (* any) ")" (* any)
+                    line-end)))
+                (max 0 (+ (current-indentation) vbnet-mode-indent))
+              (current-column)
+              )))
 
-         ((looking-at (rx-to-string `(and line-start (* (not "(")) (or ")") (* space) line-end)))
-          (progn ;; step back until we find the opening bracket
-            (while
-                (not
-                 (looking-at
-                  (rx-to-string
-                   `(and line-start (* space) (* (or (+ alnum) "." "_")) "(" (* any) (or "&" "_"))
-                   )))
-                 (vbnet-previous-line-of-code))
-            (current-indentation))
+         ((looking-at (vbnet-regexp 'sub-start))
+          ;; previous line is sub
+          (progn
+            (princ "(looking-at (vbnet-regexp 'sub-start)")
+            (search-forward-regexp (vbnet-regexp 'sub-start))
+            (if (looking-at
+                 (rx-to-string
+                  `(and
+                    (* any) ")" (* " ")
+                    (? (and (literal "Handles") (+ " ") (+ (or alnum "." "_"))))
+                    line-end)))
+                (max 0 (+ (current-indentation) vbnet-mode-indent))
+              (current-column)
+              )))
+
+         ((looking-at
+           (rx-to-string
+            `(and line-start (* " ") (+ (or "Optional" "ByVal" "ByRef")) (* any) line-end)))
+          (progn
+            (princ "Function or sub argument\n")
+            (cond
+             ((save-excursion
+                (vbnet-next-line-of-code)
+                (looking-at (rx-to-string `(and (* " ") ") As" (* any) line-end)))
+                )
+              (current-indentation)
+              )
+             ((looking-at (rx-to-string `(and (* any) ")" (* any) line-end)))
+              (save-excursion
+                (vbnet-moveto-beginning-of-defun)
+                (max 0 (+ (current-indentation) vbnet-mode-indent))
+                )
+              )
+             (t (current-column)))))
+
+         ((looking-at (rx-to-string `(and line-start (* any) (or ",") (* " ") line-end)))
+          ;; lines ending with comma
+          (progn
+            (princ "lines ending with comma")
+            (cond
+             ((looking-at (rx-to-string `(and line-start (* " ") "AddHandler" (* any) line-end)))
+              (max 0 (+ (current-indentation) vbnet-mode-indent))
+              )
+             (t (current-indentation)))
+            ))
+
+         ((looking-at
+           ;; Line ending with open bracket
+           (rx-to-string `(and line-start (* any) "(" (* " ") line-end)))
+          (progn
+            (princ "Line ending with open bracket")
+            (max 0 (+ (current-indentation) vbnet-mode-indent))
+            )
           )
 
+         ((looking-at
+           ;; Line ending with ampersand
+           (rx-to-string `(and line-start (* any) "&" (* " ") line-end)))
+          (progn
+            (princ "Line ending with ampersand")
+            (search-forward-regexp (rx-to-string `(and (* (not (or "\$" "\""))) )))
+            (current-column)
+            )
+          )
+
+         ((looking-at lines-ends-with-dot-regexp)
+          (if (save-excursion
+                (vbnet-previous-line-of-code)
+                (looking-at lines-ends-with-dot-regexp)
+                )
+              (current-indentation)
+              (progn
+                (princ (thing-at-point 'line t))
+                (+ (current-indentation) vbnet-mode-indent)))
+            )
+
+         ((looking-at (rx-to-string `(and line-start (* any) "=" (* " ") line-end)))
+          ;; lines ending with an equals
+          (progn
+            (princ (thing-at-point 'line t))
+            (+ (current-indentation) vbnet-mode-indent))
+            )
+
          (t
+          (skip-back-over-indented-multi-line-statements)
+          (princ (format "Current Line: %s" (thing-at-point 'line t)))
 
           (vbnet--back-to-start-of-continued-statement t) ;; why?
 
           (let ((indent (current-indentation)))
             ;; All the various +indent regexps.
             (cond
+
+             ((or
+               (looking-at (rx-to-string `(and line-start (* " ") "End Function)" line-end)))
+               (looking-at (rx-to-string `(and line-start (* " ") "End Sub)" line-end))))
+              ;; line after End Function)
+              (save-excursion
+                (princ "line after End Function)")
+                (max 0 (- (current-indentation) vbnet-mode-indent))
+                )
+              )
 
              ((looking-at (vbnet-regexp 'block-start))
               (+ indent vbnet-mode-indent))
@@ -2312,14 +2597,26 @@ Indent continuation lines according to some rules.
                   (looking-at (vbnet-regexp 'namespace-start))
                   (looking-at (vbnet-regexp 'propget-start))
                   (looking-at (vbnet-regexp 'propset-start))
-                  (looking-at (vbnet-regexp 'module)))
+                  (looking-at (vbnet-regexp 'module-start))
+                  (looking-at (vbnet-regexp 'sub-start))
+                  (looking-at (vbnet-regexp 'func-start)))
+              (+ indent vbnet-mode-indent))
+
+             ((or
+               (looking-at
+                ;; Lambda function
+                (rx-to-string `(and line-start (* " ") (* (not "(")) "(" (or "F" "f") "unction()" line-end)))
+               (looking-at
+                ;; Lambda function
+                (rx-to-string `(and line-start (* " ") (* (not "(")) "(" (or "S" "s") "ub()" line-end))))
+
               (+ indent vbnet-mode-indent))
 
              ((and (or (looking-at (vbnet-regexp 'if))
                        (looking-at (vbnet-regexp 'else)))
                    (not (and vbnet-allow-single-line-if
                              (looking-at (vbnet-regexp 'ifthen)))))
-              (+ indent vbnet-mode-indent))
+                (+ indent vbnet-mode-indent))
 
              ((or (looking-at (vbnet-regexp 'select))
                   (looking-at (vbnet-regexp 'case)))
@@ -2341,11 +2638,138 @@ Indent continuation lines according to some rules.
 
              (t
               ;; By default, just copy indent from prev line.
+              (princ "By default, just copy indent from prev line.")
               indent
               ))))))))))
 
 
 
+
+(defun skip-back-over-indented-multi-line-statements()
+  "Skips backward over indented lines part of a multi-line statement."
+  (let ((done nil) (anyskipped nil))
+    (while (not done)
+      (cond
+       ((bobp) (setq done t) )
+
+       ;; ((looking-at
+       ;;   (rx-to-string
+       ;;    `(and line-start (* any) (or "." "=" "_" "&") (* " ") line-end))
+       ;;   )
+       ;;  (progn
+       ;;    (setq anyskipped t)
+       ;;    (princ (format "Skipping line: %s" (thing-at-point 'line t)))
+       ;;    )
+       ;;  )
+
+       ((or
+         (looking-at (rx-to-string `(and (* " ") (or "D" "d") "im" (* any) line-end)))
+         (looking-at (vbnet-regexp 'func-start))
+         (looking-at (vbnet-regexp 'sub-start))
+         (looking-at (vbnet-regexp 'class-start))
+         (looking-at (vbnet-regexp 'struct-start))
+         (looking-at (vbnet-regexp 'enum-start))
+         (looking-at (vbnet-regexp 'namespace-start))
+         (looking-at (vbnet-regexp 'propget-start))
+         (looking-at (vbnet-regexp 'propset-start))
+         (looking-at (vbnet-regexp 'module))
+         (and (or (looking-at (vbnet-regexp 'if))
+                  (looking-at (vbnet-regexp 'else)))
+              (not (and vbnet-allow-single-line-if
+                        (looking-at (vbnet-regexp 'ifthen)))))
+         (looking-at (vbnet-regexp 'select))
+         (looking-at (vbnet-regexp 'case))
+         (looking-at (vbnet-regexp 'try))
+         (looking-at (vbnet-regexp 'catch))
+         (looking-at (vbnet-regexp 'finally))
+         (looking-at (vbnet-regexp 'do))
+         (looking-at (vbnet-regexp 'for))
+         (looking-at (vbnet-regexp 'while))
+         (looking-at (vbnet-regexp 'with))
+         (looking-at (vbnet-regexp 'using))
+         )
+
+        (setq done t)
+        )
+
+       ((and
+         (looking-at
+          ;; Single line function call
+          (rx-to-string `(and line-start (* " ") (+ (or alnum "_")) "(" (* any) (* " ") line-end)))
+         (save-excursion
+           (vbnet-previous-line-of-code)
+           (not (looking-at (rx-to-string `(and line-start (* any) "=" (* " ") line-end))))
+           )
+         )
+        (progn
+          (princ "not skipping over single line function call\n")
+          (setq done t)
+          )
+        )
+
+       ((or (looking-at (rx-to-string `(and line-start (* " ") "End Function)" line-end)))
+            (looking-at (rx-to-string `(and line-start (* " ") "End Sub)" line-end))))
+        (setq done t)
+        )
+
+       ((or
+         (looking-at
+          ;; Lambda function
+          (rx-to-string `(and line-start (* " ") (* (not "(")) "(" (or "F" "f") "unction()" line-end)))
+         (looking-at
+          ;; Lambda function
+          (rx-to-string `(and line-start (* " ") (* (not "(")) "(" (or "S" "s") "ub()" line-end))))
+
+        (setq done t))
+
+       ((looking-at
+         (rx-to-string
+          `(and line-start (* any) (or "," ")" "." "=" "_" "&") (* " ") line-end))
+         )
+        (progn
+          (setq anyskipped t)
+          (princ (format "Skipping line: %s" (thing-at-point 'line t)))
+          )
+        )
+       ((looking-at
+         (rx-to-string
+          `(and line-start (* " ") "AddressOf" (* " ") (* (or alnum "_"))line-end))
+         )
+        (progn
+          (setq anyskipped t)
+          (princ (format "Skipping line: %s" (thing-at-point 'line t)))
+          )
+        )
+
+       ((save-excursion
+          (vbnet-previous-line-of-code)
+          (looking-at
+           (rx-to-string
+            `(and line-start (* any) "." (* " ") line-end))
+           )
+          )
+        (progn
+          (setq anyskipped t)
+          (princ (format "Skipping line: %s" (thing-at-point 'line t)))
+          )
+        )
+
+       ((looking-at
+         (rx-to-string
+          `(and line-start (* any) (or "," ")" "(") (* " ") line-end))
+         )
+        (progn
+          (setq anyskipped t)
+          (princ (format "Skipping line: %s" (thing-at-point 'line t)))
+          )
+        )
+
+       (t (setq done t))
+       )
+      (if (not done)
+          (vbnet-previous-line-of-code))
+      )
+    ))
 
 (defun vbnet-indent-to-column (col)
   (let* ((bol (save-excursion

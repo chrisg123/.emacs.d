@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: vbnet doc comment
+# key: '''
+# --
+''' <summary>
+''' ${1: TODO}
+''' </summary>

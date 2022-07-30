@@ -119,7 +119,7 @@
  '(diff-refine-removed ((t (:inherit diff-refine-changed :background "brightblack"))))
  '(ediff-current-diff-A ((t (:background "color-19"))))
  '(ediff-current-diff-B ((t (:background "magenta"))))
- '(ediff-even-diff-A ((t (:extend t :background "color-245"))))
+ '(ediff-even-diff-A ((t (:extend t :background "color-237"))))
  '(ediff-even-diff-B ((t (:extend t :background "brightblack"))))
  '(ediff-odd-diff-A ((t (:extend t :background "brightblack"))))
  '(ediff-odd-diff-B ((t (:background "color-17"))))
