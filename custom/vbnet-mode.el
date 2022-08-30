@@ -919,7 +919,7 @@ See `imenu-create-index-function' for more information."
 (if vbnet-mode-map ()
   (setq vbnet-mode-map (make-sparse-keymap))
   (define-key vbnet-mode-map "\t" 'vbnet-indent-line)
-  (define-key vbnet-mode-map "\r" 'vbnet-newline-and-indent)
+  ;;(define-key vbnet-mode-map "\r" 'vbnet-newline-and-indent)
 
   ;;It is bound to C->, <C-M-end>, C-M-e, ESC <C-end>.
   ;;It is bound to C-<, <C-M-home>, C-M-a, ESC <C-home>.
@@ -1200,6 +1200,8 @@ See `imenu-create-index-function' for more information."
      '(end-module      "^[ \t]*[Ee]nd[ \t]+[Mm]odule\\b")
      '(using           "^[ \t]*\\([Uu]sing\\)\\b")
      '(end-using       "^[ \t]*[Ee]nd[ \t]+[Uu]sing\\b")
+     '(synclock        "^[ \t]*\\([Ss]ync[Ll]ock\\)\\b")
+     '(end-synclock    "^[ \t]*[Ee]nd[ \t]+[Ss]ync[Ll]ock\\b")
      '(brace-start      "^[ \t].*\\([Ww]ith\\|[Ff]rom\\|=\\)\s+{\s*$")
      '(brace-end  "^[ \t]*\\(}\\)\s*")
      '(blank           "^[ \t]*$")
@@ -1298,7 +1300,7 @@ fast enough.
 ;; This is some approximation of the set of reserved words in Visual Basic.
 (eval-and-compile
   (defvar vbnet-all-keywords
-    '("Add" "AddressOf" "Aggregate" "And" "AndAlso" "App" "AppActivate" "Application" "Array" "As"
+    '("Add" "AddHandler""AddressOf" "Aggregate" "And" "AndAlso" "App" "AppActivate" "Application" "Array" "As"
       "Asc" "AscB" "Async" "Atn" "Attribute" "Await"
       "Beep" "Begin" "BeginTrans" "Boolean" "ByVal" "ByRef"
       "Catch" "CBool" "CByte" "CCur"
@@ -1321,7 +1323,7 @@ fast enough.
       "GoTo" "Group" "Groups" "Hex" "Hour" "IIf" "IMEStatus" "IPmt" "IRR"
       "If" "Implements" "In" "InStr" "Input" "Int" "Integer" "Is" "IsArray" "IsDate"
       "IsEmpty" "IsError" "IsMissing" "IsNot" "IsNull" "IsNumeric" "IsObject" "Kill"
-      "LBound" "LCase" "LOF" "LSet" "LTrim" "Len" "Let" "Like" "Line"
+      "LBound" "LCase" "LOF" "LSet" "LTrim" "Len" "Let" "Like"
       "Load" "LoadPicture" "LoadResData" "LoadResPicture" "LoadResString" "Loc"
       "Lock" "Log" "Long" "Loop" "MDIForm" "MIRR" "Me" "MenuItems"
       "MenuLine" "Mid" "Minute" "MkDir" "Month" "MsgBox"
@@ -1343,7 +1345,7 @@ fast enough.
       "Structure"
       "StrComp" "StrConv"
       ;;"String"
-      "Sub" "SubMenu" "Switch" "Tab" "Table"
+      "Sub" "SubMenu" "Switch" "SyncLock" "Tab" "Table"
       "TableDef" "TableDefs" "Tan" "Then" "Time" "TimeSerial" "TimeValue"
       "Timer" "To"
       ;;"Trim"
@@ -1616,6 +1618,7 @@ don't do that."
          (current-line-matches (vbnet-regexp 'brace-start))
          (current-line-matches (vbnet-regexp 'with))
          (current-line-matches (vbnet-regexp 'using))
+         (current-line-matches (vbnet-regexp 'synclock))
          (current-line-matches (vbnet-regexp 'if))
          (current-line-matches (vbnet-regexp 'for))
          (current-line-matches (vbnet-regexp 'while))
@@ -1641,6 +1644,7 @@ don't do that."
                '(with end-with 1 0)
                '(brace-start brace-end 1 0)
                '(using end-using 1 0)
+               '(synclock end-synclock 1 0)
                '(if endif 1 0)
                '(for next "Next" 0)
                '(while end-while 1 0)
@@ -2310,6 +2314,11 @@ Indent continuation lines according to some rules.
                                   (vbnet-regexp 'end-using))
         (current-indentation))
 
+       ((looking-at (vbnet-regexp 'end-synclock))
+        (vbnet-find-matching-stmt (vbnet-regexp 'synclock)
+                                  (vbnet-regexp 'end-synclock))
+        (current-indentation))
+
        ((looking-at (vbnet-regexp 'select-end))
         (vbnet-find-matching-stmt (vbnet-regexp 'select)
                                   (vbnet-regexp 'select-end))
@@ -2452,7 +2461,19 @@ Indent continuation lines according to some rules.
              (t
               (current-indentation)
               )))))
-
+       ((looking-at
+         ;; heredoc
+         (rx-to-string
+          `(and line-start
+                (* not-newline) "\""
+                (? (and "." (* (or alnum "_" ))  "()"))
+                (* " ") line-end))
+          )
+        (progn
+          (princ "heredoc")
+          (current-indentation)
+          )
+        )
        (t
 
         ;; Other cases which depend on the previous line.
@@ -2632,7 +2653,8 @@ Indent continuation lines according to some rules.
                   (looking-at (vbnet-regexp 'for))
                   (looking-at (vbnet-regexp 'while))
                   (looking-at (vbnet-regexp 'with))
-                  (looking-at (vbnet-regexp 'using)))
+                  (looking-at (vbnet-regexp 'using))
+                  (looking-at (vbnet-regexp 'synclock)))
 
               (+ indent vbnet-mode-indent))
 
@@ -2687,6 +2709,7 @@ Indent continuation lines according to some rules.
          (looking-at (vbnet-regexp 'while))
          (looking-at (vbnet-regexp 'with))
          (looking-at (vbnet-regexp 'using))
+         (looking-at (vbnet-regexp 'synclock))
          )
 
         (setq done t)
@@ -2758,6 +2781,12 @@ Indent continuation lines according to some rules.
          (rx-to-string
           `(and line-start (* any) (or "," ")" "(") (* " ") line-end))
          )
+        (progn
+          (setq anyskipped t)
+          (princ (format "Skipping line: %s" (thing-at-point 'line t)))
+          )
+        )
+       ((looking-at string-literal-regexp)
         (progn
           (setq anyskipped t)
           (princ (format "Skipping line: %s" (thing-at-point 'line t)))
