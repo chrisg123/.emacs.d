@@ -36,6 +36,8 @@
 (require 'my-indent)
 (require 'my-flycheck)
 (require 'my-semantic)
+(require 'tree-sitter)
+(require 'tree-sitter-langs)
 (require 'emacs-customize)
 (require 'emacs-saves)
 (require 'emacs-modes)

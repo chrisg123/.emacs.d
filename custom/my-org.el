@@ -15,7 +15,7 @@
 
 (defvar org-edit-src-content-indentation)
 (setq org-edit-src-content-indentation 0)
-
+(setq org-startup-folded t)
 (defun org-mode-keybinding()
   "Setup keybinding for 'org-mode'."
 )
@@ -110,6 +110,7 @@ Depends on the xterm-color package."
              (add-to-list 'org-file-apps '("\\.mp3\\'" . "mplayer %s"))
              (add-to-list 'org-file-apps '("\\.m4a\\'" . "mplayer %s"))
              (add-to-list 'org-file-apps '("\\.webm\\'" . "mplayer %s"))
+             (add-to-list 'org-file-apps '("\\.opus\\'" . "mplayer %s"))
              (add-to-list 'org-file-apps '("\\.oga\\'" . "mplayer -novideo %s"))
              (add-to-list 'org-file-apps '("\\.mpeg\\'" . "mplayer %s"))
              (add-to-list 'org-file-apps '("\\.mkv\\'" . "mplayer %s"))
@@ -234,6 +235,18 @@ The `:tangle FILE` header argument will be added when pulling in file contents."
 
 (setq org-ditaa-jar-path "/usr/share/ditaa/lib/ditaa.jar")
 
+(defun org-babel-noweb-wrap (&optional regexp)
+  "Return regexp matching a Noweb reference.
+
+Match any reference, or only those matching REGEXP, if non-nil.
+
+When matching, reference is stored in match group 1."
+  (rx-to-string
+   `(and (or "<<" "«")
+           (group
+            (not (or " " "\t" "\n"))
+            (? (*? any) (not (or " " "\t" "\n"))))
+           (or ">>" "»"))))
 (provide 'my-org)
 
 ;;; my-org.el ends here

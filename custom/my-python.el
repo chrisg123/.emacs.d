@@ -25,7 +25,7 @@
             (add-to-list 'format-all-formatters '("Python" yapf))
             (python-extra-font-lock)
             (setq grep-find-ignored-directories (append grep-find-ignored-directories (list "venv")))
-            ))
+            (tree-sitter-mode)))
 
 (defun my-venv()
   "Setup venv."
