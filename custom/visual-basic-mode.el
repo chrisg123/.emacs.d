@@ -334,7 +334,7 @@ Note: shall not contain any \\( \\) (use \\(?: if need be)."
     ()
   (setq visual-basic-mode-map (make-sparse-keymap))
   (define-key visual-basic-mode-map "\t" 'visual-basic-indent-line)
-  (define-key visual-basic-mode-map "\r" 'visual-basic-newline-and-indent)
+  ;; (define-key visual-basic-mode-map "\r" 'visual-basic-newline-and-indent)
   (define-key visual-basic-mode-map "\M-\r" 'visual-basic-insert-item)
   (define-key visual-basic-mode-map "\C-c\C-j" 'visual-basic-insert-item)
   (define-key visual-basic-mode-map "\M-\C-a" 'visual-basic-beginning-of-defun)
@@ -343,7 +343,7 @@ Note: shall not contain any \\( \\) (use \\(?: if need be)."
   (define-key visual-basic-mode-map "\M-\C-\\" 'visual-basic-indent-region)
   (define-key visual-basic-mode-map "\M-q" 'visual-basic-fill-or-indent)
   (define-key visual-basic-mode-map "\M-\C-j" 'visual-basic-split-line)
-  (define-key visual-basic-mode-map "\C-c]" 'visual-basic-close-block)
+  (define-key visual-basic-mode-map "\C-c/" 'visual-basic-close-block)
   (cond (visual-basic-winemacs-p
          (define-key visual-basic-mode-map '(control C) 'visual-basic-start-ide))
         (visual-basic-win32-p
@@ -1238,10 +1238,32 @@ In Abbrev mode, any abbrev before point will be expanded."
         ))
     ret))
 
+(defun current-line-matches (regexp)
+  "REGEXP."
+  (save-excursion
+    (beginning-of-line)
+    (looking-at-p regexp)))
+
 (defun visual-basic-close-block ()
   "Insert `End If' is current block is a `If Then ...', `End
 With' if the block is a `With ...', etc..."
   (interactive)
+  (when (or
+         (current-line-matches visual-basic-if-regexp)
+         (current-line-matches visual-basic-defun-start-regexp)
+         (current-line-matches visual-basic-select-regexp)
+         (current-line-matches visual-basic-with-regexp)
+         (current-line-matches visual-basic-case-regexp)
+         (current-line-matches visual-basic-begin-regexp)
+         (current-line-matches visual-basic-else-regexp)
+         (current-line-matches visual-basic-do-regexp)
+         (current-line-matches visual-basic-while-regexp)
+         (current-line-matches visual-basic-for-regexp)
+         (current-line-matches visual-basic-next-regexp)
+         (current-line-matches visual-basic-loop-regexp))
+    (newline)
+    (move-beginning-of-line 1))
+
   (let (end-statement end-indent)
     (save-excursion
       (save-match-data
@@ -1294,12 +1316,12 @@ With' if the block is a `With ...', etc..."
 		(goto-char (match-end 0))
 		(setq  end-statement "Next"
 		       end-indent (current-indentation))
-		(let ((vb-idom (visual-basic-detect-idom)))
-		  (cond
-		   ;; for VBA add the variable name after Next.
-		   ((eq vb-idom 'vba)
-		    (when (looking-at "\\s-+\\(Each\\s-+\\|\\)\\([^ \t\n\r]+\\)")
-		      (setq end-statement (concat end-statement " " (match-string 2)))))))
+		;; (let ((vb-idom (visual-basic-detect-idom)))
+		;;   (cond
+		;;    ;; for VBA add the variable name after Next.
+		;;    ((eq vb-idom 'vba)
+		;;     (when (looking-at "\\s-+\\(Each\\s-+\\|\\)\\([^ \t\n\r]+\\)")
+		;;       (setq end-statement (concat end-statement " " (match-string 2)))))))
 		nil)
 	       ;; Cases where the current statement is an end-of-smthing statement
 	       ((or (looking-at visual-basic-else-regexp)
@@ -1327,7 +1349,12 @@ With' if the block is a `With ...', etc..."
 	       (t t))))))
     (when end-statement
       (insert end-statement)
-      (visual-basic-indent-to-column end-indent))))
+      (visual-basic-indent-to-column end-indent)
+      (move-beginning-of-line 1)
+      (newline)
+      (forward-line -1)
+      (visual-basic-indent-line)
+      )))
 
 (defun visual-basic-insert-item ()
   "Insert a new item in a block.

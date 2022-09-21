@@ -11,6 +11,7 @@
 (require 'vbnet-mode)
 (require 'flycheck)
 (require 'man)
+(require 'grep)
 
 (setq column-number-mode t)
 (show-paren-mode t)
@@ -63,6 +64,64 @@
 (defvar visual-basic-mode-indent)
 (defvar visual-basic-mode-map)
 
+(defvar visual-basic-compilation-finished-functions '())
+(defvar visual-basic-run-command)
+
+(defun visual-basic-compilation-finished (buffer desc)
+  "BUFFER, DESC."
+  (interactive)
+  (message "Buffer %s: %s" buffer desc)
+
+  (when visual-basic-compilation-finished-functions
+    (let ((xs visual-basic-compilation-finished-functions))
+      (setq visual-basic-compilation-finished-functions '())
+      (mapc (lambda(x) (eval x)) xs)
+      ))
+  )
+
+
+(defun visual-basic-run()
+  "Run `\\[visual-basic-run-command] asyncronously.  With a `\\[universal-argument]' \
+prefix, `compile-command` is run before `visual-basic-run-command`."
+  (interactive)
+  (visual-basic-kill-async-buffer)
+    (if current-prefix-arg
+        (progn
+          (add-to-list
+           'visual-basic-compilation-finished-functions
+           (function
+            (let ((dir
+                   (locate-dominating-file
+                    "." (lambda (parent)
+                          (directory-files parent nil ".*\\.vbproj")))))
+              (async-shell-command (concat "cd '" dir "' && " visual-basic-run-command) ))))
+          (visual-basic-compile))
+      (let ((dir
+             (locate-dominating-file
+              "." (lambda (parent)
+                    (directory-files parent nil ".*\\.vbproj")))))
+        (async-shell-command (concat "cd '" dir "' && " visual-basic-run-command) ))
+
+))
+
+(defun visual-basic-kill-async-buffer ()
+  "__________."
+  (interactive)
+  (setq kill-buffer-query-functions
+        (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
+  (kill-matching-buffers "*Async Shell Command*" 0 t)
+  )
+
+(defun visual-basic-compile ()
+  "Compile visual-basic project."
+  (interactive)
+  (let ((dir
+         (locate-dominating-file
+          "." (lambda (parent)
+                (directory-files parent nil ".*\\.vbp")))))
+    (compile (concat "cd '" dir "' && " "./build.sh"))))
+
+
 (add-hook 'visual-basic-mode-hook
           (lambda()
             (setq visual-basic-mode-indent 4)
@@ -72,6 +131,14 @@
                 (interactive) (print "No whitespace cleanup for vb6.")))
             (define-key visual-basic-mode-map (kbd "C-c C-p") 'visual-basic-beginning-of-defun)
             (define-key visual-basic-mode-map (kbd "C-c C-n") 'visual-basic-end-of-defun)
+            (define-key visual-basic-mode-map (kbd "C-c C-c") 'visual-basic-compile)
+            (define-key visual-basic-mode-map (kbd "C-c C-r") 'visual-basic-run)
+            (define-key visual-basic-mode-map (kbd "C-c TAB") 'indent-region)
+            (setq compile-command "./build.sh")
+            (setq visual-basic-run-command "./build.sh -r")
+            (setq compilation-read-command nil)
+            (add-hook 'compilation-finish-functions 'visual-basic-compilation-finished)
+            (setq grep-find-ignored-directories (append grep-find-ignored-directories (list "TAGS")))
             ))
 
 (put 'narrow-to-region 'disabled nil)
