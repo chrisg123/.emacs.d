@@ -34,6 +34,7 @@
 ;; Load custom scripts.
 (add-to-list 'load-path "~/.emacs.d/custom/")
 (add-to-list 'load-path "~/.emacs.d/custom/copilot")
+(add-to-list 'load-path "~/.emacs.d/custom/ob-powershell")
 (require 'my-indent)
 (require 'my-flycheck)
 (require 'my-semantic)
@@ -76,6 +77,6 @@
 (require 'my-perl)
 (require 'copilot)
 (require 'my-copilot)
-
+(require 'my-latex)
 ;;; init.el ends here
 

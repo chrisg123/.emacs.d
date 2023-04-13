@@ -105,9 +105,53 @@
  '(global-semanticdb-minor-mode t)
  '(org-agenda-loop-over-headlines-in-active-region nil)
  '(package-selected-packages
-   '(vterm dash jsonrpc s editorconfig tree-sitter tree-sitter-langs helm-perldoc bash-completion rust-mode yaml-mode elpy swift-mode yaml json-mode flycheck python company-jedi yapfify pydoc pyenv-mode company-sourcekit pyvenv lsp-ui transpose-frame ob-swift lsp-sourcekit powershell multiple-cursors xterm-color ob-async csharp-mode sudo-edit string-inflection flycheck-rust flycheck-kotlin kotlin-mode org jedi linum-relative flycheck-pycheckers xah-math-input org-projectile auto-complete ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides helm-c-yasnippet ac-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm))
+   '(vterm dash jsonrpc meson-mode go-mode s editorconfig tree-sitter tree-sitter-langs helm-perldoc bash-completion rust-mode yaml-mode elpy swift-mode yaml json-mode flycheck python company-jedi yapfify pydoc pyenv-mode company-sourcekit pyvenv lsp-ui transpose-frame ob-swift lsp-sourcekit powershell multiple-cursors xterm-color ob-async csharp-mode sudo-edit string-inflection flycheck-rust flycheck-kotlin kotlin-mode org jedi linum-relative flycheck-pycheckers xah-math-input org-projectile auto-complete ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode markdown-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides helm-c-yasnippet ac-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm))
  '(safe-local-variable-values
-   '((org-babel-noweb-wrap-end . "»")
+   '((whitespace-style face lines indentation:space)
+     (eval unless
+           (featurep 'llbuild-project-settings)
+           (message "loading 'llbuild-project-settings")
+           (add-to-list 'load-path
+                        (concat
+                         (let
+                             ((dlff
+                               (dir-locals-find-file default-directory)))
+                           (if
+                               (listp dlff)
+                               (car dlff)
+                             (file-name-directory dlff)))
+                         "utils/emacs")
+                        :append)
+           (require 'llbuild-project-settings))
+     (eval add-hook 'prog-mode-hook
+           (lambda nil
+             (whitespace-mode 1))
+           (not :APPEND)
+           :BUFFER-LOCAL)
+     (eval let*
+           ((x
+             (dir-locals-find-file default-directory))
+            (this-directory
+             (if
+                 (listp x)
+                 (car x)
+               (file-name-directory x))))
+           (unless
+               (or
+                (featurep 'swift-project-settings)
+                (and
+                 (fboundp 'tramp-tramp-file-p)
+                 (tramp-tramp-file-p this-directory)))
+             (add-to-list 'load-path
+                          (concat this-directory "utils")
+                          :append)
+             (let
+                 ((swift-project-directory this-directory))
+               (require 'swift-project-settings)))
+           (set
+            (make-local-variable 'swift-project-directory)
+            this-directory))
+     (org-babel-noweb-wrap-end . "»")
      (org-babel-noweb-wrap-start . "«")
      (c-indent-level . 4)))
  '(yaml-indent-offset 2))
