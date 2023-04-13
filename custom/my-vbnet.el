@@ -11,6 +11,7 @@
 
 (defvar vbnet-compilation-finished-functions '())
 (defvar vbnet-run-command)
+(defvar vbnet-run-tests-command)
 
 (defun vbnet-compilation-finished (buffer desc)
   "BUFFER, DESC."
@@ -29,24 +30,69 @@
 prefix, `compile-command` is run before `vbnet-run-command`."
   (interactive)
   (vbnet-kill-async-buffer)
-    (if current-prefix-arg
-        (progn
-          (add-to-list
-           'vbnet-compilation-finished-functions
-           (function
-            (let ((dir
-                   (locate-dominating-file
-                    "." (lambda (parent)
-                          (directory-files parent nil ".*\\.vbproj")))))
-              (async-shell-command (concat "cd '" dir "' && " vbnet-run-command) ))))
-          (vbnet-compile))
-      (let ((dir
-             (locate-dominating-file
-              "." (lambda (parent)
-                    (directory-files parent nil ".*\\.vbproj")))))
-        (async-shell-command (concat "cd '" dir "' && " vbnet-run-command) ))
+  (if current-prefix-arg
+      (progn
+        (add-to-list
+         'vbnet-compilation-finished-functions
+         (function
+          (let ((dir
+                 (locate-dominating-file
+                  "." (lambda (parent)
+                        (directory-files parent nil ".*\\.vbproj")))))
+            (async-shell-command (concat "cd '" dir "' && " vbnet-run-command) ))))
+        (vbnet-compile))
+    (let ((dir
+           (locate-dominating-file
+            "." (lambda (parent)
+                  (directory-files parent nil ".*\\.vbproj")))))
+      (async-shell-command (concat "cd '" dir "' && " vbnet-run-command) ))
 
-))
+    ))
+
+(defun vbnet-run-tests()
+  "."
+  (interactive)
+  (vbnet-kill-async-buffer)
+  (if current-prefix-arg
+      (progn
+        (add-to-list
+         'vbnet-compilation-finished-functions
+         (function
+          (let ((dir
+                 (locate-dominating-file
+                  "." (lambda (parent)
+                        (directory-files parent nil ".*\\.vbproj")))))
+            (my-async-shell-command vbnet-run-tests-command ))))
+        (vbnet-compile))
+    (let ((dir
+           (locate-dominating-file
+            "." (lambda (parent)
+                  (directory-files parent nil ".*\\.vbproj")))))
+      (my-async-shell-command (list "python" vbnet-run-tests-command) ))
+
+    ))
+
+(defun my-async-shell-command(cmd)
+  "CMD."
+  (let ((buf "*Testrun*"))
+    (when (gnus-buffer-exists-p buf) (kill-buffer buf))
+    (get-buffer-create buf)
+    (switch-to-buffer-other-window buf)
+
+    (insert "\t")
+    (make-process
+     :name "*Testrun*"
+     :buffer "*Testrun*"
+     :command cmd
+     :connection-type 'pipe
+     :sentinel (lambda(proc msg)
+                 (when (equal "finished\n" msg)
+                   (with-current-buffer "*Testrun*"
+                     (compilation-mode)
+                     (setq buffer-read-only nil)
+                     (xterm-color-colorize-buffer)
+                     (setq buffer-read-only t)
+                     ))))))
 
 (defun vbnet-kill-async-buffer ()
   "__________."
@@ -71,11 +117,13 @@ prefix, `compile-command` is run before `vbnet-run-command`."
             (define-key vbnet-mode-map (kbd "C-c C-n") 'vbnet-moveto-end-of-block)
             (define-key vbnet-mode-map (kbd "C-c C-c") 'vbnet-compile)
             (define-key vbnet-mode-map (kbd "C-c C-r") 'vbnet-run)
+            (define-key vbnet-mode-map (kbd "C-c C-t") 'vbnet-run-tests)
             (define-key vbnet-mode-map (kbd "C-c C-k") 'vbnet-kill-async-buffer)
             (define-key vbnet-mode-map (kbd "C-c TAB") 'indent-region)
             (setq compile-command "./build.sh")
             (setq vbnet-run-command "./build.sh -r")
             (setq compilation-read-command nil)
+            (setq vbnet-run-tests-command "./testrun.py")
             (add-hook 'compilation-finish-functions 'vbnet-compilation-finished)
             ))
 
@@ -147,7 +195,6 @@ prefix, `compile-command` is run before `vbnet-run-command`."
      ;;(vbnet-of-type-declaration-font-lock-find)
      )
    'append))
-
 
 (provide 'my-vbnet)
 

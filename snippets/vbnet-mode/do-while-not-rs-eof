@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: vbnet Do While Not rs.EOF
+# key: Do
+# --
+Do While Not rs.EOF
+   ${1:' TODO}
+   rs.MoveNext()
+Loop

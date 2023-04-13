@@ -253,6 +253,15 @@ Don't mess with special buffers."
 (setq magit-diff-hide-trailing-cr-characters t)
 
 (setq compilation-scroll-output t)
+(defun center-buffer()
+  (interactive)
+  (set-window-margins nil (/ (- (frame-width) 125) 2) (/ (- (frame-width) 125) 2))
+  )
+(defun uncenter-buffer()
+  (interactive)
+  (set-window-margins nil nil nil)
+  )
+
 
 (provide 'misc)
 ;;; misc.el ends here

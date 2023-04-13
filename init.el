@@ -33,6 +33,7 @@
 
 ;; Load custom scripts.
 (add-to-list 'load-path "~/.emacs.d/custom/")
+(add-to-list 'load-path "~/.emacs.d/custom/copilot")
 (require 'my-indent)
 (require 'my-flycheck)
 (require 'my-semantic)
@@ -73,5 +74,8 @@
 (require 'format-all)
 (require 'zpl-mode)
 (require 'my-perl)
+(require 'copilot)
+(require 'my-copilot)
+
 ;;; init.el ends here
 
