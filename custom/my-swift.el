@@ -82,6 +82,62 @@
 
   )
 
+(defun ob-swift--eval (body)
+  "Evaluate BODY with swift."
+  (with-temp-buffer
+    (insert body)
+    (let*
+        ((sources (concat (getenv "HOME") "/src"))
+         (ob-swift-include-paths
+          (list
+            (concat sources "/swift-identified-collections/.build/x86_64-unknown-linux-gnu/debug")
+            (concat sources "/swift-identified-collections/.build/checkouts/swift-system/Sources/CSystem/include")
+            ))
+         (ob-swift-library-paths
+          (list
+            (concat sources "/swift-identified-collections/.build/x86_64-unknown-linux-gnu/debug")
+            ))
+         (ob-swift-libraries
+          '(
+            "swift-identified-collections__REPL"
+            ))
+         (include-paths
+          (if (> (length ob-swift-include-paths) 0)
+              (concat
+               " -I"
+               (mapconcat
+                'identity
+                (cl-remove-if-not
+                 (lambda(path) (and (file-exists-p path)
+                             (not (string-blank-p path)))) ob-swift-include-paths) " -I"))
+            ""
+            ))
+         (library-paths
+          (if (> (length ob-swift-library-paths) 0)
+              (concat
+               " -L"
+               (mapconcat
+                'identity
+                (cl-remove-if-not
+                 (lambda(path) (and (file-exists-p path)
+                             (not (string-blank-p path)))) ob-swift-library-paths) " -L"))
+            ""
+            ))
+         (libraries
+          (if (> (length ob-swift-libraries) 0)
+              (concat
+               " -l"
+               (mapconcat
+                'identity
+                (cl-remove-if-not
+                 (lambda (lib) (not (string-blank-p lib)))  ob-swift-libraries) " -l"))
+            ""
+            ))
+         (swift-cmd (concat "swift" include-paths library-paths libraries " - ")))
+      (progn
+        (print swift-cmd)
+        (shell-command-on-region (point-min) (point-max) swift-cmd nil 't)))
+    (buffer-string)))
 
 (provide 'my-swift)
 
