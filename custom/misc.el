@@ -276,5 +276,13 @@ Don't mess with special buffers."
             (define-key vterm-copy-mode-map (kbd "C-c C-x C-v") 'vterm-copy-mode-done)
             ))
 
+(defun beautify-json ()
+  ;; https://coderwall.com/p/2vnxaw/beautify-json-in-emacs
+  (interactive)
+  (let ((b (if mark-active (min (point) (mark)) (point-min)))
+        (e (if mark-active (max (point) (mark)) (point-max))))
+    (shell-command-on-region b e
+     "python -mjson.tool" (current-buffer) t)))
+
 (provide 'misc)
 ;;; misc.el ends here
