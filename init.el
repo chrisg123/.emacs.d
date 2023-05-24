@@ -76,6 +76,6 @@
 (require 'my-perl)
 (require 'copilot)
 (require 'my-copilot)
-
+(require 'my-magit)
 ;;; init.el ends here
 

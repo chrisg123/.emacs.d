@@ -18,8 +18,8 @@
 
 (global-flycheck-mode)
 (when (boundp 'global-xah-math-input-mode)
-      (global-xah-math-input-mode t)
-      )
+  (global-xah-math-input-mode t)
+  )
 
 (semantic-mode 1)
 
@@ -85,24 +85,24 @@
 prefix, `compile-command` is run before `visual-basic-run-command`."
   (interactive)
   (visual-basic-kill-async-buffer)
-    (if current-prefix-arg
-        (progn
-          (add-to-list
-           'visual-basic-compilation-finished-functions
-           (function
-            (let ((dir
-                   (locate-dominating-file
-                    "." (lambda (parent)
-                          (directory-files parent nil ".*\\.vbproj")))))
-              (async-shell-command (concat "cd '" dir "' && " visual-basic-run-command) ))))
-          (visual-basic-compile))
-      (let ((dir
-             (locate-dominating-file
-              "." (lambda (parent)
-                    (directory-files parent nil ".*\\.vbproj")))))
-        (async-shell-command (concat "cd '" dir "' && " visual-basic-run-command) ))
+  (if current-prefix-arg
+      (progn
+        (add-to-list
+         'visual-basic-compilation-finished-functions
+         (function
+          (let ((dir
+                 (locate-dominating-file
+                  "." (lambda (parent)
+                        (directory-files parent nil ".*\\.vbproj")))))
+            (async-shell-command (concat "cd '" dir "' && " visual-basic-run-command) ))))
+        (visual-basic-compile))
+    (let ((dir
+           (locate-dominating-file
+            "." (lambda (parent)
+                  (directory-files parent nil ".*\\.vbproj")))))
+      (async-shell-command (concat "cd '" dir "' && " visual-basic-run-command) ))
 
-))
+    ))
 
 (defun visual-basic-kill-async-buffer ()
   "__________."
@@ -262,6 +262,19 @@ Don't mess with special buffers."
   (set-window-margins nil nil nil)
   )
 
+(add-hook 'vterm-mode-hook
+          (lambda()
+            (define-key vterm-mode-map (kbd "C-c C-v") 'vterm-copy-mode)
+            (define-key vterm-mode-map (kbd "C-c C-x C-v") 'vterm-copy-mode-done)
+            ))
+(add-hook 'vterm-mode-hook
+          (lambda()
+            (define-key vterm-mode-map (kbd "C-c C-v") 'vterm-copy-mode)
+            ))
+(add-hook 'vterm-copy-mode-hook
+          (lambda()
+            (define-key vterm-copy-mode-map (kbd "C-c C-x C-v") 'vterm-copy-mode-done)
+            ))
 
 (provide 'misc)
 ;;; misc.el ends here
