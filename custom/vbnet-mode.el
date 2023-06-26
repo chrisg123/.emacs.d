@@ -1563,12 +1563,10 @@ fast enough.
            (null (nth 4 list))))))      ; inside comment
 
 
-(defun vbnet-pre-abbrev-expand-hook ()
+(defun vbnet-abbrev-expand-function ()
   ;; Allow our abbrevs only in a code context.
-  (setq local-abbrev-table
-        (if (vbnet-in-code-context-p)
-            vbnet-mode-abbrev-table)))
-
+  (if (vbnet-in-code-context-p)
+      (abbrev--default-expand)))
 
 (defun vbnet-newline-and-indent (&optional count)
   "Insert a newline, updating indentation."
@@ -3555,8 +3553,7 @@ Here's a summary of the key bindings:
   (setq local-abbrev-table vbnet-mode-abbrev-table)
   (if vbnet-capitalize-keywords-p
       (progn
-        (make-local-variable 'pre-abbrev-expand-hook)
-        (add-hook 'pre-abbrev-expand-hook 'vbnet-pre-abbrev-expand-hook)
+        (setq abbrev-expand-function 'vbnet-abbrev-expand-function)
         (abbrev-mode 1)))
 
   (make-local-variable 'comment-start)
