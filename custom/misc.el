@@ -148,7 +148,7 @@ prefix, `compile-command` is run before `visual-basic-run-command`."
 (set-face-attribute 'Man-overstrike nil :inherit font-lock-type-face :bold t)
 (set-face-attribute 'Man-underline nil :inherit font-lock-keyword-face :underline t)
 
-(defun add-include-path (path &optional buffer)
+(defun add-include-path (path &optional buffer checker)
   "Add PATH to flycheck and semantic include-path.  Optional BUFFER."
   (interactive
    (list (string-trim-right (read-directory-name "Include path: "))))
@@ -157,11 +157,12 @@ prefix, `compile-command` is run before `visual-basic-run-command`."
         (if (y-or-n-p (format "Path: `%s'\nAdd path to includes? " full-path))
             (progn
               (message (format "buffer: %s" buffer))
-              (cond
-               ((eq flycheck-checker 'c/c++-gcc)
-                (add-to-list 'flycheck-gcc-include-path full-path))
-               ((eq flycheck-checker 'c/c++-emscripten)
-                (add-to-list 'flycheck-emscripten-include-path full-path)))
+              (let ((current-checker (or checker flycheck-checker)))
+                (cond
+                 ((eq current-checker 'c/c++-gcc)
+                  (add-to-list 'flycheck-gcc-include-path full-path))
+                 ((eq current-checker 'c/c++-emscripten)
+                  (add-to-list 'flycheck-emscripten-include-path full-path))))
               (if buffer (switch-to-buffer buffer))
               (semantic-add-system-include full-path)
               (flycheck-buffer)
@@ -177,13 +178,14 @@ prefix, `compile-command` is run before `visual-basic-run-command`."
                              "Path to `.extra_include' parent directory: "))))
   (let ((xfile (format "%s/.extra_include"
                        (replace-regexp-in-string "/*\s*$" "" path)))
-        (buffer (current-buffer)))
+        (buffer (current-buffer))
+        (checker flycheck-checker))
     (if (file-exists-p xfile)
         (progn
           (message "file exists")
           (with-temp-buffer
             (insert-file-contents xfile)
-            (mapcar (lambda (x) (add-include-path x buffer))
+            (mapcar (lambda (x) (add-include-path x buffer checker))
                     (split-string (buffer-string) "\n" t))
             )
           )
