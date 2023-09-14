@@ -152,17 +152,23 @@ prefix, `compile-command` is run before `visual-basic-run-command`."
   "Add PATH to flycheck and semantic include-path.  Optional BUFFER."
   (interactive
    (list (string-trim-right (read-directory-name "Include path: "))))
-  (if (file-directory-p path)
-      (if (y-or-n-p (format "Path: `%s'\nAdd path to includes? " path))
-          (progn
-            (message (format "buffer: %s" buffer))
-            (add-to-list 'flycheck-gcc-include-path path)
-            (if buffer (switch-to-buffer buffer))
-            (semantic-add-system-include path)
-            (flycheck-buffer)
-            )
-        (message "Canceled."))
-    (message "Path is not a directory.")))
+  (let ((full-path (expand-file-name path)))
+    (if (file-directory-p full-path)
+        (if (y-or-n-p (format "Path: `%s'\nAdd path to includes? " full-path))
+            (progn
+              (message (format "buffer: %s" buffer))
+              (cond
+               ((eq flycheck-checker 'c/c++-gcc)
+                (add-to-list 'flycheck-gcc-include-path full-path))
+               ((eq flycheck-checker 'c/c++-emscripten)
+                (add-to-list 'flycheck-emscripten-include-path full-path)))
+              (if buffer (switch-to-buffer buffer))
+              (semantic-add-system-include full-path)
+              (flycheck-buffer)
+              )
+          (message "Canceled."))
+      (message "Path is not a directory."))))
+
 
 (defun extra-include(path)
   "Load includes from `.extra_include' file in PATH."
