@@ -2739,7 +2739,11 @@ Indent continuation lines according to some rules.
           (rx-to-string `(and line-start (* " ") (* (not "(")) "(" (or "F" "f") "unction()" line-end)))
          (looking-at
           ;; Lambda function
-          (rx-to-string `(and line-start (* " ") (* (not "(")) "(" (or "S" "s") "ub()" line-end))))
+          (rx-to-string `(and line-start (* " ") (* (not "(")) "(" (or "S" "s") "ub()" line-end)))
+         (looking-at
+          ;; Lambda function
+          (rx-to-string `(and line-start (* " ") (or "S" "s") "ub(" (* anything) ")" line-end)))
+         )
 
         (setq done t))
 
