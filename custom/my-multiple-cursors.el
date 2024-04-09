@@ -3,7 +3,7 @@
 ;; Show line numbers when editing files.
 
 ;;; Code:
-
+(require 'sgml-mode)
 (require 'multiple-cursors)
 
 (global-set-key (kbd "C-c i i") 'mc/edit-lines)
