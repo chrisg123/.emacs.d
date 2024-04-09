@@ -102,14 +102,38 @@ prefix, `compile-command` is run before `vbnet-run-command`."
   (kill-matching-buffers "*Async Shell Command*" 0 t)
   )
 
+
+(defun display-compilation-buffer (buffer alist)
+  "Display the compilation buffer in an appropriate manner based on current window configuration."
+  (let ((single-window (one-window-p t))
+        displayed)
+    (setq displayed
+          (or (display-buffer-reuse-window buffer alist)  ;; First try to reuse an existing window
+              (if single-window
+                  (let ((new-window (split-window-horizontally))) ;; If there's only one window, split it
+                    ;; Display buffer in the new window and select it
+                    (set-window-buffer new-window buffer)
+                    (select-window new-window)
+                    new-window)
+                (display-buffer-use-some-window buffer alist))  ;; Try to use some existing window
+              (display-buffer-below-selected buffer alist)  ;; Try to split below if not yet handled
+              (display-buffer-pop-up-window buffer alist))) ;; As a fallback, pop up a new window
+    displayed))
+
 (defun vbnet-compile ()
-  "Compile vbnet project."
+  "Compile VB.NET project."
   (interactive)
-  (let ((dir
-         (locate-dominating-file
-          "." (lambda (parent)
-                (directory-files parent nil ".*\\.vbproj")))))
-    (compile (concat "cd '" dir "' && " "./build.sh"))))
+  (let* ((dir (locate-dominating-file
+               "." (lambda (parent)
+                     (directory-files parent nil ".*\\.vbproj"))))
+         (compile-command (concat "cd '" dir "' && " "./build.sh")))
+    ;; Set custom display rules for the *compilation* buffer just before compiling
+    (let ((display-buffer-alist
+           (cons '("\\*compilation\\*"
+                   display-compilation-buffer
+                   (reusable-frames . t))
+                 display-buffer-alist)))
+      (compile compile-command))))
 
 (add-hook 'vbnet-mode-hook
           (lambda()
