@@ -92,6 +92,8 @@ prefix, `compile-command` is run before `vbnet-run-command`."
                      (setq buffer-read-only nil)
                      (xterm-color-colorize-buffer)
                      (setq buffer-read-only t)
+                     (goto-char (point-max))
+                     (recenter -1)
                      ))))))
 
 (defun vbnet-kill-async-buffer ()
