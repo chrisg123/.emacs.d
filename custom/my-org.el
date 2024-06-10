@@ -1,9 +1,10 @@
 ;;; my-org.el --- Emacs auto save settings
 ;;; Commentary:
 ;;; Code:
-
+(require 'org)
 (require 'ob-async)
 (require 'ox)
+(require 'ob-kotlin)
 
 (remove-hook 'org-mode-hook 'org-babel-hide-all-hashes)
 
@@ -119,7 +120,8 @@ Depends on the xterm-color package."
              ))
 
 (add-hook 'org-src-mode-hook
-          '(lambda() (global-display-line-numbers-mode 1)))
+          '(lambda()
+             (global-display-line-numbers-mode 1)))
 
 (defun escape-src-block-tags(str)
   "Escape source code declaration block tags in STR."
@@ -231,7 +233,29 @@ The `:tangle FILE` header argument will be added when pulling in file contents."
    (ditaa . t)
    (swift . t)
    (perl . t)
+   (kotlin . t)
 ))
+
+(defun org-babel-execute:vbnet (body params)
+  "Execute a block of VB.NET code with Org-Babel."
+  (let* ((wrapped-body (if (or (string-match "Module" body)
+                               (string-match "Class" body))
+                           body
+                         (concat "Module Program\n    Sub Main()\n" body "\n    End Sub\nEnd Module")))
+         (tmp-src-file (org-babel-temp-file "vbnet-src-" ".vb"))
+         (tmp-out-file (org-babel-temp-file "vbnet-out-" ".exe")))
+    (with-temp-file tmp-src-file
+      (insert wrapped-body))
+    (org-babel-eval
+     (format "dotnet new console -lang vb -o temp-vbnet-project --force && cd temp-vbnet-project && mv %s Program.vb && dotnet run > %s"
+             (shell-quote-argument tmp-src-file)
+             (shell-quote-argument tmp-out-file))
+     "")
+    (with-temp-buffer
+      (insert-file-contents tmp-out-file)
+      (buffer-string))))
+
+(add-to-list 'org-babel-tangle-lang-exts '("vbnet" . "vb"))
 
 (setq org-ditaa-jar-path "/usr/share/ditaa/lib/ditaa.jar")
 
@@ -248,5 +272,21 @@ When matching, reference is stored in match group 1."
             (? (*? any) (not (or " " "\t" "\n"))))
            (or ">>" "»"))))
 (provide 'my-org)
+
+(defun ob-kotlin-eval-in-repl (session body)
+  (let ((name (format "*ob-kotlin-%s*" session)))
+    (setq ob-kotlin-process-output "")
+    (process-send-string name (format "%s\n\"%s\"\n" body ob-kotlin-eoe))
+    (accept-process-output (get-process name) nil nil 1)
+    (ob-kotlin--wait ob-kotlin-eoe)
+    (string-trim-right
+     (replace-regexp-in-string
+      "^res[0-9]*: " ""
+      (replace-regexp-in-string
+       (format "^>>>.*%s.*\n>>>" ob-kotlin-eoe) "" ob-kotlin-process-output)))))
+
+(setq org-export-with-sub-superscripts nil)
+
+(setq org-src-preserve-indentation t)
 
 ;;; my-org.el ends here
