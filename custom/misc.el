@@ -40,9 +40,13 @@
 	       (set-face-italic 'font-lock-doc-face nil)
 	       (set-face-italic 'font-lock-preprocessor-face nil)))
 
-;; remove background color so transparency works.
-;; TODO: maybe check if compositing is enabled first.
-(set-background-color nil)
+
+;; Remove background color for transparency. Commented out because
+;; ":background 'unspecified-bg'" in customize-set-face suffices.
+;; (set-background-color nil)
+
+;; Ensure packages know it's a dark background
+(setq frame-background-mode 'dark)
 
 ;; ANSI Color https://stackoverflow.com/a/23382008/2974621
 (require 'ansi-color)
