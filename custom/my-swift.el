@@ -13,6 +13,23 @@
 (defvar my-xctoolchain
   "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin")
 
+(defvar swift-compilation-finished-functions '())
+(defvar swift-run-command)
+(defvar swift-run-tests-command)
+
+(defun swift-compilation-finished (buffer desc)
+  "BUFFER, DESC."
+  (interactive)
+  (message "Buffer %s: %s" buffer desc)
+
+  (when swift-compilation-finished-functions
+    (let ((xs swift-compilation-finished-functions))
+      (setq swift-compilation-finished-functions '())
+      (mapc (lambda(x) (eval x)) xs)
+      ))
+  )
+
+
 (eval-after-load 'lsp-mode
   (progn
     (require 'lsp-sourcekit)
@@ -38,16 +55,64 @@
     )
   (lsp))
 
+(defun swift-kill-async-buffer ()
+  "__________."
+  (interactive)
+  (setq kill-buffer-query-functions
+        (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
+  (kill-matching-buffers "*Async Shell Command*" 0 t)
+  )
+
+(defun swift-run()
+  "Run `\\[swift-run-command] asyncronously.  With a `\\[universal-argument]' \
+prefix, `compile-command` is run before `swift-run-command`."
+  (interactive)
+  (swift-kill-async-buffer)
+  (if current-prefix-arg
+      (progn
+        (add-to-list
+         'swift-compilation-finished-functions
+         (function
+          (let ((dir
+                 (expand-file-name
+                  (locate-dominating-file
+                   "." (lambda (parent)
+                         (directory-files parent nil "Package.swift"))))))
+            (async-shell-command (concat "cd '" dir "' && " swift-run-command) ))))
+        (swift-compile))
+    (let ((dir
+           (expand-file-name
+            (locate-dominating-file
+             "." (lambda (parent)
+                   (directory-files parent nil "Package.swift"))))))
+      (async-shell-command (concat "cd '" dir "' && " swift-run-command) ))
+
+    ))
+
+(defun swift-compile ()
+  "Compile swift project."
+  (interactive)
+  (let ((dir
+         (expand-file-name
+          (locate-dominating-file
+           "." (lambda (parent)
+                 (directory-files parent nil "Package.swift"))))))
+    (compile (concat "cd '" dir "' && " "make -k"))))
+
+
 (add-hook 'swift-mode-hook
           (lambda()
             (define-key swift-mode-map (kbd "C-c C-p") 'swift-mode:beginning-of-defun)
             (define-key swift-mode-map (kbd "C-c C-n") 'swift-mode:end-of-defun)
             (define-key swift-mode-map (kbd "M-RET") 'lsp-execute-code-action)
-            (define-key swift-mode-map (kbd "C-c C-c") 'compile)
+            (define-key swift-mode-map (kbd "C-c C-c") 'swift-compile)
+            (define-key swift-mode-map (kbd "C-c C-r") 'swift-run)
             (define-key swift-mode-map (kbd "C-c C-t") 'swift-test)
             (setq compile-command "swift build")
+            (setq swift-run-command "swift run")
             (setq compilation-read-command nil)
             (swift-extra-font-lock)
+            (add-hook 'compilation-finish-functions 'swift-compilation-finished)
             (setq tramp-remote-path (append (list my-xctoolchain) tramp-remote-path))
             (lsp-register-client
              (make-lsp-client :new-connection (lsp-tramp-connection "sourcekit-lsp")
@@ -88,19 +153,19 @@
     (insert body)
     (let*
         ((sources (concat (getenv "HOME") "/src"))
+         (swift-libraries
+          (list
+           "swift-identified-collections"
+           "swift-collections"
+           "swift-algorithms"))
          (ob-swift-include-paths
-          (list
-            (concat sources "/swift-identified-collections/.build/x86_64-unknown-linux-gnu/debug")
-            (concat sources "/swift-identified-collections/.build/checkouts/swift-system/Sources/CSystem/include")
-            ))
+          (mapcar (lambda (lib) (format "%s/%s/.build/debug" sources lib))
+                  swift-libraries))
          (ob-swift-library-paths
-          (list
-            (concat sources "/swift-identified-collections/.build/x86_64-unknown-linux-gnu/debug")
-            ))
+          (mapcar (lambda (lib) (format "%s/%s/.build/debug" sources lib))
+                  swift-libraries))
          (ob-swift-libraries
-          '(
-            "swift-identified-collections__REPL"
-            ))
+          (mapcar (lambda (lib) (format "%s__REPL" lib)) swift-libraries))
          (include-paths
           (if (> (length ob-swift-include-paths) 0)
               (concat
@@ -109,7 +174,7 @@
                 'identity
                 (cl-remove-if-not
                  (lambda(path) (and (file-exists-p path)
-                             (not (string-blank-p path)))) ob-swift-include-paths) " -I"))
+                                    (not (string-blank-p path)))) ob-swift-include-paths) " -I"))
             ""
             ))
          (library-paths
@@ -120,7 +185,7 @@
                 'identity
                 (cl-remove-if-not
                  (lambda(path) (and (file-exists-p path)
-                             (not (string-blank-p path)))) ob-swift-library-paths) " -L"))
+                                    (not (string-blank-p path)))) ob-swift-library-paths) " -L"))
             ""
             ))
          (libraries
