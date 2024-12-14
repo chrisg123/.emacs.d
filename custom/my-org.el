@@ -328,4 +328,66 @@ When matching, reference is stored in match group 1."
 
 (setq org-src-preserve-indentation t)
 
+(defun render-openai-json ()
+  "Render all thread.messages containing LaTeX equations in a browser using Google Chrome."
+  (interactive)
+  (let* ((json (org-babel-read-result))
+         (parsed-json (json-read-from-string json))
+         (messages (reverse (alist-get 'data parsed-json)))  ;; Reverse the list of messages
+         (formatted-messages
+          (mapconcat
+           (lambda (message)
+             (let ((role (alist-get 'role message))
+                   (content (alist-get 'content message)))
+               (if content
+                   (concat "<p><strong>(" role ")</strong></p>"
+                           (mapconcat
+                            (lambda (item)
+                              (replace-regexp-in-string "\n" "<br>" (alist-get 'value (alist-get 'text item))))
+                            content
+                            "<br><br>"))
+                 "")))
+           messages
+           "<hr>"))
+         (html-content (concat
+                        "<!DOCTYPE html>\n"
+                        "<html lang=\"en\">\n"
+                        "<head>\n"
+                        "    <meta charset=\"UTF-8\">\n"
+                        "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+                        "    <title>Math Rendering</title>\n"
+                        "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js\"></script>\n"
+                        "    <style>\n"
+                        "        body {\n"
+                        "            font-family: Arial, sans-serif;\n"
+                        "            line-height: 1.6;\n"
+                        "            margin: 40px;\n"
+                        "            background-color: #121212; /* Dark background */\n"
+                        "            color: #e0e0e0; /* Light text */\n"
+                        "        }\n"
+                        "        #content {\n"
+                        "            text-align: left;\n"
+                        "            max-width: 800px;\n"
+                        "            margin: auto;\n"
+                        "        }\n"
+                        "        .MathJax_Display {\n"
+                        "            text-align: left !important;\n"
+                        "        }\n"
+                        "        a {\n"
+                        "            color: #bb86fc; /* Light purple for links */\n"
+                        "        }\n"
+                        "    </style>\n"
+                        "</head>\n"
+                        "<body>\n"
+                        "    <div id=\"content\">" formatted-messages "</div>\n"
+                        "    <script>\n"
+                        "        MathJax.typesetPromise();\n"
+                        "    </script>\n"
+                        "</body>\n"
+                        "</html>\n"))
+         (file-path "/tmp/openai-rendered.html"))
+    (with-temp-file file-path
+      (insert html-content))
+    (start-process-shell-command "open-html" nil "google-chrome-stable /tmp/openai-rendered.html")))
+
 ;;; my-org.el ends here
