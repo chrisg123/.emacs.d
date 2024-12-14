@@ -76,7 +76,7 @@
 (advice-add 'lsp-ui-doc--display :before #'my:push-whitespace)
 (advice-add 'lsp-ui-doc--hide-frame :after #'my:pop-whitespace)
 
-(add-hook 'prog-mode-hook (function (lambda () (whitespace-mode t))))
+(add-hook 'prog-mode-hook (function (lambda () (whitespace-mode 0))))
 
 (provide 'my-indent)
 
