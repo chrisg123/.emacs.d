@@ -22,5 +22,16 @@
 
 (setq tramp-auto-save-directory (concat my-saves "tramp/"))
 
+(add-to-list 'tramp-methods
+             '("ssh-no-pubkey"
+               (tramp-login-program        "ssh")
+               (tramp-login-args           (("-l" "%u") ("-p" "%p")
+                                            ("-o" "PubkeyAuthentication=no")
+                                            ("-e" "none") ("%h")))
+               (tramp-async-args           (("-q")))
+               (tramp-remote-shell         "/bin/sh")
+               (tramp-remote-shell-args    ("-c"))))
+
+
 (provide 'my-tramp)
 ;;; my-tramp.el ends here
