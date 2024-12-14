@@ -190,7 +190,7 @@
  '(org-document-title ((t (:foreground "brightyellow" :weight bold))))
  '(org-meta-line ((t (:inherit font-lock-comment-face :foreground "brightblack"))))
  '(pulse-highlight-start-face ((t (:background "color-19"))))
- '(region ((t (:extend t :background "color-19"))))
+ '(region ((t (:extend t :background "color-17"))))
  '(semantic-decoration-on-fileless-includes ((t (:background "#f0fdf0" :foreground "black"))))
  '(semantic-decoration-on-unparsed-includes ((t (:background "#ffff55" :foreground "black"))))
  '(semantic-highlight-func-current-tag-face ((t (:weight bold))))
