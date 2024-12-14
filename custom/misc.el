@@ -89,24 +89,24 @@
 prefix, `compile-command` is run before `visual-basic-run-command`."
   (interactive)
   (visual-basic-kill-async-buffer)
-    (if current-prefix-arg
-        (progn
-          (add-to-list
-           'visual-basic-compilation-finished-functions
-           (function
-            (let ((dir
-                   (locate-dominating-file
-                    "." (lambda (parent)
-                          (directory-files parent nil ".*\\.vbproj")))))
-              (async-shell-command (concat "cd '" dir "' && " visual-basic-run-command) ))))
-          (visual-basic-compile))
-      (let ((dir
-             (locate-dominating-file
-              "." (lambda (parent)
-                    (directory-files parent nil ".*\\.vbproj")))))
-        (async-shell-command (concat "cd '" dir "' && " visual-basic-run-command) ))
+  (if current-prefix-arg
+      (progn
+        (add-to-list
+         'visual-basic-compilation-finished-functions
+         (function
+          (let ((dir
+                 (locate-dominating-file
+                  "." (lambda (parent)
+                        (directory-files parent nil ".*\\.vbproj")))))
+            (async-shell-command (concat "cd '" dir "' && " visual-basic-run-command) ))))
+        (visual-basic-compile))
+    (let ((dir
+           (locate-dominating-file
+            "." (lambda (parent)
+                  (directory-files parent nil ".*\\.vbproj")))))
+      (async-shell-command (concat "cd '" dir "' && " visual-basic-run-command) ))
 
-))
+    ))
 
 (defun visual-basic-kill-async-buffer ()
   "__________."
