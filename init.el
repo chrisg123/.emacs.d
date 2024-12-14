@@ -41,6 +41,7 @@
 (require 'tree-sitter)
 (require 'tree-sitter-langs)
 (require 'emacs-customize)
+(require 'my-magit)
 (require 'emacs-saves)
 (require 'emacs-modes)
 (require 'emacs-keys)
