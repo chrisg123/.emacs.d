@@ -2610,6 +2610,7 @@ Indent continuation lines according to some rules.
              ((looking-at (vbnet-regexp 'block-start))
               (+ indent vbnet-mode-indent))
 
+
              ((or (looking-at (vbnet-regexp 'class-start))
                   (looking-at (vbnet-regexp 'struct-start))
                   (looking-at (vbnet-regexp 'enum-start))
@@ -2655,6 +2656,9 @@ Indent continuation lines according to some rules.
                   (looking-at (vbnet-regexp 'synclock)))
 
               (+ indent vbnet-mode-indent))
+
+             ((looking-at (rx-to-string `(and line-start (* " ") " Return " (* any) line-end)))
+              (+ indent (length "Return ")))
 
              (t
               ;; By default, just copy indent from prev line.

@@ -79,5 +79,6 @@
 (require 'my-copilot)
 (require 'my-magit)
 (require 'my-latex)
+(require 'highlight)
 ;;; init.el ends here
 
