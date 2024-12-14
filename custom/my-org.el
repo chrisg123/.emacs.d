@@ -234,26 +234,65 @@ The `:tangle FILE` header argument will be added when pulling in file contents."
    (swift . t)
    (perl . t)
    (kotlin . t)
+   (js . t)
 ))
+
+;; (defun org-babel-execute:vbnet (body params)
+;;   "Execute a block of VB.NET code with Org-Babel."
+;;   (let* ((wrapped-body (if (or (string-match "Module" body)
+;;                                (string-match "Class" body))
+;;                            body
+;;                          (concat "Module Program\n    Sub Main()\n" body "\n    End Sub\nEnd Module")))
+;;          (tmp-src-file (org-babel-temp-file "vbnet-src-" ".vb"))
+;;          (tmp-out-file (org-babel-temp-file "vbnet-out-" ".exe")))
+;;     (with-temp-file tmp-src-file
+;;       (insert wrapped-body))
+;;     (org-babel-eval
+;;      (format "dotnet new console -lang vb -o temp-vbnet-project --force && cd temp-vbnet-project && mv %s Program.vb && dotnet run > %s"
+;;              (shell-quote-argument tmp-src-file)
+;;              (shell-quote-argument tmp-out-file))
+;;      "")
+;;     (with-temp-buffer
+;;       (insert-file-contents tmp-out-file)
+;;       (buffer-string))))
 
 (defun org-babel-execute:vbnet (body params)
   "Execute a block of VB.NET code with Org-Babel."
-  (let* ((wrapped-body (if (or (string-match "Module" body)
-                               (string-match "Class" body))
-                           body
-                         (concat "Module Program\n    Sub Main()\n" body "\n    End Sub\nEnd Module")))
-         (tmp-src-file (org-babel-temp-file "vbnet-src-" ".vb"))
-         (tmp-out-file (org-babel-temp-file "vbnet-out-" ".exe")))
-    (with-temp-file tmp-src-file
-      (insert wrapped-body))
-    (org-babel-eval
-     (format "dotnet new console -lang vb -o temp-vbnet-project --force && cd temp-vbnet-project && mv %s Program.vb && dotnet run > %s"
-             (shell-quote-argument tmp-src-file)
-             (shell-quote-argument tmp-out-file))
-     "")
-    (with-temp-buffer
-      (insert-file-contents tmp-out-file)
-      (buffer-string))))
+  (let* ((lines (split-string body "\n" t))
+         (imports '())
+         (rest-lines '())
+         (collecting-imports t)
+         (wrapped-body))
+    (if (or (string-match-p "\\<Module\\>" body)
+            (string-match-p "\\<Class\\>" body))
+        (setq wrapped-body body)
+      (dolist (line lines)
+        (if (and collecting-imports (string-match-p "^\\s-*Imports\\s-" line))
+            (push line imports)
+          (setq collecting-imports nil)
+          (push line rest-lines)))
+      (setq imports (reverse imports))
+      (setq rest-lines (reverse rest-lines))
+      (setq wrapped-body
+            (concat
+             (mapconcat 'identity imports "\n")
+             (if imports "\n" "")
+             "Module Program\n    Sub Main()\n"
+             (mapconcat (lambda (line) (concat "        " line)) rest-lines "\n")
+             "\n    End Sub\nEnd Module")))
+    (let* ((tmp-src-file (org-babel-temp-file "vbnet-src-" ".vb"))
+           (tmp-out-file (org-babel-temp-file "vbnet-out-" ".txt")))
+      (with-temp-file tmp-src-file
+        (insert wrapped-body))
+      (org-babel-eval
+       (format "dotnet new console -lang vb -o temp-vbnet-project --force && cd temp-vbnet-project && mv %s Program.vb && dotnet run > %s"
+               (shell-quote-argument tmp-src-file)
+               (shell-quote-argument tmp-out-file))
+       "")
+      (with-temp-buffer
+        (insert-file-contents tmp-out-file)
+        (buffer-string)))))
+
 
 (add-to-list 'org-babel-tangle-lang-exts '("vbnet" . "vb"))
 
