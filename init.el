@@ -78,6 +78,7 @@
 (require 'my-perl)
 (require 'my-latex)
 (require 'highlight)
+(require 'my-magit)
 
 (let ((gptel-path "~/.emacs.d/custom/gptel"))
   (when (file-directory-p gptel-path)

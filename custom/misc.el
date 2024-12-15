@@ -274,6 +274,19 @@ Don't mess with special buffers."
   (set-window-margins nil nil nil)
   )
 
+(add-hook 'vterm-mode-hook
+          (lambda()
+            (define-key vterm-mode-map (kbd "C-c C-v") 'vterm-copy-mode)
+            (define-key vterm-mode-map (kbd "C-c C-x C-v") 'vterm-copy-mode-done)
+            ))
+(add-hook 'vterm-mode-hook
+          (lambda()
+            (define-key vterm-mode-map (kbd "C-c C-v") 'vterm-copy-mode)
+            ))
+(add-hook 'vterm-copy-mode-hook
+          (lambda()
+            (define-key vterm-copy-mode-map (kbd "C-c C-x C-v") 'vterm-copy-mode-done)
+            ))
 
 (defun beautify-json ()
   ;; https://coderwall.com/p/2vnxaw/beautify-json-in-emacs

@@ -1308,7 +1308,7 @@ fast enough.
       "Case" "ChDir" "ChDrive" "Character" "Choose" "Chr" "ChrB"
       "Class" "Clipboard" "Close" "Collection"  "Columns"
       "Command" "CommitTrans" "CompactDatabase" "Component" "Components"
-      "Const" "Container" "Containers" "Cos" "CreateDatabase" "CreateObject"
+      "Const" "Container" "Containers" "Continue" "Cos" "CreateDatabase" "CreateObject"
       "CurDir" "Currency"
       "DBEngine" "DDB" "Database" "Databases"
       "Date" "DateAdd" "DateDiff" "DatePart" "DateSerial" "DateValue" "Day"
@@ -1349,7 +1349,7 @@ fast enough.
       "TableDef" "TableDefs" "Tan" "Then" "Time" "TimeSerial" "TimeValue"
       "Timer" "To"
       ;;"Trim"
-      "Throw" "True" "Try" "Type" "TypeName" "UBound" "UCase" "Unload"
+      "Throw" "True" "Try" "Type" "TypeName" "TypeOf" "UBound" "UCase" "Unload"
       "Unlock" "Using" "Val" "Variant" "VarType" "Verb" "Weekday" "Wend"
       "While" "With" "Workspace" "Workspaces" "Write" "Year"
       "NotInheritable" "Shared" "OrElse"
@@ -1563,12 +1563,10 @@ fast enough.
            (null (nth 4 list))))))      ; inside comment
 
 
-(defun vbnet-pre-abbrev-expand-hook ()
+(defun vbnet-abbrev-expand-function ()
   ;; Allow our abbrevs only in a code context.
-  (setq local-abbrev-table
-        (if (vbnet-in-code-context-p)
-            vbnet-mode-abbrev-table)))
-
+  (if (vbnet-in-code-context-p)
+      (abbrev--default-expand)))
 
 (defun vbnet-newline-and-indent (&optional count)
   "Insert a newline, updating indentation."
@@ -2612,6 +2610,7 @@ Indent continuation lines according to some rules.
              ((looking-at (vbnet-regexp 'block-start))
               (+ indent vbnet-mode-indent))
 
+
              ((or (looking-at (vbnet-regexp 'class-start))
                   (looking-at (vbnet-regexp 'struct-start))
                   (looking-at (vbnet-regexp 'enum-start))
@@ -2657,6 +2656,9 @@ Indent continuation lines according to some rules.
                   (looking-at (vbnet-regexp 'synclock)))
 
               (+ indent vbnet-mode-indent))
+
+             ((looking-at (rx-to-string `(and line-start (* " ") " Return " (* any) line-end)))
+              (+ indent (length "Return ")))
 
              (t
               ;; By default, just copy indent from prev line.
@@ -2741,7 +2743,11 @@ Indent continuation lines according to some rules.
           (rx-to-string `(and line-start (* " ") (* (not "(")) "(" (or "F" "f") "unction()" line-end)))
          (looking-at
           ;; Lambda function
-          (rx-to-string `(and line-start (* " ") (* (not "(")) "(" (or "S" "s") "ub()" line-end))))
+          (rx-to-string `(and line-start (* " ") (* (not "(")) "(" (or "S" "s") "ub()" line-end)))
+         (looking-at
+          ;; Lambda function
+          (rx-to-string `(and line-start (* " ") (or "S" "s") "ub(" (* anything) ")" line-end)))
+         )
 
         (setq done t))
 
@@ -3555,8 +3561,7 @@ Here's a summary of the key bindings:
   (setq local-abbrev-table vbnet-mode-abbrev-table)
   (if vbnet-capitalize-keywords-p
       (progn
-        (make-local-variable 'pre-abbrev-expand-hook)
-        (add-hook 'pre-abbrev-expand-hook 'vbnet-pre-abbrev-expand-hook)
+        (setq abbrev-expand-function 'vbnet-abbrev-expand-function)
         (abbrev-mode 1)))
 
   (make-local-variable 'comment-start)

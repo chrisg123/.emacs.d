@@ -6,30 +6,6 @@
 (defvar cxx-run-command)
 (defvar cxx-compilation-finished-functions '())
 
-(add-hook
- 'c++-mode-hook
- (lambda()
-   (semantic-mode 1)
-   (setq-default flycheck-checker 'c/c++-gcc)
-   (setq c-hungry-delete-key nil)
-   (setq compilation-read-command nil)
-   (setq cxx-run-command "./run.sh")
-   (define-key c++-mode-map (kbd "M-.") 'semantic-ia-fast-jump)
-   (define-key c++-mode-map (kbd "C-c C-c") 'cxx-compile)
-   (define-key c++-mode-map (kbd "C-c C-r") 'cxx-run)
-   (add-hook 'compilation-finish-functions 'cxx-compilation-finished)
-   ))
-
-(defun cxx-compile ()
-  "Compile cxx project."
-  (interactive)
-  (let ((dir
-         (expand-file-name
-          (locate-dominating-file
-           "." (lambda (parent)
-                 (directory-files parent nil "Makefile"))))))
-    (compile (concat "cd '" dir "' && " "make -k"))))
-
 (defun cxx-compilation-finished (buffer desc)
   "BUFFER, DESC."
   (interactive)
@@ -42,7 +18,24 @@
       ))
   )
 
+
+(add-hook
+ 'c++-mode-hook
+ (lambda()
+   (semantic-mode 1)
+   (setq-default flycheck-checker 'c/c++-gcc)
+   (setq c-hungry-delete-key nil)
+   (define-key c++-mode-map (kbd "M-.") 'semantic-ia-fast-jump)
+   (define-key c++-mode-map (kbd "C-c C-c") 'cxx-compile)
+   (define-key c++-mode-map (kbd "C-c C-r") 'cxx-run)
+   (setq compile-command "./build.sh")
+   (setq cxx-run-command "./build.sh -r")
+   (setq compilation-read-command nil)
+   (add-hook 'compilation-finish-functions 'cxx-compilation-finished)
+   ))
+
 (defun cxx-run()
+  "."
   (interactive)
   (cxx-kill-async-buffer)
   (if current-prefix-arg
@@ -53,18 +46,26 @@
           (let ((dir
                  (locate-dominating-file
                   "." (lambda (parent)
-                        (or (directory-files parent nil "build")
-                            (directory-files parent nil "Makefile"))))))
-            (async-shell-command (concat "cd " dir " && " cxx-run-command) ))))
-        (compile "make -k"))
+                        (directory-files parent nil "build.sh")))))
+            (async-shell-command (concat "cd '" dir "' && " cxx-run-command) ))))
+        (cxx-compile))
     (let ((dir
            (locate-dominating-file
             "." (lambda (parent)
-                  (or (directory-files parent nil "build")
-                      (directory-files parent nil "Makefile"))))))
-      (async-shell-command (concat "cd " dir " && " cxx-run-command) ))
-    )
-  )
+                  (directory-files parent nil "build.sh")))))
+      (async-shell-command (concat "cd '" dir "' && " cxx-run-command) ))
+
+    ))
+
+(defun cxx-compile ()
+  "Compile cxx project."
+  (interactive)
+  (let ((dir
+         (locate-dominating-file
+          "." (lambda (parent)
+                (directory-files parent nil "build.sh")))))
+    (compile (concat "cd '" dir "' && " "./build.sh"))))
+
 
 (defun cxx-kill-async-buffer ()
   "__________."
