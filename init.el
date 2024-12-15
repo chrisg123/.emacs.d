@@ -33,8 +33,8 @@
 
 ;; Load custom scripts.
 (add-to-list 'load-path "~/.emacs.d/custom/")
-(add-to-list 'load-path "~/.emacs.d/custom/copilot")
 (add-to-list 'load-path "~/.emacs.d/custom/ob-powershell")
+
 (require 'my-indent)
 (require 'my-flycheck)
 (require 'my-semantic)
@@ -76,8 +76,17 @@
 (require 'format-all)
 (require 'zpl-mode)
 (require 'my-perl)
-(require 'copilot)
-(require 'my-copilot)
 (require 'my-latex)
-;;; init.el ends here
+(require 'highlight)
 
+(let ((gptel-path "~/.emacs.d/custom/gptel"))
+  (when (file-directory-p gptel-path)
+    (add-to-list 'load-path gptel-path)
+    (require 'gptel-curl)
+    (require 'gptel-context)
+    (require 'gptel-transient)
+    (require 'gptel-org)
+    (require 'gptel-rewrite)
+    (require 'gptel)))
+
+;;; init.el ends here
