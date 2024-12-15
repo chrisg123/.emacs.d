@@ -1,7 +1,3 @@
-[submodule "custom/copilot"]
-	path = custom/copilot
-	url = https://github.com/zerolfx/copilot.el
-
 [submodule "custom/ob-powershell"]
 	path = custom/ob-powershell
 	url = https://github.com/rkiggen/ob-powershell
