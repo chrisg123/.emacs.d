@@ -15,10 +15,20 @@
    (setq compilation-read-command nil)
    (setq cxx-run-command "./run.sh")
    (define-key c++-mode-map (kbd "M-.") 'semantic-ia-fast-jump)
-   (define-key c++-mode-map (kbd "C-c C-c") 'compile)
+   (define-key c++-mode-map (kbd "C-c C-c") 'cxx-compile)
    (define-key c++-mode-map (kbd "C-c C-r") 'cxx-run)
    (add-hook 'compilation-finish-functions 'cxx-compilation-finished)
    ))
+
+(defun cxx-compile ()
+  "Compile cxx project."
+  (interactive)
+  (let ((dir
+         (expand-file-name
+          (locate-dominating-file
+           "." (lambda (parent)
+                 (directory-files parent nil "Makefile"))))))
+    (compile (concat "cd '" dir "' && " "make -k"))))
 
 (defun cxx-compilation-finished (buffer desc)
   "BUFFER, DESC."
@@ -43,13 +53,15 @@
           (let ((dir
                  (locate-dominating-file
                   "." (lambda (parent)
-                        (directory-files parent nil "build")))))
+                        (or (directory-files parent nil "build")
+                            (directory-files parent nil "Makefile"))))))
             (async-shell-command (concat "cd " dir " && " cxx-run-command) ))))
         (compile "make -k"))
     (let ((dir
            (locate-dominating-file
             "." (lambda (parent)
-                  (directory-files parent nil "build")))))
+                  (or (directory-files parent nil "build")
+                      (directory-files parent nil "Makefile"))))))
       (async-shell-command (concat "cd " dir " && " cxx-run-command) ))
     )
   )
