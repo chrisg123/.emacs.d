@@ -12,14 +12,13 @@
 (require 'flycheck)
 (require 'man)
 (require 'grep)
-
+(require 'my-flycheck)
 (setq column-number-mode t)
 (show-paren-mode t)
 
 (global-flycheck-mode)
 (when (boundp 'global-xah-math-input-mode)
-      (global-xah-math-input-mode t)
-      )
+  (global-xah-math-input-mode t))
 
 (semantic-mode 1)
 
@@ -282,7 +281,29 @@ Don't mess with special buffers."
   (let ((b (if mark-active (min (point) (mark)) (point-min)))
         (e (if mark-active (max (point) (mark)) (point-max))))
     (shell-command-on-region b e
-     "python -mjson.tool" (current-buffer) t)))
+                             "python -mjson.tool" (current-buffer) t)))
+
+(setq dired-guess-shell-alist-user
+      '(("\\.pdf\\'" "mupdf")))
+
+(defun copy-diff-region ()
+  "Copy diff region without + or - markers."
+  (interactive)
+  (deactivate-mark)
+  (let ((text (buffer-substring-no-properties
+               (region-beginning) (region-end))))
+    (kill-new (replace-regexp-in-string "^[\\+\\-]" "" text))))
+
+(add-hook 'sh-mode-hook (lambda () (setq flycheck-checker 'sh-shellcheck)))
+
+(defun sanitize-sql-region (start end)
+  "Remove double quotes and the 'dbo.' qualifier from the selected region containing a SQL query."
+  (interactive "r") ;; Enable region selection in interactive mode
+  (let ((query (buffer-substring-no-properties start end)))
+    (let ((sanitized-query (replace-regexp-in-string "\"" "" query)))
+      (setq sanitized-query (replace-regexp-in-string "\\b\\(dbo\\.\\)" "" sanitized-query))
+      (delete-region start end)
+      (insert sanitized-query))))
 
 (provide 'misc)
 ;;; misc.el ends here
