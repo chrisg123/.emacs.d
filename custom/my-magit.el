@@ -4,6 +4,8 @@
 ;;; Code:
 (require 'magit)
 
+(setq magit-section-keep-region-overlay t)
+
 (defun my-magit-setup-faces ()
   "Customize faces for Magit."
 
@@ -26,6 +28,12 @@
   (set-face-attribute 'magit-diff-hunk-heading nil
                       :foreground "grey30"
                       :background 'unspecified
+                      :inherit nil)
+
+  (set-face-attribute 'magit-diff-hunk-heading-highlight nil
+                      :foreground "grey30"
+                      :background 'unspecified
+                      :weight 'bold
                       :inherit nil)
 
   (set-face-attribute 'magit-diff-removed nil
