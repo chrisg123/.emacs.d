@@ -1,3 +1,6 @@
 [submodule "custom/ob-powershell"]
 	path = custom/ob-powershell
 	url = https://github.com/rkiggen/ob-powershell
+[submodule "gptel"]
+	path = custom/gptel
+	url = https://github.com/chrisg123/gptel
