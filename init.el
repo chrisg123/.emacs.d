@@ -79,15 +79,11 @@
 (require 'my-latex)
 (require 'highlight)
 (require 'my-magit)
+(require 'my-markdown)
 
 (let ((gptel-path "~/.emacs.d/custom/gptel"))
   (when (file-directory-p gptel-path)
     (add-to-list 'load-path gptel-path)
-    (require 'gptel-curl)
-    (require 'gptel-context)
-    (require 'gptel-transient)
-    (require 'gptel-org)
-    (require 'gptel-rewrite)
-    (require 'gptel)))
+    (require 'my-gptel)))
 
 ;;; init.el ends here
