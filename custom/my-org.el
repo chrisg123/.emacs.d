@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 (require 'org)
-(require 'ob-async)
 (require 'ox)
 (require 'ob-kotlin)
 

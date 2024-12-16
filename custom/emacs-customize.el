@@ -105,7 +105,7 @@
  '(global-semanticdb-minor-mode t)
  '(org-agenda-loop-over-headlines-in-active-region nil)
  '(package-selected-packages
-   '(python-mode haproxy-mode dockerfile-mode csv-mode typescript-mode glsl-mode shader-mode wgrep mmm-mode flymake-shellcheck web-mode ob-kotlin ox-gfm yafolding json-navigator vterm dash jsonrpc meson-mode go-mode s editorconfig tree-sitter tree-sitter-langs helm-perldoc bash-completion rust-mode yaml-mode elpy swift-mode yaml json-mode flycheck python company-jedi yapfify pydoc pyenv-mode company-sourcekit pyvenv lsp-ui transpose-frame ob-swift lsp-sourcekit powershell xterm-color ob-async csharp-mode sudo-edit string-inflection flycheck-rust flycheck-kotlin kotlin-mode org jedi linum-relative flycheck-pycheckers xah-math-input org-projectile auto-complete ghc groovy-mode magit company-lsp flycheck-gradle gradle-mode format-all android-mode cmake-mode geben-helm-projectile geben highlight-indent-guides helm-c-yasnippet ac-php nginx-mode hindent ac-haskell-process haskell-snippets flycheck-ghcmod company-ghc helm multiple-cursors))
+   '(transpose-frame multiple-cursors yaml-mode geben-helm-projectile highlight-indent-guides xterm-color projectile format-all elpy pyvenv lsp-sourcekit swift-mode kotlin-mode haskell-mode hindent mmm-mode glsl-mode helm ob-swift ob-kotlin lsp-ui lsp-mode magit tree-sitter-langs tree-sitter flycheck gnu-elpa-keyring-update))
  '(safe-local-variable-values
    '((whitespace-style face lines indentation:space)
      (eval unless
@@ -199,7 +199,7 @@
  '(smerge-refined-removed ((t (:inherit smerge-refined-change :background "red"))))
  '(smerge-upper ((t (:extend t :background "red"))))
  '(table-cell ((t (:background "color-18" :foreground "gray90" :inverse-video nil))))
- '(tree-sitter-hl-face:function\.call ((t (:inherit (link font-lock-function-name-face) :underline nil :weight normal))))
+ '(tree-sitter-hl-face:function.call ((t (:inherit (link font-lock-function-name-face) :underline nil :weight normal))))
  '(vbnet-funcall-face ((t (:foreground "color-121"))))
  '(vbnet-namespace-face ((t (:foreground "brightmagenta"))))
  '(web-mode-html-tag-bracket-face ((t (:foreground "color-127"))))

@@ -3,7 +3,6 @@
 
 ;;; Code:
 (require 'helm-mode)
-(require 'helm-config)
 (helm-mode 1)
 
 (defvar helm-map)
