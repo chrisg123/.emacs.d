@@ -16,7 +16,8 @@
 
 (defun my-gptel-set-settings ()
   "Set a gptel SETTING to VALUE."
-  (setq gptel-expert-commands t))
+  (setq gptel-expert-commands t)
+  (setq gptel-default-mode 'org-mode))
 
 (defun my-gptel-setup ()
   "Setup gptel."
