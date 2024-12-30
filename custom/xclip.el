@@ -21,83 +21,52 @@
     (call-process-region
      text nil "/mnt/c/Windows/System32/clip.exe" nil t nil)))
 
-(defun clip-exe-paste-function()
-  "Pase from clipboard with clip.exe."
-  (let ((xclip-output
-         (shell-command-to-string
-          "/mnt/c/Windows/system32/WindowsPowerShell/v1.0/powershell.exe -command Get-Clipboard 2> /dev/null | sed 's/\r//g'")))
-    (unless (string= (car kill-ring) xclip-output)
-      xclip-output )))
+(defun powershell-clipboard-paste ()
+  "Paste text from the Windows clipboard using PowerShell."
+  (let ((clip-output (string-trim
+                      (shell-command-to-string
+                       "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -Command Get-Clipboard"))))
+    (unless (string= clip-output (car kill-ring))
+      clip-output)))
 
-(unless window-system
-  (when (getenv "DISPLAY")
 
-    (cond
+(defun detect-os ()
+  "Detect the operating system and return a symbol."
+  (cond
+   ((string-match "Microsoft" (shell-command-to-string "uname -r"))
+    'wsl)                      ;; Running in WSL
+   ((eq system-type 'windows-nt)
+    'windows)                  ;; Running on native Windows
+   ((eq system-type 'gnu/linux)
+    'linux)                    ;; Running on Linux
+   (t
+    'other)))                  ;; Other OS
 
-     ((string-match "-[Mm]icrosoft" operating-system-release)
+(defun toggle-clipboard ()
+  "Toggle clipboard integration in Emacs."
+  (interactive)
+  (if (eq interprogram-cut-function nil)
       (progn
-        (setq interprogram-cut-function 'clip-exe-cut-function)
-        ;;(setq interprogram-paste-function 'clip-exe-paste-function)
-        ))
+        ;; Restore clipboard functions based on the operating system
+        (pcase (detect-os)
+          ('wsl
+           (setq interprogram-cut-function 'clip-exe-cut-function)
+           (setq interprogram-paste-function 'powershell-clipboard-paste))
+          ('windows
+           (setq interprogram-cut-function 'clip-exe-cut-function)
+           (setq interprogram-paste-function 'powershell-clipboard-paste))
+          ('linux
+           (setq interprogram-cut-function 'xsel-cut-function)
+           (setq interprogram-paste-function 'xsel-paste-function))
+          (_ (message "Clipboard integration not configured for this OS.")))
+        (message "Clipboard integration enabled"))
+    (progn
+      ;; Disable clipboard functions
+      (setq interprogram-cut-function nil)
+      (setq interprogram-paste-function nil)
+      (message "Clipboard integration disabled"))))
 
-     ((eq system-type 'darwin)
-      (progn (princ "TODO: darwin")))
-
-     ((eq system-type 'gnu/linux)
-      (progn
-        (setq interprogram-cut-function 'xsel-cut-function)
-        (setq interprogram-paste-function 'xsel-paste-function)
-        ))
-     )))
-
-
-;; (unless window-system
-;;   (when (getenv "DISPLAY")
-
-;; (defun xclip-cut-function (text &optional push)
-;;   (with-temp-buffer
-;;     (insert text)
-;;     (let (;; prevent tramp from calling remotely
-;;           (default-directory (getenv "HOME")))
-;;       (call-process-region
-;;        (point-min)
-;;        (point-max) "xclip" nil 0 nil "-i" "-selection" "clipboard")
-;;       )
-;;     ))
-
-;; (defun xclip-paste-function()
-;;   (let (;; prevent tramp from calling remotely
-;;         (default-directory (getenv "HOME")))
-;;     (let ((xclip-output (shell-command-to-string "xclip -o -selection clipboard")))
-;;       (unless (string= (car kill-ring) xclip-output)
-;;         xclip-output))
-;;     )
-;;   )
-
-;; (defun clip-exe-cut-function (text &optional push)
-;;   (with-temp-buffer
-;;     (insert text)
-;;      (call-process-region (point-min) (point-max) "/mnt/c/Windows/system32/clip.exe")))
-
-;; (defun clip-exe-paste-function()
-;;   (let ((xclip-output (shell-command-to-string "powershell.exe -command Get-Clipboard | sed 's/\r//g'")))
-;;     (unless (string= (car kill-ring) xclip-output)
-;;       xclip-output )))
-
-;; (cond
-;;  ((string-match "-[Mm]icrosoft" operating-system-release)
-;;   (setq interprogram-cut-function 'clip-exe-cut-function))
-
-;;  ((eq system-type 'darwin) nil)
-
-;;  ((eq system-type 'gnu/linux)
-;;   (progn (setq interprogram-cut-function 'xclip-cut-function)
-;;          (setq interprogram-paste-function 'xclip-paste-function))
-;;   ))
-
-;; )
-
-;; )
+(toggle-clipboard)
 
 (provide 'xclip)
 ;;; xclip.el ends here
