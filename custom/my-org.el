@@ -25,8 +25,9 @@
   (org-entry-get nil property t)
 )
 
-(defun pfmt(string &rest properties)
-  "Format a STRING out of a format-string and org PROPERTIES."
+(defun pfmt (string &rest properties)
+  "Format a STRING out of a format-string and org PROPERTIES.
+Example usage: (pfmt \"/my/dir/path/%s.\" \"PROP\")"
   (apply 'format
          (append (list string)
                  (mapcar (lambda(x) (org-entry-get nil x t)) properties))))
