@@ -318,5 +318,18 @@ Don't mess with special buffers."
       (delete-region start end)
       (insert sanitized-query))))
 
+(defun copy-visible-region (beg end)
+  "Copy the visible region between BEG and END."
+  (interactive "r")
+  (let ((pos beg)
+        (accum ""))
+    (while (< pos end)
+      (let ((next (or (next-single-property-change pos 'invisible nil end) end)))
+        (unless (get-text-property pos 'invisible)
+          (setq accum (concat accum (buffer-substring pos next))))
+        (setq pos next)))
+    (kill-new accum)
+    (message "Copied visible text only.")))
+
 (provide 'misc)
 ;;; misc.el ends here
