@@ -80,6 +80,22 @@
           1 'font-lock-type-face)))
   )
 
+(defun python-run ()
+  "Run `run.sh` from the current directory or the nearest parent directory."
+  (interactive)
+  (let ((dir (locate-dominating-file default-directory
+                                     (lambda (parent)
+                                       (file-exists-p (expand-file-name "run.sh" parent))
+                                       ))))
+    (if dir
+        (let ((expanded-dir (expand-file-name dir)))
+          (async-shell-command (concat "cd '" expanded-dir "' && ./run.sh"))
+          (message "Executing run.sh in %s" expanded-dir))
+      (message "No run.sh found in this directory or its parents."))))
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (define-key python-mode-map (kbd "C-c C-r") 'python-run)))
 
 (provide 'my-python)
 
