@@ -12,6 +12,7 @@
 (add-to-list 'auto-mode-alist '("\\.vbproj\\'" . xml-mode))
 (add-to-list 'auto-mode-alist '("\\.csproj\\'" . xml-mode))
 (add-to-list 'auto-mode-alist '("\\.vcxproj\\'" . xml-mode))
+(add-to-list 'auto-mode-alist '("\\.svg\\'" . xml-mode))
 
 ;; ANSI colors for .log files https://stackoverflow.com/a/23382008/2974621
 (add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
