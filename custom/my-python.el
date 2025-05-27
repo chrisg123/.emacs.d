@@ -34,6 +34,7 @@
     (pyvenv-activate venv)
     (setq elpy-rpc-virtualenv-path venv)
     (elpy-enable)
+    (define-key elpy-mode-map (kbd "C-c C-r") nil)
     ))
 
 
