@@ -331,5 +331,15 @@ Don't mess with special buffers."
     (kill-new accum)
     (message "Copied visible text only.")))
 
+(defun my-trace-log-setup ()
+  "When visiting a file called `trace.log`, make it read-only and turn on auto-revert."
+  (when (and buffer-file-name
+             (string= (file-name-nondirectory buffer-file-name) "trace.log"))
+    (read-only-mode 1)
+    (auto-revert-mode 1)))
+
+(add-hook 'find-file-hook #'my-trace-log-setup)
+
+
 (provide 'misc)
 ;;; misc.el ends here
