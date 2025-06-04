@@ -66,7 +66,62 @@
       (setq interprogram-paste-function nil)
       (message "Clipboard integration disabled"))))
 
-(toggle-clipboard)
+
+(defun enable-clipboard-integration ()
+  "Enable clipboard integration based on the operating system."
+  (pcase (detect-os)
+    ('wsl
+     ;; Do not enable clipboard integration on WSL by default
+     (message "Running on WSL. Clipboard integration is disabled by default. Use C-u M-w to copy to system clipboard."))
+    ('windows
+     ;; Setup clipboard functions for native Windows
+     (setq interprogram-cut-function 'clip-exe-cut-function)
+     (setq interprogram-paste-function 'powershell-clipboard-paste)
+     (message "Clipboard integration enabled for Windows."))
+    ('linux
+     ;; Setup clipboard functions for native Linux
+     (setq interprogram-cut-function 'xsel-cut-function)
+     (setq interprogram-paste-function 'xsel-paste-function)
+     (message "Clipboard integration enabled for Linux."))
+    (_ (message "Clipboard integration not configured for this OS."))))
+
+(enable-clipboard-integration)
+
+(defun my/clipboard‐after‐kill‐ring‐save (&rest args)
+  "After `kill-ring-save`, if called with C-u on WSL also send to system clipboard."
+  (when (and current-prefix-arg
+             (eq (detect-os) 'wsl))
+    (let ((beg (nth 0 args))
+          (end (nth 1 args)))
+      (clip-exe-cut-function
+       (buffer-substring-no-properties beg end))
+      (message "Copied region to kill-ring and system clipboard"))))
+
+(advice-add 'kill-ring-save :after #'my/clipboard‐after‐kill‐ring‐save)
+
+(defun my/clipboard‐after‐kill‐region (&rest args)
+  "After `kill-region`, if called with C-u on WSL also send to system clipboard."
+  (when (and current-prefix-arg
+             (eq (detect-os) 'wsl))
+    (let ((beg (nth 0 args))
+          (end (nth 1 args)))
+      (clip-exe-cut-function
+       (buffer-substring-no-properties beg end))
+      (message "Cut region to kill-ring and system clipboard"))))
+
+(advice-add 'kill-region :after #'my/clipboard‐after‐kill‐region)
+
+(defun my/clipboard‐around‐yank (orig-fun &rest args)
+  "If called with C-u on WSL, yank from system clipboard; otherwise do normal `yank`."
+  (if (and current-prefix-arg
+           (eq (detect-os) 'wsl))
+      (let ((txt (powershell-clipboard-paste)))
+        (if txt
+            (insert txt)
+          (message "No clipboard content available.")))
+    (apply orig-fun args)))
+
+(advice-add 'yank :around #'my/clipboard‐around‐yank)
 
 (provide 'xclip)
 ;;; xclip.el ends here
