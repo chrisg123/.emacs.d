@@ -227,6 +227,12 @@ prefix, `compile-command` is run before `vbnet-run-command`."
   (interactive)
   (occur "^\s*\\(Public\\|Private\\|Protected\\|Friend\\|Protected Friend\\|Public Shared\\|Private Shared\\|Protected Shared\\|Friend Shared\\|Protected Friend Shared\\)?\s*\\(Sub\\|Function\\)\s+"))
 
+
+(defun vbnet-remove-trace-lines ()
+  "Kill every line that contains a Tracer.Trace call."
+  (interactive)
+  (flush-lines "^[[:blank:]]*Tracer\\.Trace.*$"))
+
 (provide 'my-vbnet)
 
 ;;; my-vbnet.el ends here
