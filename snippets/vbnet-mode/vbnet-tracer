@@ -1,0 +1,29 @@
+# -*- mode: snippet -*-
+# name: vbnet-tracer
+# key: tracer
+# --
+' DO NOT CHECKIN #################################################################
+Public Class Tracer
+    Private Shared ReadOnly TraceFilePath As String = "${1:C:\Users\dev\Documents\trace.log}"
+
+
+    Public Shared Sub Trace(ByVal message As String,
+        <Runtime.CompilerServices.CallerFilePath> Optional ByVal filePath As String = "",
+        <Runtime.CompilerServices.CallerLineNumber> Optional ByVal lineNumber As Integer = 0,
+        <Runtime.CompilerServices.CallerMemberName> Optional ByVal memberName As String = ""
+        )
+        Dim safeFileName As String = If(String.IsNullOrWhiteSpace(filePath), "UnknownFile", System.IO.Path.GetFileName(filePath))
+        Dim safeMemberName As String = If(String.IsNullOrWhiteSpace(memberName), "UnknownMember", memberName)
+        Dim safeLineNumber As String = If(lineNumber > 0, lineNumber.ToString(), "UnknownLine")
+
+        Dim logEntry As String = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - {message} " &
+        $"[{safeFileName}:{safeLineNumber} in {safeMemberName}]{Environment.NewLine}"
+        Try
+            Console.WriteLine($"{TraceFilePath}")
+            System.IO.File.AppendAllText(TraceFilePath, logEntry)
+        Catch ex As Exception
+            ' Silently ignore errors (e.g., file permission issues)
+        End Try
+    End Sub
+End Class
+' ################################################################################
