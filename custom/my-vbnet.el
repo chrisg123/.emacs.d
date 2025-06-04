@@ -156,23 +156,76 @@ prefix, `compile-command` is run before `vbnet-run-command`."
 (defconst brace-regexp
   "[^{]{[^{}]*}")
 
-(defconst vbnet-string-interpolation-regexp
-  "$\\('.*?[^\\]'\\|\".*?[^\\]\"\\)")
-
 (defconst vbnet-of-type-declaration-regexp
   "\\(?:Of[[:space:]]*\\([^)]*\\)\\)"
   )
 
+(defconst vbnet-interpolated-string-regexp
+  ;;  \($"     start with $"
+  ;;  \(\"\"  or a doubled quote
+  ;;  \|     ...
+  ;;  [^"]   any char that is not a double‐quote (this includes newline!)
+  ;;  \)*    …repeated any number of times
+  ;;  \"     closing "
+  "\\$\"\\(\"\"\\|[^\"]\\)*\"")
+
 (defun vbnet-string-interpolation-font-lock-find (limit)
-  "LIMIT."
-  (while (re-search-forward vbnet-string-interpolation-regexp limit t)
-    (put-text-property (match-beginning 0) (match-end 0)
+  "Fontify VB interpolated strings ($\"…\") including multiline, up to LIMIT."
+  (while (re-search-forward vbnet-interpolated-string-regexp limit t)
+    ;; 1) Highlight the entire interpolated string as a string:
+    (put-text-property (match-beginning 0)
+                       (match-end 0)
                        'face 'font-lock-string-face)
-    (let ((start (match-beginning 0)))
-      (while (re-search-backward brace-regexp start t)
-        (put-text-property (1+ (match-beginning 0)) (match-end 0)
-                           'face 'font-lock-type-face))))
+
+    ;; 2) Now scan INSIDE that region for {…} and highlight the inner expression:
+    (let ((str-start (match-beginning 0))
+          (str-end   (match-end 0)))
+      (save-excursion
+        (goto-char str-start)
+        (while (re-search-forward "{\\([^}]*\\)}" str-end t)
+          ;; Highlight only what's between the braces:
+          (put-text-property (1+ (match-beginning 0))
+                             (1- (match-end 0))
+                             'face 'font-lock-type-face)))))
   nil)
+
+;; ----------------------------------------------------------------------------
+;; 2) Keep the region‐extender hook in vbnet‐mode-hook (buffer-local).
+;; ----------------------------------------------------------------------------
+
+(defun my-vbnet-extend-region-to-interpolated-string ()
+  "If we’re inside a VB `$\"…\"` block, extend font-lock-beg/end to cover it all."
+  (when (and (boundp 'font-lock-beg)
+             (boundp 'font-lock-end))
+    (let ((ppss-beg (save-excursion
+                      (goto-char font-lock-beg)
+                      (syntax-ppss)))
+          (ppss-end (save-excursion
+                      (goto-char font-lock-end)
+                      (syntax-ppss))))
+      (when (or (nth 3 ppss-beg) (nth 3 ppss-end))
+        (let ((string-start (min
+                             (or (nth 8 ppss-beg) most-positive-fixnum)
+                             (or (nth 8 ppss-end) most-positive-fixnum)))
+              string-end)
+          (save-excursion
+            (goto-char font-lock-end)
+            (condition-case nil (forward-sexp) (error nil))
+            (setq string-end (point)))
+          (setq font-lock-beg (min font-lock-beg string-start)
+                font-lock-end (max font-lock-end string-end)))))))
+
+(defun my-vbnet-setup-fontlock-extensions ()
+  "Register the interpolation-region extender (buffer-local) in vbnet-mode."
+  ;; Add our region-extender. ‘t’ makes it buffer-local, so it only affects vbnet buffers.
+  (add-hook 'font-lock-extend-region-functions
+            #'my-vbnet-extend-region-to-interpolated-string
+            nil  ;; APPEND doesn’t matter here
+            t)) ;; Make it buffer-local
+
+(add-hook 'vbnet-mode-hook #'my-vbnet-setup-fontlock-extensions)
+
+
 
 (defun re-seq (regexp string)
   "Match REGEXP in STRING and return a list."
@@ -220,7 +273,7 @@ prefix, `compile-command` is run before `vbnet-run-command`."
      ;;(vbnet-enum-usage-font-lock-find)
      ;;(vbnet-of-type-declaration-font-lock-find)
      )
-   'append))
+   'prepend))
 
 (defun find-vbnet-subroutines-and-functions ()
   "Use `occur` to find all VB.NET Subroutines and Functions in the current buffer."
