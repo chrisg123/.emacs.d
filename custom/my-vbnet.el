@@ -170,7 +170,15 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
       (save-excursion
         (goto-char str-start)
         (while (re-search-forward "{\\([^}]*\\)}" str-end t)
-          ;; Highlight only what's between the braces:
+          ;; a) Highlight the opening "{" itself with function-name face:
+          (put-text-property (match-beginning 0)
+                             (1+ (match-beginning 0))
+                             'face 'font-lock-function-name-face)
+          ;; b) Highlight the closing "}" itself with function-name face:
+          (put-text-property (1- (match-end 0))
+                             (match-end 0)
+                             'face 'font-lock-function-name-face)
+          ;; c) Highlight what's between { and } with variable-name face:
           (put-text-property (1+ (match-beginning 0))
                              (1- (match-end 0))
                              'face 'font-lock-variable-name-face)))))
