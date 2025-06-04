@@ -173,7 +173,7 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
           ;; Highlight only what's between the braces:
           (put-text-property (1+ (match-beginning 0))
                              (1- (match-end 0))
-                             'face 'font-lock-type-face)))))
+                             'face 'font-lock-variable-name-face)))))
   nil)
 
 ;; ----------------------------------------------------------------------------
