@@ -47,18 +47,8 @@
   (interactive)
   (if (eq interprogram-cut-function nil)
       (progn
+        (enable-clipboard)
         ;; Restore clipboard functions based on the operating system
-        (pcase (detect-os)
-          ('wsl
-           (setq interprogram-cut-function 'clip-exe-cut-function)
-           (setq interprogram-paste-function 'powershell-clipboard-paste))
-          ('windows
-           (setq interprogram-cut-function 'clip-exe-cut-function)
-           (setq interprogram-paste-function 'powershell-clipboard-paste))
-          ('linux
-           (setq interprogram-cut-function 'xsel-cut-function)
-           (setq interprogram-paste-function 'xsel-paste-function))
-          (_ (message "Clipboard integration not configured for this OS.")))
         (message "Clipboard integration enabled"))
     (progn
       ;; Disable clipboard functions

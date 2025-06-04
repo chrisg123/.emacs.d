@@ -60,6 +60,7 @@
 (require 'my-python)
 (require 'my-projectile)
 (require 'vbnet-mode)
+(require 'my-xaml)
 (require 'misc)
 (require 'my-vbnet)
 (require 'my-yasnippet)
@@ -79,6 +80,7 @@
 (require 'my-latex)
 (require 'highlight)
 (require 'my-markdown)
+(require 'my-js)
 
 (let ((gptel-path "~/.emacs.d/custom/gptel"))
   (when (file-directory-p gptel-path)

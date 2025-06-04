@@ -390,4 +390,52 @@ When matching, reference is stored in match group 1."
       (insert html-content))
     (start-process-shell-command "open-html" nil "google-chrome-stable /tmp/openai-rendered.html")))
 
+(defun export-org-ascii-subtrees ()
+  "Export each level‑1 subtree to its own ASCII file.
+Default: use the subtree heading as the title (via `org-export-to-file`).
+If a subtree has PROPERTY `EXPORT_DOC_TITLE`, use the global #+TITLE:
+instead (via `org-export-as`).  Filenames come from
+`EXPORT_FILE_NAME` or a slug of the heading (no extension).
+Echo each export in the minibuffer."
+  (interactive)
+  ;; 1. Grab the global document title
+  (let* ((env       (org-export-get-environment 'ascii nil nil))
+         (doc-title (or (plist-get (cadr env) :title)
+                        (file-name-base (buffer-file-name)))))
+    ;; 2. Iterate over all level‑1 headings
+    (org-map-entries
+     (lambda ()
+       (let* ((heading       (nth 4 (org-heading-components)))
+              (slug          (replace-regexp-in-string "[[:space:]]+" "_" heading))
+              (fname         (or (org-entry-get (point) "EXPORT_FILE_NAME")
+                                 slug))
+              (use-doc-title (org-entry-get (point) "EXPORT_DOC_TITLE")))
+         (if use-doc-title
+             ;; — Use global #+TITLE: via org-export-as
+             (save-restriction
+               (org-narrow-to-subtree)
+               (let ((out-str
+                      (org-export-as
+                       'ascii    ; backend
+                       nil       ; async?
+                       nil       ; subtreep? (we've already narrowed)
+                       nil       ; visible-only?
+                       (list :title doc-title))))  ; ext-plist
+                 (with-temp-file fname
+                   (insert out-str))
+                 (message "Exported (doc title) '%s' → %s" heading fname)))
+           ;; — Default: subtree heading as title via org-export-to-file
+           (progn
+             (org-export-to-file
+              'ascii   ; backend
+              fname    ; output file
+              nil      ; async?
+              t        ; subtree-only
+              nil      ; visible-only?
+              nil)     ; ext-plist
+             (message "Exported (subtree) '%s' → %s" heading fname))))))
+     "LEVEL=1"  ; match only top‑level subtrees
+     'file))   ; scope: current file
+
+
 ;;; my-org.el ends here

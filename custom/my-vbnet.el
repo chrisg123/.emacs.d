@@ -3,6 +3,7 @@
 
 ;;; Code:
 
+(require 'misc)
 (require 'vbnet-mode)
 (require 'compile)
 
@@ -11,6 +12,7 @@
 
 (defvar vbnet-compilation-finished-functions '())
 (defvar vbnet-run-command)
+(defvar vbnet-run-command-remote)
 (defvar vbnet-run-tests-command)
 
 (defun vbnet-compilation-finished (buffer desc)
@@ -26,28 +28,14 @@
   )
 
 (defun vbnet-run()
-  "Run `\\[vbnet-run-command] asyncronously.  With a `\\[universal-argument]' \
-prefix, `compile-command` is run before `vbnet-run-command`."
-  (interactive)
-  (vbnet-kill-async-buffer)
-  (if current-prefix-arg
-      (progn
-        (add-to-list
-         'vbnet-compilation-finished-functions
-         (function
-          (let ((dir
-                 (locate-dominating-file
-                  "." (lambda (parent)
-                        (directory-files parent nil ".*\\.vbproj")))))
-            (async-shell-command (concat "cd '" dir "' && " vbnet-run-command) ))))
-        (vbnet-compile))
-    (let ((dir
-           (locate-dominating-file
-            "." (lambda (parent)
-                  (directory-files parent nil ".*\\.vbproj")))))
-      (async-shell-command (concat "cd '" dir "' && " vbnet-run-command) ))
-
-    ))
+"Run =vbnet-run-command= asynchronously.
+With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instead."
+    (interactive)
+    (vbnet-kill-async-buffer)
+    (let* ((root (my/compile-root "\\.vbproj\\'")))
+      (if current-prefix-arg
+          (async-shell-command (concat "cd '" root "' && " vbnet-run-command-remote))
+        (async-shell-command (concat "cd '" root "' && " vbnet-run-command)))))
 
 (defun vbnet-run-tests()
   "."
@@ -125,17 +113,15 @@ prefix, `compile-command` is run before `vbnet-run-command`."
 (defun vbnet-compile ()
   "Compile VB.NET project."
   (interactive)
-  (let* ((dir (locate-dominating-file
-               "." (lambda (parent)
-                     (directory-files parent nil ".*\\.vbproj"))))
-         (compile-command (concat "cd '" dir "' && " "./build.sh")))
+  (let* ((root (my/compile-root "\\.vbproj\\'"))
+    (compile-command (concat "cd '" root "' && " "./build.sh")))
     ;; Set custom display rules for the *compilation* buffer just before compiling
-    (let ((display-buffer-alist
-           (cons '("\\*compilation\\*"
-                   display-compilation-buffer
-                   (reusable-frames . t))
-                 display-buffer-alist)))
-      (compile compile-command))))
+  (let ((display-buffer-alist
+         (cons '("\\*compilation\\*"
+                 display-compilation-buffer
+                 (reusable-frames . t))
+               display-buffer-alist)))
+    (compile compile-command))))
 
 (add-hook 'vbnet-mode-hook
           (lambda()
@@ -148,6 +134,7 @@ prefix, `compile-command` is run before `vbnet-run-command`."
             (define-key vbnet-mode-map (kbd "C-c TAB") 'indent-region)
             (setq compile-command "./build.sh")
             (setq vbnet-run-command "./build.sh -r")
+            (setq vbnet-run-command-remote "./run_remote.sh")
             (setq compilation-read-command nil)
             (setq vbnet-run-tests-command "./testrun.py")
             (add-hook 'compilation-finish-functions 'vbnet-compilation-finished)

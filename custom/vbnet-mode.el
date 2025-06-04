@@ -2232,7 +2232,10 @@ Indent continuation lines according to some rules.
        ((looking-at (vbnet-regexp 'prop-end))
         (vbnet-find-matching-stmt (vbnet-regexp 'prop-start)
                                   (vbnet-regexp 'prop-end))
-        (current-indentation))
+        (progn
+          (print "prop-end")
+          (current-indentation)
+          ))
 
        ((looking-at (vbnet-regexp 'propget-end))
         (vbnet-find-matching-stmt (vbnet-regexp 'propget-start)
@@ -2257,6 +2260,7 @@ Indent continuation lines according to some rules.
           (current-indentation)
           )
         )
+
 
        ;; The outdenting stmts, which simply match their original.
        ((or (looking-at (vbnet-regexp 'else))
@@ -2474,10 +2478,11 @@ Indent continuation lines according to some rules.
         )
        (t
 
+        (princ (format "Current Line: %s" (thing-at-point 'line t)))
         ;; Other cases which depend on the previous line.
         (vbnet-previous-line-of-code)
         (princ (format "* vbnet-previous-line-of-code: %s" (thing-at-point 'line t)))
-        ;;(princ (format "Current Line: %s" (thing-at-point 'line t)))
+
         ;; Skip over label lines, which always have 0 indent.
         (while (looking-at (vbnet-regexp 'label))
           (vbnet-previous-line-of-code))
@@ -2589,7 +2594,7 @@ Indent continuation lines according to some rules.
 
          (t
           (skip-back-over-indented-multi-line-statements)
-          (princ (format "Current Line: %s" (thing-at-point 'line t)))
+          ;;(princ (format "*Current Line: %s" (thing-at-point 'line t)))
 
           (vbnet--back-to-start-of-continued-statement t) ;; why?
 
@@ -2606,9 +2611,31 @@ Indent continuation lines according to some rules.
                 (max 0 (- (current-indentation) vbnet-mode-indent))
                 )
               )
+             ((looking-at (vbnet-regexp 'prop-start))
+              (let ((prop-indent (current-indentation)))
+                (save-excursion
+                  ;; go back to the ORIGINAL point (start of the line we're indenting)
+                  (goto-char original-point)
+                  (beginning-of-line)
+                  (cond
+                   ;; if the current line is a “Get” block start, indent one level
+                   ((looking-at (vbnet-regexp 'propget-start))
+                    (princ "*** propget-start ***")
+                    (+ prop-indent vbnet-mode-indent))
+                   ;; same for “Set”
+                   ((looking-at (vbnet-regexp 'propset-start))
+                    (princ "*** propset-start ***")
+                    (+ prop-indent vbnet-mode-indent))
+                   ;; otherwise leave it exactly where the “Property” was
+                   (t
+                    (princ "leave it exactly where the “Property” was")
+                    prop-indent)))))
 
              ((looking-at (vbnet-regexp 'block-start))
+              (progn
+               (princ "block-start")
               (+ indent vbnet-mode-indent))
+              )
 
 
              ((or (looking-at (vbnet-regexp 'class-start))
@@ -2620,7 +2647,9 @@ Indent continuation lines according to some rules.
                   (looking-at (vbnet-regexp 'module-start))
                   (looking-at (vbnet-regexp 'sub-start))
                   (looking-at (vbnet-regexp 'func-start)))
+              (progn (princ "one of these")
               (+ indent vbnet-mode-indent))
+              )
 
              ((or
                (looking-at

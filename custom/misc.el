@@ -339,6 +339,103 @@ Don't mess with special buffers."
     (auto-revert-mode 1)))
 
 (add-hook 'find-file-hook #'my-trace-log-setup)
+(defun my-push-files ()
+  "Find the nearest .git directory and run push.sh asynchronously."
+  (interactive)
+  (let* ((dir (locate-dominating-file "." ".git"))
+         (expanded-dir (and dir (expand-file-name dir))))
+    (if expanded-dir
+        (async-shell-command (concat "cd " (shell-quote-argument expanded-dir) " && ./push.sh"))
+      (message "No .git directory found in parent directories."))))
+
+(defun my-pull-files ()
+  "Find the nearest .git directory and run pull.sh asynchronously."
+  (interactive)
+  (let* ((dir (locate-dominating-file "." ".git"))
+         (expanded-dir (and dir (expand-file-name dir))))
+    (if expanded-dir
+        (async-shell-command (concat "cd " (shell-quote-argument expanded-dir) " && ./pull.sh"))
+      (message "No .git directory found in parent directories."))))
+
+(defun my-push-or-pull-files (arg)
+  "Push or pull files.  If ARG then pull else push."
+  (interactive "P")
+  (if arg
+      (my-pull-files)
+    (my-push-files)))
+
+(global-set-key (kbd "C-c C-u") 'my-push-or-pull-files)
+
+(defun my-nxml-mode-keys()
+  (local-set-key (kbd "C-c C-e e") 'sgml-skip-tag-forward)
+  (local-set-key (kbd "C-c C-e b") 'sgml-skip-tag-backward)
+  )
+
+(add-hook 'nxml-mode-hook 'my-nxml-mode-keys)
+
+(add-hook 'with-editor-mode-hook
+          (lambda ()
+            ;; no lock‑files
+            (setq-local create-lockfiles nil)
+            ;; no auto‑revert
+            (when (bound-and-true-p auto-revert-mode)
+              (auto-revert-mode -1))
+            ;; never ask about disk‑change here
+            (setq-local ask-user-about-supersession-threat nil)))
+
+(defvar my/compile-root nil
+  "If non-nil, use this directory as the root for all compile commands.
+Set interactively with `my/set-compile-root`.")
+
+(defvar my/last-compile-root nil
+  "The directory of the last successful project compile (from auto-detect).")
+
+(defun my/set-compile-root (dir)
+  "Manually override `my/compile-root` to DIR."
+  (interactive "DCompile root directory: ")
+  (setq my/compile-root (expand-file-name dir))
+  (message "Compile root explicitly set to: %s" my/compile-root))
+
+(defun my/clear-compile-root ()
+  "Clear the manual override in `my/compile-root`."
+  (interactive)
+  (setq my/compile-root nil)
+  (message "Compile root override cleared."))
+
+
+(defun my/detect-build-root (pattern)
+  "Detect build root using PATTERN."
+  (locate-dominating-file
+   default-directory
+   (lambda (parent)
+     (and (directory-files parent nil pattern)
+          (file-exists-p (expand-file-name "build.sh" parent))))))
+
+
+(defun my/compile-root (pattern)
+  "Decide where to run a build command using PATTERN."
+  (let* ((detected (my/detect-build-root pattern)))
+    (or my/compile-root
+        (when detected
+          (setq my/last-compile-root (expand-file-name detected)))
+        my/last-compile-root
+        (user-error "No compile root found; set `my/compile-root' or open a project file"))))
+
+(defvar my/bg-transparent t
+  "Non-`nil` means the default background is transparent.")
+
+(defun my/toggle-bg-transparent ()
+  "Toggle `default` face background between transparent and black."
+  (interactive)
+  (if my/bg-transparent
+      (set-face-attribute 'default nil :background "black")
+    (set-face-attribute 'default nil :background "unspecified-bg"))
+  (setq my/bg-transparent (not my/bg-transparent))
+  (message "Background → %s"
+           (if my/bg-transparent "transparent" "black")))
+
+;; bind it to a key of your choice, e.g. F5
+(global-set-key (kbd "<f5>") #'my/toggle-bg-transparent)
 
 
 (provide 'misc)

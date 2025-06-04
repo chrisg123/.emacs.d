@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: html
-# key: <!DOCTYPE html
+# key: html
 # --
 <!DOCTYPE html>
 <html lang="en">
