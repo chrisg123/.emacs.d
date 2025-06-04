@@ -413,5 +413,22 @@ Set interactively with `my/set-compile-root`.")
         my/last-compile-root
         (user-error "No compile root found; set `my/compile-root' or open a project file"))))
 
+(defvar my/bg-transparent t
+  "Non-`nil` means the default background is transparent.")
+
+(defun my/toggle-bg-transparent ()
+  "Toggle `default` face background between transparent and black."
+  (interactive)
+  (if my/bg-transparent
+      (set-face-attribute 'default nil :background "black")
+    (set-face-attribute 'default nil :background "unspecified-bg"))
+  (setq my/bg-transparent (not my/bg-transparent))
+  (message "Background → %s"
+           (if my/bg-transparent "transparent" "black")))
+
+;; bind it to a key of your choice, e.g. F5
+(global-set-key (kbd "<f5>") #'my/toggle-bg-transparent)
+
+
 (provide 'misc)
 ;;; misc.el ends here
