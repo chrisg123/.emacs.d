@@ -402,15 +402,14 @@ Set interactively with `my/set-compile-root`.")
   (setq my/compile-root nil)
   (message "Compile root override cleared."))
 
-
 (defun my/detect-build-root (pattern)
   "Detect build root using PATTERN."
   (locate-dominating-file
    default-directory
    (lambda (parent)
      (and (directory-files parent nil pattern)
-          (file-exists-p (expand-file-name "build.sh" parent))))))
-
+          (or (file-exists-p (expand-file-name "build.py" parent))
+              (file-exists-p (expand-file-name "build.sh" parent)))))))
 
 (defun my/compile-root (pattern)
   "Decide where to run a build command using PATTERN."

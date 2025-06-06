@@ -114,7 +114,7 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
   "Compile VB.NET project."
   (interactive)
   (let* ((root (my/compile-root "\\.vbproj\\'"))
-    (compile-command (concat "cd '" root "' && " "./build.sh")))
+    (compile-command (concat "cd '" root "' && " compile-command)))
     ;; Set custom display rules for the *compilation* buffer just before compiling
   (let ((display-buffer-alist
          (cons '("\\*compilation\\*"
@@ -132,8 +132,12 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
             (define-key vbnet-mode-map (kbd "C-c C-t") 'vbnet-run-tests)
             (define-key vbnet-mode-map (kbd "C-c C-k") 'vbnet-kill-async-buffer)
             (define-key vbnet-mode-map (kbd "C-c TAB") 'indent-region)
-            (setq compile-command "./build.sh")
-            (setq vbnet-run-command "./build.sh -r")
+            (setq compile-command
+                  (if (file-exists-p "./build.py")
+                      "./build.py"
+                    "./build.sh"))
+            (setq vbnet-run-command
+                  (concat compile-command " -r"))
             (setq vbnet-run-command-remote "./run_remote.sh")
             (setq compilation-read-command nil)
             (setq vbnet-run-tests-command "./testrun.py")
