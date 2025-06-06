@@ -28,14 +28,14 @@
   )
 
 (defun vbnet-run()
-"Run =vbnet-run-command= asynchronously.
+  "Run =vbnet-run-command= asynchronously.
 With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instead."
-    (interactive)
-    (vbnet-kill-async-buffer)
-    (let* ((root (my/compile-root "\\.vbproj\\'")))
-      (if current-prefix-arg
-          (async-shell-command (concat "cd '" root "' && " vbnet-run-command-remote))
-        (async-shell-command (concat "cd '" root "' && " vbnet-run-command)))))
+  (interactive)
+  (vbnet-kill-async-buffer)
+  (let* ((root (my/compile-root "\\.vbproj\\'")))
+    (if current-prefix-arg
+        (async-shell-command (concat "cd '" root "' && " vbnet-run-command-remote))
+      (async-shell-command (concat "cd '" root "' && " vbnet-run-command)))))
 
 (defun vbnet-run-tests()
   "."
@@ -110,18 +110,27 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
               (display-buffer-pop-up-window buffer alist))) ;; As a fallback, pop up a new window
     displayed))
 
+(defun vbnet‐choose‐compiler‐script (root)
+  "ROOT."
+  (let ((py (expand-file-name "build.py" root))
+        (sh (expand-file-name "build.sh" root)))
+    (cond
+     ((file-exists-p py) py)
+     ((file-exists-p sh) sh)
+     (t (error "No build.py or build.sh in %s" root)))))
+
 (defun vbnet-compile ()
   "Compile VB.NET project."
   (interactive)
   (let* ((root (my/compile-root "\\.vbproj\\'"))
-    (compile-command (concat "cd '" root "' && " compile-command)))
+         (compile-command (concat "cd " (shell-quote-argument root) " && " (shell-quote-argument compile-command))))
     ;; Set custom display rules for the *compilation* buffer just before compiling
-  (let ((display-buffer-alist
-         (cons '("\\*compilation\\*"
-                 display-compilation-buffer
-                 (reusable-frames . t))
-               display-buffer-alist)))
-    (compile compile-command))))
+    (let ((display-buffer-alist
+           (cons '("\\*compilation\\*"
+                   display-compilation-buffer
+                   (reusable-frames . t))
+                 display-buffer-alist)))
+      (compile compile-command))))
 
 (add-hook 'vbnet-mode-hook
           (lambda()
@@ -132,10 +141,7 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
             (define-key vbnet-mode-map (kbd "C-c C-t") 'vbnet-run-tests)
             (define-key vbnet-mode-map (kbd "C-c C-k") 'vbnet-kill-async-buffer)
             (define-key vbnet-mode-map (kbd "C-c TAB") 'indent-region)
-            (setq compile-command
-                  (if (file-exists-p "./build.py")
-                      "./build.py"
-                    "./build.sh"))
+            (setq compile-command (vbnet‐choose‐compiler‐script (my/compile-root "\\.vbproj\\'")))
             (setq vbnet-run-command
                   (concat compile-command " -r"))
             (setq vbnet-run-command-remote "./run_remote.sh")
