@@ -413,12 +413,15 @@ Set interactively with `my/set-compile-root`.")
 
 (defun my/compile-root (pattern)
   "Decide where to run a build command using PATTERN."
-  (let* ((detected (my/detect-build-root pattern)))
+  (let ((detected (my/detect-build-root pattern)))
     (or my/compile-root
-        (when detected
-          (setq my/last-compile-root (expand-file-name detected)))
+        (and detected
+             (setq my/last-compile-root (expand-file-name detected)))
         my/last-compile-root
-        (user-error "No compile root found; set `my/compile-root' or open a project file"))))
+        "."
+        (when (called-interactively-p 'interactive)
+          (user-error "No compile root found; set `my/compile-root`")))))
+
 
 (defvar my/bg-transparent t
   "Non-`nil` means the default background is transparent.")
