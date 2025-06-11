@@ -111,13 +111,15 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
     displayed))
 
 (defun vbnet‐choose‐compiler‐script (root)
-  "ROOT."
+  "Return the build script in ROOT, preferring build.py but defaulting to build.sh."
   (let ((py (expand-file-name "build.py" root))
         (sh (expand-file-name "build.sh" root)))
-    (cond
-     ((file-exists-p py) py)
-     ((file-exists-p sh) sh)
-     (t (error "No build.py or build.sh in %s" root)))))
+    (if (file-exists-p py)
+        py
+      ;; Even if build.sh isn't present, we still return its expected path
+      ;; so that your hook never signals an error during initialization.
+      sh)))
+
 
 (defun vbnet-compile ()
   "Compile VB.NET project."
