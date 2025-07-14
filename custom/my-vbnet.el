@@ -110,7 +110,7 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
               (display-buffer-pop-up-window buffer alist))) ;; As a fallback, pop up a new window
     displayed))
 
-(defun vbnet‐choose‐compiler‐script (root)
+(defun vbnet-choose-compiler-script (root)
   "Return the build script in ROOT, preferring build.py but defaulting to build.sh."
   (let ((py (expand-file-name "build.py" root))
         (sh (expand-file-name "build.sh" root)))
@@ -125,7 +125,7 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
   "Compile VB.NET project."
   (interactive)
   (let* ((root (my/compile-root "\\.vbproj\\'"))
-         (compile-command (concat "cd " (shell-quote-argument root) " && " (shell-quote-argument compile-command))))
+         (compile-command (concat "cd " (shell-quote-argument root) " && " compile-command)))
     ;; Set custom display rules for the *compilation* buffer just before compiling
     (let ((display-buffer-alist
            (cons '("\\*compilation\\*"
@@ -143,7 +143,7 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
             (define-key vbnet-mode-map (kbd "C-c C-t") 'vbnet-run-tests)
             (define-key vbnet-mode-map (kbd "C-c C-k") 'vbnet-kill-async-buffer)
             (define-key vbnet-mode-map (kbd "C-c TAB") 'indent-region)
-            (setq compile-command (vbnet‐choose‐compiler‐script (my/compile-root "\\.vbproj\\'")))
+            (setq compile-command (shell-quote-argument (vbnet-choose-compiler-script (my/compile-root "\\.vbproj\\'"))))
             (setq vbnet-run-command
                   (concat compile-command " -r"))
             (setq vbnet-run-command-remote "./run_remote.sh")
