@@ -32,10 +32,12 @@
 With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instead."
   (interactive)
   (vbnet-kill-async-buffer)
-  (let* ((root (my/compile-root "\\.vbproj\\'")))
+  (let* ((root (my/resolve-compile-root "\\.vbproj\\'" t))
+         (default-directory root)
+         (vbnet-run-command (concat (shell-quote-argument (vbnet-choose-compiler-script root)) " -r")))
     (if current-prefix-arg
-        (async-shell-command (concat "cd '" root "' && " vbnet-run-command-remote))
-      (async-shell-command (concat "cd '" root "' && " vbnet-run-command)))))
+        (async-shell-command vbnet-run-command-remote)
+      (async-shell-command vbnet-run-command))))
 
 (defun vbnet-run-tests()
   "."
@@ -121,11 +123,12 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
       sh)))
 
 
-(defun vbnet-compile ()
-  "Compile VB.NET project."
-  (interactive)
-  (let* ((root (my/compile-root "\\.vbproj\\'"))
-         (compile-command (concat "cd " (shell-quote-argument root) " && " compile-command)))
+(defun vbnet-compile (&optional force)
+  "Compile VB.NET project.  FORCE."
+  (interactive "P")
+  (let* ((root (my/resolve-compile-root "\\.vbproj\\'" force))
+         (default-directory root)
+         (compile-command (shell-quote-argument (vbnet-choose-compiler-script root))))
     ;; Set custom display rules for the *compilation* buffer just before compiling
     (let ((display-buffer-alist
            (cons '("\\*compilation\\*"
@@ -143,9 +146,6 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
             (define-key vbnet-mode-map (kbd "C-c C-t") 'vbnet-run-tests)
             (define-key vbnet-mode-map (kbd "C-c C-k") 'vbnet-kill-async-buffer)
             (define-key vbnet-mode-map (kbd "C-c TAB") 'indent-region)
-            (setq compile-command (shell-quote-argument (vbnet-choose-compiler-script (my/compile-root "\\.vbproj\\'"))))
-            (setq vbnet-run-command
-                  (concat compile-command " -r"))
             (setq vbnet-run-command-remote "./run_remote.sh")
             (setq compilation-read-command nil)
             (setq vbnet-run-tests-command "./testrun.py")
