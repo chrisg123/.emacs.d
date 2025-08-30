@@ -439,6 +439,6 @@ Set interactively with `my/set-compile-root`.")
 ;; bind it to a key of your choice, e.g. F5
 (global-set-key (kbd "<f5>") #'my/toggle-bg-transparent)
 
-
+(setq create-lockfiles nil)
 (provide 'misc)
 ;;; misc.el ends here
