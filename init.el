@@ -51,6 +51,7 @@
 (require 'my-lsp)
 (require 'my-line-numbers)
 (require 'my-org)
+(require 'my-org-pdf-export)
 (require 'my-helm)
 (require 'my-c)
 (require 'my-cxx)
