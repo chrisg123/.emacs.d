@@ -383,7 +383,7 @@ Don't mess with special buffers."
             ;; never ask about disk‑change here
             (setq-local ask-user-about-supersession-threat nil)))
 
-(defvar my/compile-root nil
+(defvar my/explicit-compile-root nil
   "If non-nil, use this directory as the root for all compile commands.
 Set interactively with `my/set-compile-root`.")
 
@@ -391,15 +391,15 @@ Set interactively with `my/set-compile-root`.")
   "The directory of the last successful project compile (from auto-detect).")
 
 (defun my/set-compile-root (dir)
-  "Manually override `my/compile-root` to DIR."
-  (interactive "DCompile root directory: ")
-  (setq my/compile-root (expand-file-name dir))
-  (message "Compile root explicitly set to: %s" my/compile-root))
+  "Manually override `my/explicit-compile-root` to DIR."
+  (interactive "Compile root directory: ")
+  (setq my/explicit-compile-root (expand-file-name dir))
+  (message "Compile root explicitly set to: %s" my/explicit-compile-root))
 
 (defun my/clear-compile-root ()
-  "Clear the manual override in `my/compile-root`."
+  "Clear the manual override in `my/explicit-compile-root`."
   (interactive)
-  (setq my/compile-root nil)
+  (setq my/explicit-compile-root nil)
   (message "Compile root override cleared."))
 
 (defun my/detect-build-root (pattern)
@@ -411,16 +411,16 @@ Set interactively with `my/set-compile-root`.")
           (or (file-exists-p (expand-file-name "build.py" parent))
               (file-exists-p (expand-file-name "build.sh" parent)))))))
 
-(defun my/compile-root (pattern)
-  "Decide where to run a build command using PATTERN."
-  (let ((detected (my/detect-build-root pattern)))
-    (or my/compile-root
-        (and detected
-             (setq my/last-compile-root (expand-file-name detected)))
-        my/last-compile-root
-        "."
-        (when (called-interactively-p 'interactive)
-          (user-error "No compile root found; set `my/compile-root`")))))
+(defun my/resolve-compile-root (pattern &optional force)
+  "Decide where to run a build command using PATTERN.  FORCE."
+  (or my/explicit-compile-root
+      (and (not force) my/last-compile-root)
+      (let ((detected (my/detect-build-root pattern)))
+        (when detected
+          (setq my/last-compile-root (expand-file-name detected))))
+      (if (called-interactively-p 'interactive)
+        (user-error "No compile root found; set `my/explicit-compile-root`")
+        ".")))
 
 
 (defvar my/bg-transparent t
