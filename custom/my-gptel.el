@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'gptel-curl)
 (require 'gptel-context)
 (require 'gptel-transient)
 (require 'gptel-org)
