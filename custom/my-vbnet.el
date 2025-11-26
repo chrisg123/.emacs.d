@@ -6,6 +6,7 @@
 (require 'misc)
 (require 'vbnet-mode)
 (require 'compile)
+(require 'hideshow)
 
 (autoload 'vbnet-mode "vbnet-mode" "Mode for editing VB.NET code." t)
 (setq auto-mode-alist (append '(("\\.vb\\'" . vbnet-mode)) auto-mode-alist))
@@ -137,8 +138,36 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
                  display-buffer-alist)))
       (compile compile-command))))
 
+(defun vbnet-hs-forward-sexp (arg)
+  "Move point from a `#Region` line to the matching `#End Region`.
+ARG is ignored; we always move forward one region.  Nested regions are
+handled by keeping a depth counter."
+  (ignore arg)
+  (let ((depth 1))
+    ;; Start searching from the next line so we don't immediately re-hit the
+    ;; same #Region we’re sitting on.
+    (forward-line 1)
+    (while (and (> depth 0)
+                (re-search-forward
+                 "^[ \t]*#\\(End[ \t]+Region\\b\\|Region\\b\\)" nil t))
+      (if (string-prefix-p "End" (match-string 1))
+          (setq depth (1- depth))   ; found #End Region
+        (setq depth (1+ depth)))))) ; found nested #Region
+
+(defun my-vbnet-hs-setup()
+  "Setup hideshow mode."
+  (add-to-list 'hs-special-modes-alist
+               '(vbnet-mode
+                 "^[ \t]*#Region\\b"          ;; block start
+                 "^[ \t]*#End[ \t]+Region\\b" ;; block end
+                 "'"                          ;; comment start
+                 vbnet-hs-forward-sexp        ;; forward-sexp-func
+                 nil))                        ;; adjust-beg-func
+  (hs-minor-mode 1))
+
 (add-hook 'vbnet-mode-hook
           (lambda()
+            (my-vbnet-hs-setup)
             (define-key vbnet-mode-map (kbd "C-c C-p") 'vbnet-moveto-beginning-of-block)
             (define-key vbnet-mode-map (kbd "C-c C-n") 'vbnet-moveto-end-of-block)
             (define-key vbnet-mode-map (kbd "C-c C-c") 'vbnet-compile)
@@ -146,6 +175,7 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
             (define-key vbnet-mode-map (kbd "C-c C-t") 'vbnet-run-tests)
             (define-key vbnet-mode-map (kbd "C-c C-k") 'vbnet-kill-async-buffer)
             (define-key vbnet-mode-map (kbd "C-c TAB") 'indent-region)
+            (define-key vbnet-mode-map (kbd "C-c C-f") 'hs-toggle-hiding)
             (setq vbnet-run-command-remote "./run_remote.sh")
             (setq compilation-read-command nil)
             (setq vbnet-run-tests-command "./testrun.py")
@@ -293,6 +323,18 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
   (interactive)
   (flush-lines "^[[:blank:]]*Tracer\\.Trace.*$"))
 
+(defun vbnet-trace-expression ()
+  "If current line contains `Dim <var> As <type> =`, insert a trace line under it."
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (when (looking-at
+           "^\\s-*Dim\\s-+\\([A-Za-z0-9_]+\\)\\s-+As\\s-+[A-Za-z0-9_]+\\s-*=")
+      (let ((var (match-string 1)))
+        ;; move to end of line and insert trace
+        (end-of-line)
+        (newline-and-indent)
+        (insert (format "Tracer.Trace($\"%s: {%s}\")" var var))))))
 (provide 'my-vbnet)
 
 ;;; my-vbnet.el ends here
