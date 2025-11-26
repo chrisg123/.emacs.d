@@ -43,7 +43,9 @@ various LaTeX classes."
 \\setlength{\\droptitle}{-2cm}
 \\pretitle{\\vspace*{-2ex}\\centering\\LARGE\\bfseries}
 \\posttitle{\\par\\vspace*{-1em}}
-\\setlength{\\parindent}{0pt}"
+\\setlength{\\parindent}{0pt}
+\\usepackage{enumitem}%
+\\setlist[description]{style=nextline,font=\\bfseries,leftmargin=1.5em,labelsep=0.5em}"
               ("\\section{%s}" . "\\section*{%s}")
               ("\\subsection{%s}" . "\\subsection*{%s}")
               ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
@@ -61,7 +63,9 @@ various LaTeX classes."
 \\setlength{\\droptitle}{-2cm}
 \\pretitle{\\vspace*{-2ex}\\centering\\LARGE\\bfseries}
 \\posttitle{\\par\\vspace*{-1em}}
-\\setlength{\\parindent}{0pt}"
+\\setlength{\\parindent}{0pt}
+\\usepackage{enumitem}%
+\\setlist[description]{style=nextline,font=\\bfseries,leftmargin=1.5em,labelsep=0.5em}"
               ("\\section{%s}" . "\\section*{%s}")
               ("\\subsection{%s}" . "\\subsection*{%s}")
               ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))

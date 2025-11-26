@@ -105,7 +105,7 @@
  '(global-semanticdb-minor-mode t)
  '(org-agenda-loop-over-headlines-in-active-region nil)
  '(package-selected-packages
-   '(powershell typescript-mode cmake-mode tree-sitter-langs yasnippet helm-pydoc pydoc string-inflection web-mode json-mode 0blayout vterm transpose-frame yaml-mode geben-helm-projectile highlight-indent-guides xterm-color projectile format-all elpy pyvenv lsp-sourcekit swift-mode kotlin-mode haskell-mode hindent mmm-mode glsl-mode helm ob-swift ob-kotlin lsp-ui lsp-mode magit tree-sitter flycheck gnu-elpa-keyring-update))
+   '(php-mode csv-mode powershell typescript-mode cmake-mode tree-sitter-langs yasnippet helm-pydoc pydoc string-inflection web-mode json-mode 0blayout vterm transpose-frame yaml-mode geben-helm-projectile highlight-indent-guides xterm-color projectile format-all elpy pyvenv lsp-sourcekit swift-mode kotlin-mode haskell-mode hindent mmm-mode glsl-mode helm ob-swift ob-kotlin lsp-ui lsp-mode magit tree-sitter flycheck gnu-elpa-keyring-update))
  '(safe-local-variable-values
    '((whitespace-style face lines indentation:space)
      (eval unless

@@ -19,10 +19,17 @@
   (setq gptel-expert-commands t)
   (setq gptel-default-mode 'org-mode))
 
+(defun my-gptel-setup-directives ()
+  "Add custom directives to gptel directives."
+  (let ((new-directives
+         '((custom-directive . "You are a large language model living in Emacs and a helpful assistant. Respond concisely. All code should be wrapped in org-mode src blocks. vb.net code should use vbnet as the src type."))))
+    (setq gptel-directives (append new-directives gptel-directives))))
+
 (defun my-gptel-setup ()
   "Setup gptel."
   (my-gptel-set-settings)
-  (my-gptel-set-keybindings))
+  (my-gptel-set-keybindings)
+  (my-gptel-setup-directives))
 
 (my-gptel-setup)
 

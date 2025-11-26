@@ -13,6 +13,8 @@
 (require 'man)
 (require 'grep)
 (require 'my-flycheck)
+(require 'csv-mode)
+(require 'url-util)
 (setq column-number-mode t)
 (show-paren-mode t)
 
@@ -219,11 +221,18 @@ Don't mess with special buffers."
   (interactive)
   (shell-command (format "printf %s | xsel --clipboard -i" (buffer-file-name))))
 
+(defun generate-uuid ()
+  "Return a newly generated UUID as a string."
+  (replace-regexp-in-string
+   "\n\\'" ""
+   (shell-command-to-string "uuidgen")))
+
 (defun insert-uuid()
   "Insert uuid at point."
   (interactive)
-  (insert (replace-regexp-in-string "\n$" ""
-                                    (shell-command-to-string "uuidgen"))))
+  (insert (generate-uuid)))
+
+
 (defun my-reverse-region (beg end)
   "Reverse characters between BEG and END."
   (interactive "r")
@@ -438,6 +447,37 @@ Set interactively with `my/set-compile-root`.")
 
 ;; bind it to a key of your choice, e.g. F5
 (global-set-key (kbd "<f5>") #'my/toggle-bg-transparent)
+
+(defun my-csv-mode-hook ()
+  ;; optional: if you like the alignment helper
+  (csv-align-mode 1)
+
+  ;; Treat `#` as a normal char, not a comment starter.
+  (modify-syntax-entry ?# ".")
+
+  ;; Also clear generic comment vars so comment-dwim won't assume `#`.
+  (setq-local comment-start nil
+              comment-start-skip nil)
+
+  ;; Refontify with the new syntax.
+  (font-lock-refresh-defaults))
+(add-hook 'csv-mode-hook #'my-csv-mode-hook)
+
+(defun my/url-encode-region (beg end)
+  "URL-encode the region from BEG to END in-place."
+  (interactive "r")
+  (let* ((text (buffer-substring-no-properties beg end))
+         (encoded (url-hexify-string text)))
+    (delete-region beg end)
+    (insert encoded)))
+
+(defun my/url-decode-region (beg end)
+  "URL-decode the region from BEG to END in-place."
+  (interactive "r")
+  (let* ((text (buffer-substring-no-properties beg end))
+         (decoded (url-unhex-string text)))
+    (delete-region beg end)
+    (insert decoded)))
 
 (setq create-lockfiles nil)
 (provide 'misc)

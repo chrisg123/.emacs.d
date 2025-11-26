@@ -3,6 +3,7 @@
 ;;; Code:
 (require 'org)
 (require 'ox)
+(require 'ob)
 (require 'ob-kotlin)
 
 (remove-hook 'org-mode-hook 'org-babel-hide-all-hashes)
@@ -256,13 +257,44 @@ The `:tangle FILE` header argument will be added when pulling in file contents."
 ;;       (insert-file-contents tmp-out-file)
 ;;       (buffer-string))))
 
+(defun org-babel-variable-assignments:vbnet (params)
+  "Return a list of VB.NET variable assignments for PARAMS."
+  (let ((vars (org-babel--get-vars params)))
+    (mapcar
+     (lambda (pair)
+       (let* ((name (symbol-name (car pair)))
+              (value (cdr pair)))
+         (cond
+          ;; string
+          ((stringp value)
+           (format "Dim %s As String = \"%s\"" name
+                   (replace-regexp-in-string "\"" "\"\"" value)))
+          ;; number
+          ((numberp value)
+           (format "Dim %s = %s" name value))
+          ;; simple list → string join for now
+          ((listp value)
+           (format "Dim %s() As String = {%s}"
+                   name
+                   (mapconcat (lambda (s)
+                                (format "\"%s\"" (replace-regexp-in-string "\"" "\"\"" (format "%s" s))))
+                              value
+                              ", ")))
+          ;; fallback: ToString()
+          (t
+           (format "Dim %s = \"%s\"" name
+                   (replace-regexp-in-string "\"" "\"\"" (format "%s" value)))))))
+     vars)))
+
+
 (defun org-babel-execute:vbnet (body params)
   "Execute a block of VB.NET code with Org-Babel."
   (let* ((lines (split-string body "\n" t))
          (imports '())
          (rest-lines '())
          (collecting-imports t)
-         (wrapped-body))
+         (wrapped-body)
+         (var-lines (org-babel-variable-assignments:vbnet params)))
     (if (or (string-match-p "\\<Module\\>" body)
             (string-match-p "\\<Class\\>" body))
         (setq wrapped-body body)
@@ -278,6 +310,8 @@ The `:tangle FILE` header argument will be added when pulling in file contents."
              (mapconcat 'identity imports "\n")
              (if imports "\n" "")
              "Module Program\n    Sub Main()\n"
+             (mapconcat (lambda (line) (concat "        " line)) var-lines "\n")
+             (if var-lines "\n" "")
              (mapconcat (lambda (line) (concat "        " line)) rest-lines "\n")
              "\n    End Sub\nEnd Module")))
     (let* ((tmp-src-file (org-babel-temp-file "vbnet-src-" ".vb"))
