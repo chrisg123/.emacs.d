@@ -438,4 +438,38 @@ Echo each export in the minibuffer."
      'file))   ; scope: current file
 
 
+(setq org-latex-compiler "xelatex"
+      org-latex-pdf-process
+      '("xelatex -interaction nonstopmode -output-directory %o %f"
+        "xelatex -interaction nonstopmode -output-directory %o %f"))
+
+(with-eval-after-load 'ox-latex
+  ;; 1) Register a new class "myarticle"
+  (add-to-list 'org-latex-classes
+               '("myarticle"
+                 ;; Preamble:
+                 "\\documentclass[11pt]{article}
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage{fontspec}
+\\usepackage{graphicx}
+\\usepackage[a4paper, margin=1in]{geometry}
+\\usepackage{titling}
+\\setlength{\\droptitle}{-2cm}
+\\pretitle{\\vspace*{-2ex}\\centering\\LARGE\\bfseries}
+\\posttitle{\\par\\vspace*{-2.5cm}}
+\\setlength{\\parindent}{0pt}"
+                 ;; How to translate Org sections -> LaTeX
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+  ;; 2) Make "myarticle" the default class for all exports
+  (setq org-latex-default-class "myarticle"))
+
+
+
+;; \\usepackage{titlesec}
+;; \\titlespacing*{\\section}{0pt}{0.5\\baselineskip}{0.5\\baselineskip}
+;; \\titlespacing*{\\subsection}{0pt}{0.25\\baselineskip}{0.25\\baselineskip}
+
 ;;; my-org.el ends here
