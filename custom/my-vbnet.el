@@ -138,32 +138,106 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
                  display-buffer-alist)))
       (compile compile-command))))
 
-(defun vbnet-hs-forward-sexp (arg)
-  "Move point from a `#Region` line to the matching `#End Region`.
-ARG is ignored; we always move forward one region.  Nested regions are
-handled by keeping a depth counter."
-  (ignore arg)
+;; (defun vbnet-hs-forward-sexp (arg)
+;;   "Move point from a `#Region` line to the matching `#End Region`.
+;; ARG is ignored; we always move forward one region.  Nested regions are
+;; handled by keeping a depth counter."
+;;   (ignore arg)
+;;   (let ((depth 1))
+;;     ;; Start searching from the next line so we don't immediately re-hit the
+;;     ;; same #Region we’re sitting on.
+;;     (forward-line 1)
+;;     (while (and (> depth 0)
+;;                 (re-search-forward
+;;                  "^[ \t]*#\\(End[ \t]+Region\\b\\|Region\\b\\)" nil t))
+;;       (if (string-prefix-p "End" (match-string 1))
+;;           (setq depth (1- depth))   ; found #End Region
+;;         (setq depth (1+ depth)))))) ; found nested #Region
+
+;; (defun my-vbnet-hs-setup()
+;;   "Setup hideshow mode."
+;;   (add-to-list 'hs-special-modes-alist
+;;                '(vbnet-mode
+;;                  "^[ \t]*#Region\\b"          ;; block start
+;;                  "^[ \t]*#End[ \t]+Region\\b" ;; block end
+;;                  "'"                          ;; comment start
+;;                  vbnet-hs-forward-sexp        ;; forward-sexp-func
+;;                  nil))                        ;; adjust-beg-func
+;;   (hs-minor-mode 1))
+
+(defun vbnet-hs--forward-region ()
+  "Move point from a `#Region` line to its matching `#End Region`."
   (let ((depth 1))
-    ;; Start searching from the next line so we don't immediately re-hit the
-    ;; same #Region we’re sitting on.
     (forward-line 1)
     (while (and (> depth 0)
                 (re-search-forward
                  "^[ \t]*#\\(End[ \t]+Region\\b\\|Region\\b\\)" nil t))
       (if (string-prefix-p "End" (match-string 1))
-          (setq depth (1- depth))   ; found #End Region
+          (setq depth (1- depth))  ; found #End Region
         (setq depth (1+ depth)))))) ; found nested #Region
 
-(defun my-vbnet-hs-setup()
-  "Setup hideshow mode."
-  (add-to-list 'hs-special-modes-alist
-               '(vbnet-mode
-                 "^[ \t]*#Region\\b"          ;; block start
-                 "^[ \t]*#End[ \t]+Region\\b" ;; block end
-                 "'"                          ;; comment start
-                 vbnet-hs-forward-sexp        ;; forward-sexp-func
-                 nil))                        ;; adjust-beg-func
-  (hs-minor-mode 1))
+
+(defun vbnet-hs--forward-block ()
+  "Move point from a VB.NET block start to the matching End Foo.
+Uses `block-start` and `block-end` regexes from `vbnet-regexp-alist`."
+  (let* ((start-re (vbnet-regexp 'block-start))
+         (end-re   (vbnet-regexp 'block-end))
+         (depth 1))
+    (forward-line 1)
+    (while (and (> depth 0)
+                (re-search-forward (concat start-re "\\|" end-re) nil t))
+      (let ((match (match-string 0)))
+        (if (string-match-p end-re match)
+            (setq depth (1- depth)) ; found End Sub/End Class/etc
+          (setq depth (1+ depth))))))) ; found nested block (Class in Namespace, etc)
+
+(defun vbnet-hs-forward-sexp (arg)
+  "Move point forward one VB.NET foldable unit for `hs-minor-mode`.  Ignore ARG.
+
+If point is on a `#Region` line, fold to its `#End Region`.
+Otherwise, if it matches `block-start`, fold to the corresponding `End Foo`."
+  (ignore arg)
+  (beginning-of-line)
+  (cond
+   ;; #Region / #End Region pair
+   ((looking-at "^[ \t]*#Region\\b")
+    (vbnet-hs--forward-region))
+
+   ;; Sub/Function/Class/Module/Property/Interface/Enum/Type
+   ((looking-at (vbnet-regexp 'block-start))
+    (vbnet-hs--forward-block))
+
+   ;; Fallback – try treating this line as a block start anyway
+   (t
+    (vbnet-hs--forward-block))))
+
+(defun vbnet-hs-hide-all-regions ()
+  "Hide all #Region blocks in the current buffer using hideshow."
+  (interactive)
+  (when (bound-and-true-p hs-minor-mode)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "^[ \t]*#Region\\b" nil t)
+        (goto-char (match-beginning 0))
+        ;; At a #Region line, hideshow will use `vbnet-hs-forward-sexp`
+        ;; to find the matching #End Region and hide the block.
+        (hs-hide-block)
+        ;; Move to the next line so we don't re-hide the same region.
+        (forward-line 1)))))
+
+(defun my-vbnet-hs-setup ()
+  "Setup hideshow for `vbnet-mode` using regions and VB blocks."
+  (interactive)
+  (add-to-list
+   'hs-special-modes-alist
+   `(vbnet-mode
+     ,(concat "^[ \t]*#Region\\b\\|" (vbnet-regexp 'block-start)) ; start
+     ,(concat "^[ \t]*#End[ \t]+Region\\b\\|" (vbnet-regexp 'block-end)) ; end
+     "'"                                ; comment start
+     vbnet-hs-forward-sexp              ; forward-sexp-func
+     nil))                              ; adjust-beg-func
+  (hs-minor-mode 1)
+  (vbnet-hs-hide-all-regions))
 
 (add-hook 'vbnet-mode-hook
           (lambda()
