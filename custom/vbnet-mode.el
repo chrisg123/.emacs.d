@@ -991,7 +991,7 @@ See `imenu-create-index-function' for more information."
      `(block-start  ;; general-purpose block start
        ,(concat
          "^[ \t]*" ;; leading whitespace
-         "\\(\\(?:Default \\)?[Pp]ublic\\(?: [Oo]verrides\\)?\\(?: [Rr]ead[Oo]nly\\)?\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
+         "\\(\\(?:Default \\)?[Pp]ublic\\(?: [Aa]sync\\)?\\(?: [Oo]verrides\\)?\\(?: [Rr]ead[Oo]nly\\)?\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
          "[Pp]rivate\\(?: [Aa]sync\\)?\\(?: [Dd]elegate\\)?\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
          "[Ff]riend\\(?: [Ss]hared\\)?\\(?: [Nn]ot[Ii]nheritable\\)?\\|"
          "[Ss]tatic\\)?"

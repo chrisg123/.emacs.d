@@ -15,6 +15,7 @@
 (require 'my-flycheck)
 (require 'csv-mode)
 (require 'url-util)
+(require 'powershell)
 (setq column-number-mode t)
 (show-paren-mode t)
 
@@ -478,6 +479,24 @@ Set interactively with `my/set-compile-root`.")
          (decoded (url-unhex-string text)))
     (delete-region beg end)
     (insert decoded)))
+
+(defun powershell-run ()
+  "Run `run.sh` from the current directory or the nearest parent directory."
+  (interactive)
+  (let ((dir (locate-dominating-file default-directory
+                                     (lambda (parent)
+                                       (file-exists-p (expand-file-name "run.sh" parent))
+                                       ))))
+    (if dir
+        (let ((expanded-dir (expand-file-name dir)))
+          (async-shell-command (concat "cd '" expanded-dir "' && ./run.sh"))
+          (message "Executing run.sh in %s" expanded-dir))
+      (message "No run.sh found in this directory or its parents."))))
+
+(add-hook 'powershell-mode-hook
+          (lambda ()
+            (define-key powershell-mode-map (kbd "C-c C-r") 'powershell-run)))
+
 
 (setq create-lockfiles nil)
 (provide 'misc)
