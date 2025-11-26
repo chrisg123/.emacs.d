@@ -13,6 +13,7 @@
 (require 'man)
 (require 'grep)
 (require 'my-flycheck)
+(require 'powershell)
 (setq column-number-mode t)
 (show-paren-mode t)
 
@@ -438,6 +439,24 @@ Set interactively with `my/set-compile-root`.")
 
 ;; bind it to a key of your choice, e.g. F5
 (global-set-key (kbd "<f5>") #'my/toggle-bg-transparent)
+
+
+(defun powershell-run ()
+  "Run `run.sh` from the current directory or the nearest parent directory."
+  (interactive)
+  (let ((dir (locate-dominating-file default-directory
+                                     (lambda (parent)
+                                       (file-exists-p (expand-file-name "run.sh" parent))
+                                       ))))
+    (if dir
+        (let ((expanded-dir (expand-file-name dir)))
+          (async-shell-command (concat "cd '" expanded-dir "' && ./run.sh"))
+          (message "Executing run.sh in %s" expanded-dir))
+      (message "No run.sh found in this directory or its parents."))))
+
+(add-hook 'powershell-mode-hook
+          (lambda ()
+            (define-key powershell-mode-map (kbd "C-c C-r") 'powershell-run)))
 
 
 (provide 'misc)
