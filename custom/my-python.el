@@ -94,9 +94,10 @@
           (message "Executing run.sh in %s" expanded-dir))
       (message "No run.sh found in this directory or its parents."))))
 
-(add-hook 'python-mode-hook
-          (lambda ()
-            (define-key python-mode-map (kbd "C-c C-r") 'python-run)))
+(with-eval-after-load 'python
+  (define-key python-mode-map (kbd "C-c C-p") nil)
+  (define-key python-mode-map (kbd "C-c C-n") nil)
+  (define-key python-mode-map (kbd "C-c C-r") #'python-run))
 
 (provide 'my-python)
 
