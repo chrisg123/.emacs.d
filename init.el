@@ -82,6 +82,7 @@
 (require 'highlight)
 (require 'my-markdown)
 (require 'my-js)
+(require 'my-typescript)
 
 (let ((gptel-path "~/.emacs.d/custom/gptel"))
   (when (file-directory-p gptel-path)
