@@ -28,6 +28,9 @@
 
 (add-hook 'js-mode-hook
           (lambda ()
+            (setq-local tab-width 2)
+            (setq-local js-indent-level 2)
+            (setq-local indent-tabs-mode nil)
             (define-key js-mode-map (kbd "C-c C-r") 'js-run)))
 
 (provide 'my-js)
