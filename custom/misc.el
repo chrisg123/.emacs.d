@@ -498,6 +498,8 @@ Set interactively with `my/set-compile-root`.")
             (define-key powershell-mode-map (kbd "C-c C-r") 'powershell-run)))
 
 
+(setq dired-listing-switches "-lahrt")
+
 (setq create-lockfiles nil)
 (provide 'misc)
 ;;; misc.el ends here
