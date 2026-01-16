@@ -10,6 +10,9 @@
 (global-set-key (kbd "C-x <left>") 'windmove-left)
 (global-set-key (kbd "C-x <right>") 'windmove-right)
 
+(global-set-key (kbd "C-c C-p") 'scroll-down-line)
+(global-set-key (kbd "C-c C-n") 'scroll-up-line)
+
 (global-set-key (kbd "C-c w") 'whitespace-cleanup)
 ;;(global-set-key (kbd "C-c C-x w") 'global-whitespace-mode)
 (global-set-key (kbd "C-c *") 'format-all-buffer)
