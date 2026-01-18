@@ -21,7 +21,9 @@
                                            0 t)])))
 
 (with-eval-after-load 'flycheck
-  (add-to-list 'flycheck-checkers 'c/c++-emscripten))
+  (add-to-list 'flycheck-checkers 'c/c++-emscripten)
+  (setq-default flycheck-disabled-checkers
+                (append flycheck-disabled-checkers '(emacs-lisp-checkdoc))))
 
 (defvar flycheck-emscripten-include-path '()
   "A list of include paths for the Emscripten checker.")
