@@ -113,6 +113,19 @@
                 my-gptel-llm-tools-max-bytes))
     (error "Denied: file too large (> %s bytes)" my-gptel-llm-tools-max-bytes)))
 
+(defun my-gptel-llm-tools--strip-diff-git-header (patch)
+  "Strip leading `diff --git ...' header lines from PATCH.
+
+This is intentionally conservative: it only removes *leading* lines of the form
+`diff --git ...` (possibly repeated). Everything else is left untouched so
+unified diff content (---/+++/@@) remains identical.
+
+Return the normalized patch string."
+  (replace-regexp-in-string
+   "\\`\\(?:diff --git .*\\(?:\n\\)\\)+"
+   ""
+   patch))
+
 ;; ---------------------------------------------------------------------------
 ;; Approved LLM tools (locked to sandbox)
 ;; ---------------------------------------------------------------------------
@@ -152,28 +165,33 @@
             (patch-file (make-temp-file "gptel-" nil ".patch")))
        (unwind-protect
            (progn
-             (with-temp-file patch-file (insert patch))
-             ;; Dry run first
-             (with-current-buffer buf
-               (let ((dry-exit
-                      (call-process "patch" nil buf t
-                                    "--batch" "--forward"
-                                    "--dry-run"
-                                    "-d" (file-name-directory target)
-                                    "-p0" "-i" patch-file)))
-                 (unless (and (integerp dry-exit) (= dry-exit 0))
-                   (error "Patch dry-run failed:\n%s" (buffer-string)))))
-             (with-current-buffer buf
-               (erase-buffer)
-               (let ((exit
-                      (call-process "patch" nil buf t
-                                    "--batch" "--forward"
-                                    "-d" (file-name-directory target)
-                                    "-p0" "-i" patch-file)))
-                 (if (and (integerp exit) (= exit 0))
-                     (format "Patched file: %s" target)
-                   (error "Patch failed:\n%s" (buffer-string))))
-               ))
+
+             (let* ((is-git (string-match-p "^--- a/" patch))
+                    (p-level (if is-git "-p1" "-p0"))
+                    ;; Optional: drop `diff --git ...` lines; keep rest identical
+                    (patch-text (my-gptel-llm-tools--strip-diff-git-header patch)))
+               (with-temp-file patch-file (insert patch-text))
+               ;; Dry run first
+               (with-current-buffer buf
+                 (let ((dry-exit
+                        (call-process "patch" nil buf t
+                                      "--batch" "--forward"
+                                      "--dry-run"
+                                      "-d" (file-name-directory target)
+                                      p-level "-i" patch-file)))
+                   (unless (and (integerp dry-exit) (= dry-exit 0))
+                     (error "Patch dry-run failed:\n%s" (buffer-string)))))
+               (with-current-buffer buf
+                 (erase-buffer)
+                 (let ((exit
+                        (call-process "patch" nil buf t
+                                      "--batch" "--forward"
+                                      "-d" (file-name-directory target)
+                                      p-level "-i" patch-file)))
+                   (if (and (integerp exit) (= exit 0))
+                       (format "Patched file: %s" target)
+                     (error "Patch failed:\n%s" (buffer-string))))
+                 )))
          (when (and patch-file (file-exists-p patch-file)) (delete-file patch-file))
          (when (buffer-live-p buf) (kill-buffer buf))))))
  :description "Apply a unified diff patch to an existing sandbox file (dry-run enforced)."

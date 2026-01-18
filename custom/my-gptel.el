@@ -16,7 +16,7 @@
 
 (defun my-gptel-set-settings ()
   "Set a gptel SETTING to VALUE."
-  (setq gptel-confirm-tool-calls 'always)
+  (setq gptel-confirm-tool-calls t)
   (setq gptel-model 'gpt-5.2)
   (setq gptel-expert-commands t)
   (setq gptel-default-mode 'org-mode))
