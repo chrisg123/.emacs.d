@@ -241,6 +241,7 @@ Otherwise, if it matches `block-start`, fold to the corresponding `End Foo`."
 
 (add-hook 'vbnet-mode-hook
           (lambda()
+            (display-line-numbers-mode 1)
             (my-vbnet-hs-setup)
             (define-key vbnet-mode-map (kbd "C-c C-p") 'vbnet-moveto-beginning-of-block)
             (define-key vbnet-mode-map (kbd "C-c C-n") 'vbnet-moveto-end-of-block)
