@@ -500,6 +500,40 @@ Set interactively with `my/set-compile-root`.")
 
 (setq dired-listing-switches "-lahrt")
 
+(defun green-region ()
+  "Make region text green using a tagged overlay."
+  (interactive)
+  (when (use-region-p)
+    (let ((ov (make-overlay (region-beginning) (region-end))))
+      (overlay-put ov 'face '(:foreground "green"))
+      (overlay-put ov 'green-region t))))
+
+(defun ungreen-region ()
+  "Remove green-region overlays in the active region only."
+  (interactive)
+  (unless (use-region-p)
+    (user-error "No active region"))
+  (remove-overlays (region-beginning)
+                   (region-end)
+                   'green-region t))
+
+(defun blue-region ()
+  "Make region text green using a tagged overlay."
+  (interactive)
+  (when (use-region-p)
+    (let ((ov (make-overlay (region-beginning) (region-end))))
+      (overlay-put ov 'face '(:foreground "DeepSkyBlue3"))
+      (overlay-put ov 'blue-region t))))
+
+(defun unblue-region ()
+  "Remove blue-region overlays in the active region only."
+  (interactive)
+  (unless (use-region-p)
+    (user-error "No active region"))
+  (remove-overlays (region-beginning)
+                   (region-end)
+                   'blue-region t))
+
 (setq create-lockfiles nil)
 (provide 'misc)
 ;;; misc.el ends here
