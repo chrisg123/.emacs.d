@@ -10,8 +10,13 @@
 (global-set-key (kbd "C-x <left>") 'windmove-left)
 (global-set-key (kbd "C-x <right>") 'windmove-right)
 
+<<<<<<< HEAD
 (global-set-key (kbd "C-c C-p") 'scroll-down-line)
 (global-set-key (kbd "C-c C-n") 'scroll-up-line)
+=======
+(global-set-key (kbd "M-o r") #'scroll-down-line) ;; F3
+(global-set-key (kbd "M-o s") #'scroll-up-line)   ;; F4
+>>>>>>> 7f0b18b (Disable truncate lines in vbnet; add scoll hotkey)
 
 (global-set-key (kbd "C-c w") 'whitespace-cleanup)
 ;;(global-set-key (kbd "C-c C-x w") 'global-whitespace-mode)
