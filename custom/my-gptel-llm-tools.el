@@ -20,7 +20,7 @@
   "Only paths under this directory are writable by LLM tools."
   :type 'directory)
 
-(defcustom my-gptel-llm-tools-allowed-extensions '("org" "md" "txt" "el" "patch")
+(defcustom my-gptel-llm-tools-allowed-extensions '("org" "md" "txt" "el" "patch", "sh", "py", "js", "vb", "c", "cpp")
   "Allowed file extensions for LLM create/edit operations (no dot)."
   :type '(repeat string))
 
