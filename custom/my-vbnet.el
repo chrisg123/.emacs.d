@@ -254,6 +254,7 @@ Otherwise, if it matches `block-start`, fold to the corresponding `End Foo`."
             (setq compilation-read-command nil)
             (setq vbnet-run-tests-command "./testrun.py")
             (add-hook 'compilation-finish-functions 'vbnet-compilation-finished)
+            (setq truncate-lines nil)
             ))
 
 (defconst brace-regexp
