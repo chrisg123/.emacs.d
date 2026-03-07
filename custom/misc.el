@@ -534,6 +534,13 @@ Set interactively with `my/set-compile-root`.")
                    (region-end)
                    'blue-region t))
 
+(defun unix2dos-buffer ()
+  "Run unix2dos on the current file and revert the buffer."
+  (interactive)
+  (when buffer-file-name
+    (shell-command (format "unix2dos %s" (shell-quote-argument buffer-file-name)))
+    (revert-buffer t t t)))
+
 (setq create-lockfiles nil)
 (provide 'misc)
 ;;; misc.el ends here
