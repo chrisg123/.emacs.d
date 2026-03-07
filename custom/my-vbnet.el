@@ -7,6 +7,7 @@
 (require 'vbnet-mode)
 (require 'compile)
 (require 'hideshow)
+(require 'xterm-color)
 
 (autoload 'vbnet-mode "vbnet-mode" "Mode for editing VB.NET code." t)
 (setq auto-mode-alist (append '(("\\.vb\\'" . vbnet-mode)) auto-mode-alist))
