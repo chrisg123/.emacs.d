@@ -400,10 +400,16 @@ Set interactively with `my/set-compile-root`.")
 (defvar my/last-compile-root nil
   "The directory of the last successful project compile (from auto-detect).")
 
+;; (defun my/set-compile-root (dir)
+;;   "Manually override `my/explicit-compile-root` to DIR."
+;;   (interactive "Compile root directory: ")
+;;   (setq my/explicit-compile-root (expand-file-name dir))
+;;   (message "Compile root explicitly set to: %s" my/explicit-compile-root))
+
 (defun my/set-compile-root (dir)
   "Manually override `my/explicit-compile-root` to DIR."
-  (interactive "Compile root directory: ")
-  (setq my/explicit-compile-root (expand-file-name dir))
+  (interactive (list (read-directory-name "Compile root directory: " nil nil t)))
+  (setq my/explicit-compile-root (file-name-as-directory (expand-file-name dir)))
   (message "Compile root explicitly set to: %s" my/explicit-compile-root))
 
 (defun my/clear-compile-root ()
@@ -540,6 +546,8 @@ Set interactively with `my/set-compile-root`.")
   (when buffer-file-name
     (shell-command (format "unix2dos %s" (shell-quote-argument buffer-file-name)))
     (revert-buffer t t t)))
+
+(setq global-auto-revert-non-file-buffers t)
 
 (setq create-lockfiles nil)
 (provide 'misc)

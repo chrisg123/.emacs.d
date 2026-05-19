@@ -8,6 +8,7 @@
 (require 'compile)
 (require 'hideshow)
 (require 'xterm-color)
+(require 'cl-lib)
 
 (autoload 'vbnet-mode "vbnet-mode" "Mode for editing VB.NET code." t)
 (setq auto-mode-alist (append '(("\\.vb\\'" . vbnet-mode)) auto-mode-alist))
@@ -302,6 +303,7 @@ Otherwise, if it matches `block-start`, fold to the corresponding `End Foo`."
                              (1- (match-end 0))
                              'face 'font-lock-variable-name-face)))))
   nil)
+
 
 ;; ----------------------------------------------------------------------------
 ;; 2) Keep the region‐extender hook in vbnet‐mode-hook (buffer-local).
