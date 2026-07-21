@@ -1,9 +1,11 @@
 ;;; emacs-keys.el --- Emacs custom key bindings
 ;;; Commentary:
 ;;; Code:
+(require 'misc)
+
 (define-key global-map (kbd "C-c o") 'insert-org-mode-header)
 
-(define-key global-map (kbd "C-c s") 'org-insert-source-code-block)
+(define-key global-map (kbd "C-c s") #'my/insert-src-block)
 
 (global-set-key (kbd "C-x <up>") 'windmove-up)
 (global-set-key (kbd "C-x <down>") 'windmove-down)

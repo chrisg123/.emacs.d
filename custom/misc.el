@@ -16,6 +16,9 @@
 (require 'csv-mode)
 (require 'url-util)
 (require 'powershell)
+(require 'my-org)
+(require 'my-markdown)
+
 (setq column-number-mode t)
 (show-paren-mode t)
 
@@ -548,6 +551,17 @@ Set interactively with `my/set-compile-root`.")
     (revert-buffer t t t)))
 
 (setq global-auto-revert-non-file-buffers t)
+
+(defun my/insert-src-block (&optional language file)
+  "Insert an Org src block in Org, or a Markdown fence in Markdown."
+  (interactive)
+  (cond
+   ((derived-mode-p 'org-mode)
+    (org-insert-source-code-block language file))
+   ((derived-mode-p 'markdown-mode 'gfm-mode)
+    (my/insert-src-block-markdown language file))
+   (t
+    (user-error "Not in org-mode or markdown-mode"))))
 
 (setq create-lockfiles nil)
 (provide 'misc)
