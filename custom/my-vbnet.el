@@ -17,6 +17,7 @@
 (defvar vbnet-run-command)
 (defvar vbnet-run-command-remote)
 (defvar vbnet-run-tests-command)
+(defvar vbnet-run-tests-args nil)
 
 (defun vbnet-compilation-finished (buffer desc)
   "BUFFER, DESC."
@@ -46,24 +47,22 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
   "."
   (interactive)
   (vbnet-kill-async-buffer)
-  (if current-prefix-arg
-      (progn
-        (add-to-list
-         'vbnet-compilation-finished-functions
-         (function
-          (let ((dir
-                 (locate-dominating-file
-                  "." (lambda (parent)
-                        (directory-files parent nil ".*\\.vbproj")))))
-            (my-async-shell-command vbnet-run-tests-command ))))
-        (vbnet-compile))
-    (let ((dir
-           (locate-dominating-file
-            "." (lambda (parent)
-                  (directory-files parent nil ".*\\.vbproj")))))
-      (my-async-shell-command (list "python" vbnet-run-tests-command) ))
-
-    ))
+  (let* ((dir
+          (locate-dominating-file
+           "." (lambda (parent)
+                 (directory-files parent nil ".*\\.vbproj"))))
+         (cmd
+          (append (list "python" vbnet-run-tests-command)
+                  vbnet-run-tests-args)))
+    (if current-prefix-arg
+        (progn
+          (add-to-list
+           'vbnet-compilation-finished-functions
+           `(let ((default-directory ,dir))
+              (my-async-shell-command ',cmd)))
+          (vbnet-compile))
+      (let ((default-directory dir))
+        (my-async-shell-command cmd)))))
 
 (defun my-async-shell-command(cmd)
   "CMD."
@@ -255,7 +254,8 @@ Otherwise, if it matches `block-start`, fold to the corresponding `End Foo`."
             (define-key vbnet-mode-map (kbd "C-c C-f") 'hs-toggle-hiding)
             (setq vbnet-run-command-remote "./run_remote.sh")
             (setq compilation-read-command nil)
-            (setq vbnet-run-tests-command "./testrun.py")
+            (setq vbnet-run-tests-command "./build.py")
+            (setq vbnet-run-tests-args '("--test"))
             (add-hook 'compilation-finish-functions 'vbnet-compilation-finished)
             (setq truncate-lines nil)
             ))
