@@ -500,7 +500,12 @@ Echo each export in the minibuffer."
   ;; 2) Make "myarticle" the default class for all exports
   (setq org-latex-default-class "myarticle"))
 
-
+(defun org-insert-block-quote ()
+  "Insert an Org quote block and place point inside it."
+  (interactive)
+  (let ((start (point)))
+    (insert "#+BEGIN_QUOTE\n\n#+END_QUOTE")
+    (goto-char (+ start (length "#+BEGIN_QUOTE\n")))))
 
 ;; \\usepackage{titlesec}
 ;; \\titlespacing*{\\section}{0pt}{0.5\\baselineskip}{0.5\\baselineskip}

@@ -77,7 +77,7 @@
 
 (enable-clipboard-integration)
 
-(defun my/clipboard‐after‐kill‐ring‐save (&rest args)
+(defun my/clipboard-after-kill-ring-save (&rest args)
   "After `kill-ring-save`, if called with C-u on WSL also send to system clipboard."
   (when (and current-prefix-arg
              (eq (detect-os) 'wsl))
@@ -87,9 +87,16 @@
        (buffer-substring-no-properties beg end))
       (message "Copied region to kill-ring and system clipboard"))))
 
-(advice-add 'kill-ring-save :after #'my/clipboard‐after‐kill‐ring‐save)
+(advice-add 'kill-ring-save :after #'my/clipboard-after-kill-ring-save)
 
-(defun my/clipboard‐after‐kill‐region (&rest args)
+(defun my/clipboard-after-magit-copy (&rest _args)
+  "Send Magit's copied value to the system clipboard."
+  (when (eq (detect-os) 'wsl)
+    (clip-exe-cut-function (current-kill 0 t))))
+
+(advice-add 'magit-copy-buffer-revision :after #'my/clipboard-after-magit-copy)
+
+(defun my/clipboard-after-kill-region (&rest args)
   "After `kill-region`, if called with C-u on WSL also send to system clipboard."
   (when (and current-prefix-arg
              (eq (detect-os) 'wsl))
@@ -99,9 +106,9 @@
        (buffer-substring-no-properties beg end))
       (message "Cut region to kill-ring and system clipboard"))))
 
-(advice-add 'kill-region :after #'my/clipboard‐after‐kill‐region)
+(advice-add 'kill-region :after #'my/clipboard-after-kill-region)
 
-(defun my/clipboard‐around‐yank (orig-fun &rest args)
+(defun my/clipboard-around-yank (orig-fun &rest args)
   "If called with C-u on WSL, yank from system clipboard; otherwise do normal `yank`."
   (if (and current-prefix-arg
            (eq (detect-os) 'wsl))
@@ -111,7 +118,7 @@
           (message "No clipboard content available.")))
     (apply orig-fun args)))
 
-(advice-add 'yank :around #'my/clipboard‐around‐yank)
+(advice-add 'yank :around #'my/clipboard-around-yank)
 
 (provide 'xclip)
 ;;; xclip.el ends here

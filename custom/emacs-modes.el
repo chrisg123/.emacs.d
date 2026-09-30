@@ -16,6 +16,7 @@
 (add-to-list 'auto-mode-alist '("\\.xaml\\'" . xml-mode))
 (add-to-list 'auto-mode-alist '("\\.axaml\\'" . xml-mode))
 (add-to-list 'auto-mode-alist '("\\.ps1\\'" . powershell-mode))
+(add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-mode))
 
 ;; ANSI colors for .log files https://stackoverflow.com/a/23382008/2974621
 (add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))

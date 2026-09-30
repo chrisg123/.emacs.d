@@ -30,5 +30,19 @@ With prefix arg, also prompts for FILE and inserts it."
     (when file
       (insert-file-contents file))))
 
+(defun my-markdown-follow-file-with-line (url)
+  "Open file:///...#L<line> links and jump to the line."
+  (when (string-match
+         "\\`file://\\([^#]+\\)#L\\([0-9]+\\)\\'" url)
+    (let ((file (match-string 1 url))
+          (line (string-to-number (match-string 2 url))))
+      (find-file file)
+      (goto-char (point-min))
+      (forward-line (1- line))
+      t)))                    ; Tell markdown-mode we handled it.
+
+(add-hook 'markdown-follow-link-functions
+          #'my-markdown-follow-file-with-line)
+
 (provide 'my-markdown)
 ;;; my-markdown.el ends here

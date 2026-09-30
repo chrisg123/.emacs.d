@@ -563,6 +563,39 @@ Set interactively with `my/set-compile-root`.")
    (t
     (user-error "Not in org-mode or markdown-mode"))))
 
+(defun my/git-sync-wip-apply-force ()
+  "Run ~/scripts/git-sync-wip.sh --apply --force."
+  (interactive)
+  (let ((script (expand-file-name "~/scripts/git-sync-wip.sh")))
+    (unless (file-executable-p script)
+      (user-error "Not executable or not found: %s" script))
+    (async-shell-command (format "%s --apply --force" (shell-quote-argument script))
+                         "*git-sync-wip*")))
+
+(defun my-format-all-svelte-setup ()
+  (let ((plugin
+         (concat
+          (string-trim
+           (shell-command-to-string "npm root -g"))
+          "/prettier-plugin-svelte/plugin.js")))
+    (setq-local format-all-formatters
+                `(("Svelte"
+                   (prettier "--plugin" ,plugin))))))
+
+(add-hook 'svelte-mode-hook #'my-format-all-svelte-setup)
+
+(defun decode-newlines-region (beg end)
+  (interactive "r")
+  (let ((text (buffer-substring-no-properties beg end)))
+    (delete-region beg end)
+    (insert (replace-regexp-in-string "\\\\n" "\n" text))))
+
+(defun encode-newlines-region (beg end)
+  (interactive "r")
+  (let ((text (buffer-substring-no-properties beg end)))
+    (delete-region beg end)
+    (insert (replace-regexp-in-string "\n" "\\n" text t t))))
+
 (setq create-lockfiles nil)
 (provide 'misc)
 ;;; misc.el ends here

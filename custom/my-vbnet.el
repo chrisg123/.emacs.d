@@ -78,7 +78,7 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
      :command cmd
      :connection-type 'pipe
      :sentinel (lambda(proc msg)
-                 (when (equal "finished\n" msg)
+                 (when (memq (process-status proc) '(exit signal))
                    (with-current-buffer "*Testrun*"
                      (compilation-mode)
                      (setq buffer-read-only nil)

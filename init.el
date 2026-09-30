@@ -62,6 +62,7 @@
 (require 'my-projectile)
 (require 'vbnet-mode)
 (require 'my-xaml)
+(require 'my-xml)
 (require 'misc)
 (require 'my-vbnet)
 (require 'my-yasnippet)
