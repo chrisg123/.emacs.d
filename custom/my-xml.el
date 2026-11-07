@@ -357,7 +357,7 @@
       (goto-char new-point))
 
     (when-let ((window (get-buffer-window source)))
-      (set-window-point window new-point)))))
+      (set-window-point window new-point))))
 
 (defun my-xml-attribute-editor-cancel ()
   "Cancel editing XML attributes."
