@@ -335,7 +335,12 @@
           (delete-region start end)
           (goto-char start)
           (insert new-tag)
-          (setq new-point (point))))
+          (setq new-point (point)))
+
+        ;; Keep the source buffer marked as changed after applying the edit.
+        ;; In particular, do not let the temporary editor's clean state hide
+        ;; the change from save-buffer.
+        (set-buffer-modified-p t)))
 
     ;; The editor is a temporary view.  Remove its window before restoring the
     ;; source window configuration; otherwise pop-to-buffer can leave two
