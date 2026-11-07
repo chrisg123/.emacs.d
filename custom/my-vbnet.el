@@ -19,6 +19,20 @@
 (defvar vbnet-run-tests-command)
 (defvar vbnet-run-tests-args nil)
 
+(defun vbnet--project-name-from-root (root)
+  "Return the VB.NET project name for ROOT (from *.vbproj), or nil."
+  (let* ((files (directory-files root nil "\\.vbproj\\'"))
+         ;; If there are multiple, just pick the first in sorted order.
+         (vbproj (car (sort files #'string<))))
+    (when vbproj
+      (file-name-base vbproj))))
+
+(defun vbnet--compilation-buffer-name (root)
+  "Return a per-project compilation buffer name for project at ROOT."
+  (format "*compilation: %s*"
+          (or (vbnet--project-name-from-root root)
+              (file-name-nondirectory (directory-file-name root)))))
+
 (defun vbnet-compilation-finished (buffer desc)
   "BUFFER, DESC."
   (interactive)
@@ -125,15 +139,34 @@ With a =\\[universal-argument]' prefix, =vbnet-run-command-remote= is run instea
       sh)))
 
 
+;; (defun vbnet-compile (&optional force)
+;;   "Compile VB.NET project.  FORCE."
+;;   (interactive "P")
+;;   (let* ((root (my/resolve-compile-root "\\.vbproj\\'" force))
+;;          (default-directory root)
+;;          (compile-command (shell-quote-argument (vbnet-choose-compiler-script root))))
+;;     ;; Set custom display rules for the *compilation* buffer just before compiling
+;;     (let ((display-buffer-alist
+;;            (cons '("\\*compilation\\*"
+;;                    display-compilation-buffer
+;;                    (reusable-frames . t))
+;;                  display-buffer-alist)))
+;;       (compile compile-command))))
+
 (defun vbnet-compile (&optional force)
-  "Compile VB.NET project.  FORCE."
+  "Compile VB.NET project.  With FORCE (C-u), re-detect the root."
   (interactive "P")
-  (let* ((root (my/resolve-compile-root "\\.vbproj\\'" force))
+  (let* ((root (file-name-as-directory
+                (expand-file-name (my/resolve-compile-root "\\.vbproj\\'" force))))
          (default-directory root)
-         (compile-command (shell-quote-argument (vbnet-choose-compiler-script root))))
-    ;; Set custom display rules for the *compilation* buffer just before compiling
+         (compile-command (shell-quote-argument (vbnet-choose-compiler-script root)))
+         ;; Name compilation buffer per project *at ROOT*.
+         (compilation-buffer-name-function
+          (lambda (_mode)
+            (vbnet--compilation-buffer-name root))))
+    ;; Display rules (match both *compilation* and *compilation: Foo*)
     (let ((display-buffer-alist
-           (cons '("\\*compilation\\*"
+           (cons '("\\*compilation\\*\\|\\*compilation: .*\\*"
                    display-compilation-buffer
                    (reusable-frames . t))
                  display-buffer-alist)))
